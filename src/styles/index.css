@@ -1,0 +1,35 @@
+@import "./tokens.css";
+@import "./retro.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100dvh;
+  background-color: var(--void-bg);
+  color: var(--paper);
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+  background: #2a2a3e;
+}
+::-webkit-scrollbar-thumb {
+  background: #4f527a;
+  border: 2px solid #2a2a3e;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6d71a8;
+}
+
+/* Focus outline for high accessibility */
+:focus-visible {
+  outline: 2px dashed #00f0ff;
+  outline-offset: 3px;
+}

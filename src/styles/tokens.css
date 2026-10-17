@@ -1,0 +1,60 @@
+:root {
+  --ink: #111122;
+  --paper: #fff7f0;
+  --accent: #ff007f;
+  --cyan: #00f0ff;
+  --amber: #ffb703;
+  --matrix-green: #00ff66;
+  --void-bg: #0c0d1e;
+  --void-deep: #070712;
+  --win-header: #000080;
+  --win-header-active: #1084d0;
+  --win-surface: #c0c0c0;
+  --win-shadow-dark: #404040;
+  --win-shadow-light: #ffffff;
+  --pixel: "Press Start 2P", monospace;
+  --vt: "VT323", monospace;
+
+  /* Sizing tokens */
+  --fourie-size: 200px;
+  --marquee-speed: 28s;
+  --window-chrome: block;
+}
+
+/* Day Mode / Modern Web Sunlight */
+body[data-theme="day"] {
+  --void-bg: #e8ecf2;
+  --void-deep: #d5dce6;
+  --paper: #1c2038;
+  --ink: #f0f4f8;
+  --win-header: #1e3a8a;
+  --win-surface: #e2e8f0;
+}
+
+/* Chaos Mode - screen shape responsive sizing */
+body[data-shape="pocket"] {
+  --fourie-size: 80px;
+  --marquee-speed: 15s;
+  --window-chrome: none;
+  font-size: 13px;
+}
+
+body[data-shape="phone"] {
+  --fourie-size: 110px;
+  --marquee-speed: 20s;
+}
+
+body[data-shape="tablet"] {
+  --fourie-size: 160px;
+  --marquee-speed: 24s;
+}
+
+body[data-shape="desktop"] {
+  --fourie-size: 210px;
+  --marquee-speed: 32s;
+}
+
+body[data-shape="cinema"] {
+  --fourie-size: 240px;
+  --marquee-speed: 38s;
+}

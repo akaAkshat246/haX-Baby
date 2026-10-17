@@ -1,36 +1,36 @@
-/* 90s/00s Window & Retro OS Styling */
+/* Soothing Baby Retro OS & Cozy Window Styling */
 
 .retro-bevel {
   border-top: 2px solid #ffffff;
   border-left: 2px solid #ffffff;
-  border-bottom: 2px solid #404040;
-  border-right: 2px solid #404040;
-  box-shadow: 1px 1px 0px #000000;
+  border-bottom: 2px solid #3d3568;
+  border-right: 2px solid #3d3568;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
 }
 
 .retro-bevel-inset {
-  border-top: 2px solid #404040;
-  border-left: 2px solid #404040;
+  border-top: 2px solid #c5bbd8;
+  border-left: 2px solid #c5bbd8;
   border-bottom: 2px solid #ffffff;
   border-right: 2px solid #ffffff;
 }
 
-/* Retro Window Dialog */
+/* Soothing Cozy Retro Window */
 .win {
   position: fixed;
-  top: 14vh;
-  left: calc(50% - 220px + var(--dx, 0px));
-  width: 440px;
+  top: 13vh;
+  left: calc(50% - 225px + var(--dx, 0px));
+  width: 450px;
   max-width: 94vw;
-  max-height: 75dvh;
+  max-height: 76dvh;
   display: flex;
   flex-direction: column;
-  background: #c0c0c0;
-  color: #000000;
-  border: 2px solid #ffffff;
-  border-right-color: #000000;
-  border-bottom-color: #000000;
-  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.7);
+  background: var(--win-surface, #fbf8f5);
+  color: #1e1b38;
+  border: 3px solid #7c6fd6;
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(10, 8, 30, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2);
+  overflow: hidden;
   transition: transform 0.15s ease-out;
 }
 
@@ -39,62 +39,64 @@
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  padding: 4px 8px;
-  background: linear-gradient(90deg, #000080, #1084d0);
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #7c6fd6, #a29bfe);
   color: #ffffff;
   font-family: var(--pixel);
   font-size: 11px;
   cursor: grab;
   touch-action: none;
   user-select: none;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
 }
 
 .win__bar:active {
   cursor: grabbing;
 }
 
+/* Cute Pastel Mac-Style Window Dots */
 .win__bar button {
-  min-width: 28px;
+  min-width: 24px;
   min-height: 24px;
-  border-top: 1px solid #ffffff;
-  border-left: 1px solid #ffffff;
-  border-bottom: 2px solid #000000;
-  border-right: 2px solid #000000;
-  background: #c0c0c0;
-  color: #000000;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 0, 0, 0.2);
+  background: #ff9ec0;
+  color: #ffffff;
   font-family: monospace;
   font-weight: bold;
-  font-size: 13px;
+  font-size: 11px;
   display: grid;
   place-items: center;
   cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.win__bar button:hover {
+  transform: scale(1.15);
 }
 
 .win__bar button:active {
-  border-top: 2px solid #000000;
-  border-left: 2px solid #000000;
-  border-bottom: 1px solid #ffffff;
-  border-right: 1px solid #ffffff;
+  transform: scale(0.95);
 }
 
 .win__body {
-  padding: 12px;
+  padding: 14px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: #c0c0c0;
-  color: #000000;
+  background: var(--win-surface, #fbf8f5);
+  color: #1e1b38;
 }
 
-/* Mobile Bottom Sheet */
+/* Mobile Bottom Sheet for Baby Mode */
 .win--sheet {
   inset: auto 0 calc(52px + env(safe-area-inset-bottom, 0px)) 0 !important;
   left: 0 !important;
   width: 100% !important;
   max-width: 100% !important;
-  max-height: 70dvh !important;
-  border-radius: 12px 12px 0 0;
-  border-bottom: none;
-  animation: sheet-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 72dvh !important;
+  border-radius: 20px 20px 0 0 !important;
+  border-bottom: none !important;
+  animation: sheet-up 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes sheet-up {
@@ -112,22 +114,23 @@
   }
 }
 
-/* Taskbar */
+/* Soothing Frosted Taskbar */
 .taskbar {
   position: fixed;
   inset: auto 0 0 0;
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 6px;
-  height: calc(48px + env(safe-area-inset-bottom, 0px));
-  padding: 4px 10px env(safe-area-inset-bottom, 4px) 10px;
-  background: #c0c0c0;
-  border-top: 2px solid #ffffff;
-  box-shadow: 0 -2px 0 #808080;
-  color: #000000;
+  gap: 8px;
+  height: calc(52px + env(safe-area-inset-bottom, 0px));
+  padding: 6px 14px env(safe-area-inset-bottom, 6px) 14px;
+  background: rgba(28, 24, 58, 0.92);
+  backdrop-filter: blur(16px);
+  border-top: 2px solid #5a5091;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
+  color: #ffffff;
   transform: translateY(100%);
-  transition: transform 0.3s ease-out;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .taskbar.on {
@@ -135,81 +138,79 @@
 }
 
 .taskbar button {
-  min-height: 34px;
+  min-height: 36px;
   min-width: 44px;
-  padding: 0 10px;
-  border-top: 2px solid #ffffff;
-  border-left: 2px solid #ffffff;
-  border-bottom: 2px solid #404040;
-  border-right: 2px solid #404040;
-  background: #c0c0c0;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1.5px solid #63579e;
+  background: rgba(45, 38, 88, 0.85);
+  color: #fff;
   font-family: var(--pixel);
   font-size: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.taskbar button:hover {
+  background: #7c6fd6;
+  border-color: #a89bf0;
+  transform: translateY(-1px);
 }
 
 .taskbar button:active,
 .taskbar button[aria-current="true"] {
-  background: #dfdfdf;
-  border-top: 2px solid #404040;
-  border-left: 2px solid #404040;
-  border-bottom: 2px solid #ffffff;
-  border-right: 2px solid #ffffff;
+  background: #ff9ec0;
+  color: #1e1b38;
+  border-color: #ffd97a;
+  transform: translateY(1px);
 }
 
-/* CRT Scanlines */
+/* Dreamy Vignette Scanlines (Soothing, not harsh) */
 .scanlines {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 9999;
-  background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%,
-    rgba(0, 0, 0, 0.25) 50%
-  ), linear-gradient(
-    90deg,
-    rgba(255, 0, 0, 0.03),
-    rgba(0, 255, 0, 0.01),
-    rgba(0, 0, 255, 0.03)
-  );
-  background-size: 100% 3px, 3px 100%;
-  opacity: 0.75;
+  background: radial-gradient(circle at center, transparent 65%, rgba(10, 8, 25, 0.4) 100%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px, transparent 1px, transparent 3px);
+  opacity: 0.85;
 }
 
-/* Dark Flashlight Mask */
+/* Soft Flashlight Mask */
 .dark-layer {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: rgba(8, 9, 22, 0.88);
+  background: rgba(14, 12, 32, 0.9);
   z-index: 40;
   -webkit-mask-image: radial-gradient(
-    circle var(--r, 160px) at var(--x, 50%) var(--y, 50%),
+    circle var(--r, 170px) at var(--x, 50%) var(--y, 50%),
     transparent 0,
-    transparent 50%,
+    transparent 55%,
     #000000 100%
   );
   mask-image: radial-gradient(
-    circle var(--r, 160px) at var(--x, 50%) var(--y, 50%),
+    circle var(--r, 170px) at var(--x, 50%) var(--y, 50%),
     transparent 0,
-    transparent 50%,
+    transparent 55%,
     #000000 100%
   );
 }
 
 /* Odometer Column */
 .odometer-col {
-  height: 28px;
+  height: 30px;
   overflow: hidden;
   font-family: var(--pixel);
-  font-size: 16px;
-  line-height: 28px;
-  background: #000000;
-  color: #00ff66;
-  border: 1px solid #333333;
+  font-size: 15px;
+  line-height: 30px;
+  background: #191535;
+  color: #ffd97a;
+  border-radius: 4px;
+  border: 1px solid #4a3e7a;
   padding: 0 4px;
 }
 
@@ -227,6 +228,6 @@
 
 /* Secret dim mode */
 body.dim {
-  filter: contrast(1.2) brightness(0.4) hue-rotate(180deg);
-  transition: filter 1s ease-in-out;
+  filter: contrast(1.1) brightness(0.6) hue-rotate(240deg);
+  transition: filter 1.2s ease-in-out;
 }

@@ -2,61 +2,61 @@ import React, { useState } from "react";
 import { findShortestPath, NetworkGraph, NetworkNode } from "../ds/dijkstra";
 import { audio } from "../core/audio";
 import { bus } from "../core/bus";
-import { Network, Send, Zap, CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Moon, Sparkles } from "lucide-react";
 
 const NODES: Record<string, NetworkNode> = {
   dns: {
     id: "dns",
-    name: "DNS Root Server",
+    name: "ARPANET Cradle",
     era: "1995",
     x: 60,
     y: 80,
-    description: "The primary catalog of early domain names.",
+    description: "Where early digital memories took their first steps.",
     recoveredItem: "Original .com record",
   },
   usenet: {
     id: "usenet",
-    name: "Usenet alt.binaries",
+    name: "Usenet Whispers",
     era: "1997",
     x: 220,
     y: 40,
-    description: "Decentralized discussion and file exchange threads.",
-    recoveredItem: "ASCII art manifesto",
+    description: "Late-night discussion threads among friends.",
+    recoveredItem: "ASCII star art",
   },
   geocities: {
     id: "geocities",
-    name: "GeoCities SoHo",
+    name: "GeoCities Garden",
     era: "1999",
     x: 180,
     y: 180,
     description: "Handcrafted webring page neighborhood.",
-    recoveredItem: "Spinning skull GIF",
+    recoveredItem: "Glittering star GIF",
   },
   wayback: {
     id: "wayback",
-    name: "Wayback Machine",
+    name: "Wayback Archive",
     era: "2001",
     x: 340,
     y: 60,
-    description: "Snapshot web crawlers indexing the past.",
-    recoveredItem: "Archived fan-shrine HTML",
+    description: "The giant photo album preserving the web.",
+    recoveredItem: "Old blog bedtime story",
   },
   flash: {
     id: "flash",
-    name: "Flash Game Hub",
+    name: "Flash Cloud Castle",
     era: "2004",
     x: 360,
     y: 190,
-    description: "Interactive vector animations and mini-games.",
-    recoveredItem: "Alien Hominid demo .swf",
+    description: "Whimsical interactive cartoons and games.",
+    recoveredItem: "Vector music animation",
   },
   sanctuary: {
     id: "sanctuary",
-    name: "Fourie's 404 Desk",
+    name: "Fourie's Cozy Crib",
     era: "Present",
     x: 480,
     y: 120,
-    description: "The final safe haven for all lost packets.",
+    description: "The warm final haven where lost memories rest.",
     recoveredItem: "Golden Floppy Disk",
   },
 };
@@ -88,31 +88,28 @@ export const RouterScene: React.FC = () => {
   const [selectedOrigin, setSelectedOrigin] = useState<string>("dns");
   const [activePath, setActivePath] = useState<string[]>(["dns", "geocities", "wayback", "sanctuary"]);
   const [pathLatency, setPathLatency] = useState<number>(74);
-  const [isRouting, setIsRouting] = useState(false);
 
   const handleSelectNode = async (nodeId: string) => {
     if (nodeId === "sanctuary") return;
     audio.click();
     setSelectedOrigin(nodeId);
-    setIsRouting(true);
 
     const { path, distance } = findShortestPath(GRAPH, nodeId, "sanctuary");
     setActivePath(path);
     setPathLatency(distance);
 
     await audio.unlock();
-    // Play step chime for each hop
+    // Play sweet music-box notes for each hop
     path.forEach((_, idx) => {
       setTimeout(() => {
-        audio.note(440 + idx * 80, 0, 0.2, "triangle", 0.25);
-      }, idx * 250);
+        audio.note(523.25 + idx * 65, 0, 0.4, "sine", 0.25);
+      }, idx * 260);
     });
 
     setTimeout(() => {
-      setIsRouting(false);
       audio.squeak();
       bus.emit("poke", { x: window.innerWidth / 2, y: window.innerHeight / 2 });
-    }, path.length * 250);
+    }, path.length * 260);
   };
 
   const isEdgeInPath = (from: string, to: string) => {
@@ -123,27 +120,27 @@ export const RouterScene: React.FC = () => {
   return (
     <section
       id="scene-router"
-      className="relative min-h-[90dvh] w-full flex flex-col items-center justify-center p-6 text-center select-none"
+      className="relative min-h-[90dvh] w-full flex flex-col items-center justify-center p-6 text-center select-none bg-gradient-to-b from-[#13102a] via-[#1b153d] to-[#120f28]"
     >
       <div className="max-w-3xl space-y-4 z-10 w-full">
-        <div className="inline-block px-3 py-1 bg-void-800 border border-glitch-green text-glitch-green font-pixel text-xs rounded uppercase">
-          Artifact 3 // Dijkstra Packet Recovery Router
+        <div className="inline-block px-3.5 py-1 bg-[#231d4e] border border-[#a89bf0]/50 text-[#ffd97a] font-pixel text-xs rounded-full uppercase">
+          Artifact 3 // The Starry Delivery Map (Dijkstra Algo)
         </div>
 
-        <h2 className="text-2xl sm:text-4xl font-pixel text-paper tracking-wide">
-          ROUTE THE LOST PACKET
+        <h2 className="text-2xl sm:text-4xl font-pixel text-[#ffffff] tracking-wide drop-shadow">
+          DELIVER THE LOST MEMORY
         </h2>
 
-        <p className="font-display text-sm text-gray-300 max-w-lg mx-auto leading-relaxed">
-          When an old web server drops offline, its packets get stranded in the network. Tap any origin server below, and Fourie's Dijkstra algorithm will find the lowest-latency path to deliver it home!
+        <p className="font-display text-sm text-[#c8bffd] max-w-lg mx-auto leading-relaxed">
+          When an old web realm goes to sleep, its sweet memories float adrift. Tap any star below, and Fourie will find the shortest path across the night sky to tuck it into bed!
         </p>
 
-        {/* Network SVG Interactive Map */}
-        <div className="w-full bg-void-900 border-4 border-winborder rounded-lg p-3 relative overflow-hidden shadow-2xl">
-          <div className="flex items-center justify-between text-[10px] font-pixel text-gray-400 mb-2 border-b border-gray-800 pb-2">
-            <span>SELECTED ORIGIN: {NODES[selectedOrigin]?.name}</span>
-            <span className="text-glitch-cyan">
-              PATH LATENCY: {pathLatency}ms ({activePath.length - 1} HOPS)
+        {/* Soothing Network SVG Map */}
+        <div className="w-full bg-[#151132] border-3 border-[#7c6fd6] rounded-2xl p-4 relative overflow-hidden shadow-2xl">
+          <div className="flex items-center justify-between text-[10px] font-pixel text-[#c8bffd] mb-3 border-b border-[#2d2558] pb-2.5">
+            <span>STARTING REALM: {NODES[selectedOrigin]?.name}</span>
+            <span className="text-[#ffd97a]">
+              PATH TIME: {pathLatency}ms ({activePath.length - 1} HOPS)
             </span>
           </div>
 
@@ -151,7 +148,7 @@ export const RouterScene: React.FC = () => {
             viewBox="0 0 540 250"
             className="w-full h-auto overflow-visible select-none"
           >
-            {/* Network Cable Lines */}
+            {/* Soft Starry Cable Lines */}
             {Object.entries(GRAPH).flatMap(([fromId, edges]) => {
               const fromNode = NODES[fromId];
               return edges.map((edge) => {
@@ -165,16 +162,15 @@ export const RouterScene: React.FC = () => {
                       y1={fromNode.y}
                       x2={toNode.x}
                       y2={toNode.y}
-                      stroke={active ? "#00ff66" : "#2d325a"}
-                      strokeWidth={active ? 3.5 : 1.5}
+                      stroke={active ? "#ffd97a" : "#322a5e"}
+                      strokeWidth={active ? 3.5 : 1.8}
                       strokeDasharray={active ? "6 3" : undefined}
                       className={active ? "animate-pulse" : ""}
                     />
-                    {/* Cable Weight Label */}
                     <text
                       x={(fromNode.x + toNode.x) / 2}
                       y={(fromNode.y + toNode.y) / 2 - 4}
-                      fill={active ? "#00ff66" : "#60668a"}
+                      fill={active ? "#ffd97a" : "#655896"}
                       fontSize="8"
                       fontFamily="'Press Start 2P', monospace"
                       textAnchor="middle"
@@ -186,7 +182,7 @@ export const RouterScene: React.FC = () => {
               });
             })}
 
-            {/* Server Nodes */}
+            {/* Star Nodes */}
             {Object.values(NODES).map((node) => {
               const isSelected = selectedOrigin === node.id;
               const isInPath = activePath.includes(node.id);
@@ -198,30 +194,27 @@ export const RouterScene: React.FC = () => {
                   className="cursor-pointer group"
                   onClick={() => handleSelectNode(node.id)}
                 >
-                  {/* Outer pulse circle */}
                   <circle
                     cx={node.x}
                     cy={node.y}
-                    r={isTarget ? 22 : 18}
-                    fill={isTarget ? "#00f0ff" : isInPath ? "#00ff66" : "#1a1e38"}
-                    opacity={isInPath ? 0.3 : 0.15}
-                    className="group-hover:opacity-40 transition-opacity"
+                    r={isTarget ? 24 : 18}
+                    fill={isTarget ? "#ffd97a" : isInPath ? "#ff9ec0" : "#241d48"}
+                    opacity={isInPath ? 0.35 : 0.2}
+                    className="group-hover:opacity-50 transition-opacity"
                   />
 
-                  {/* Core Node Circle */}
                   <circle
                     cx={node.x}
                     cy={node.y}
                     r={isTarget ? 15 : 12}
-                    fill={isTarget ? "#000080" : isSelected ? "#ffb703" : "#0c0d1e"}
-                    stroke={isTarget ? "#00f0ff" : isInPath ? "#00ff66" : "#4a5180"}
+                    fill={isTarget ? "#7c6fd6" : isSelected ? "#ffd97a" : "#19143a"}
+                    stroke={isTarget ? "#ffd97a" : isInPath ? "#ff9ec0" : "#5a4d8c"}
                     strokeWidth={isSelected ? 3 : 2}
                   />
 
-                  {/* Node icon label */}
                   <text
                     x={node.x}
-                    y={node.y + 3}
+                    y={node.y + 3.5}
                     fill="#ffffff"
                     fontSize="7"
                     fontFamily="'Press Start 2P', monospace"
@@ -231,12 +224,11 @@ export const RouterScene: React.FC = () => {
                     {isTarget ? "404" : node.era.slice(2)}
                   </text>
 
-                  {/* Node Name Title */}
                   <text
                     x={node.x}
                     y={node.y + (node.y > 140 ? 25 : -18)}
-                    fill={isInPath ? "#ffffff" : "#9ca3af"}
-                    fontSize="8"
+                    fill={isInPath ? "#ffd97a" : "#a89bf0"}
+                    fontSize="8.5"
                     fontFamily="'Press Start 2P', monospace"
                     textAnchor="middle"
                     className="pointer-events-none font-bold"
@@ -249,16 +241,16 @@ export const RouterScene: React.FC = () => {
           </svg>
 
           {/* Path Details Bar */}
-          <div className="mt-3 p-2 bg-void-800 rounded flex flex-wrap items-center justify-between gap-2 text-xs font-display text-gray-300">
-            <div className="flex items-center gap-1.5 font-pixel text-[10px]">
-              <CheckCircle2 className="w-4 h-4 text-glitch-green" />
+          <div className="mt-3.5 p-3 bg-[#1e1846] rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs font-display text-[#c8bffd]">
+            <div className="flex items-center gap-2 font-pixel text-[10px] text-[#ffd97a]">
+              <CheckCircle2 className="w-4 h-4 text-[#ffd97a]" />
               <span>
                 ROUTE: {activePath.map((id) => NODES[id]?.name).join(" ➔ ")}
               </span>
             </div>
 
-            <div className="font-pixel text-[9px] text-glitch-amber">
-              RESCUED: {NODES[selectedOrigin]?.recoveredItem}
+            <div className="font-pixel text-[9px] text-[#ffccd5]">
+              MEMORIZED: {NODES[selectedOrigin]?.recoveredItem}
             </div>
           </div>
         </div>

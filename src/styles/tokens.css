@@ -1,60 +1,75 @@
 :root {
-  --ink: #111122;
-  --paper: #fff7f0;
-  --accent: #ff007f;
-  --cyan: #00f0ff;
-  --amber: #ffb703;
-  --matrix-green: #00ff66;
-  --void-bg: #0c0d1e;
-  --void-deep: #070712;
-  --win-header: #000080;
-  --win-header-active: #1084d0;
-  --win-surface: #c0c0c0;
-  --win-shadow-dark: #404040;
-  --win-shadow-light: #ffffff;
+  /* Soothing Baby Nursery & Cozy Night Palette */
+  --ink: #1e1b38;
+  --paper: #fffaf5;
+  --accent: #ff9ec0;
+  --lavender: #a89bf0;
+  --lavender-soft: #c8bffd;
+  --butter-glow: #ffd97a;
+  --butter-soft: #fff1b8;
+  --baby-cyan: #7ce8ff;
+  --mint-dream: #a3f7bf;
+  --blush-rose: #ffccd5;
+
+  /* Deep Cozy Night Sky */
+  --void-bg: #131129;
+  --void-deep: #0d0b1f;
+  --void-card: #1c183a;
+  --void-border: #352f63;
+
+  /* Retro Pastel Window Chrome */
+  --win-header: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  --win-header-active: linear-gradient(135deg, #7c6fd6, #b8a9ec);
+  --win-surface: #f9f6f0;
+  --win-card: #ffffff;
+  --win-shadow: 0 12px 32px rgba(10, 8, 28, 0.45);
+
   --pixel: "Press Start 2P", monospace;
   --vt: "VT323", monospace;
+  --display: "Space Grotesk", sans-serif;
 
   /* Sizing tokens */
-  --fourie-size: 200px;
-  --marquee-speed: 28s;
+  --fourie-size: 210px;
+  --marquee-speed: 26s;
   --window-chrome: block;
 }
 
-/* Day Mode / Modern Web Sunlight */
+/* Day Mode / Sunny Nursery Morning */
 body[data-theme="day"] {
-  --void-bg: #e8ecf2;
-  --void-deep: #d5dce6;
-  --paper: #1c2038;
-  --ink: #f0f4f8;
-  --win-header: #1e3a8a;
-  --win-surface: #e2e8f0;
+  --void-bg: #fdf8f4;
+  --void-deep: #f5ebe1;
+  --void-card: #ffffff;
+  --void-border: #ebd8c8;
+  --paper: #2d264a;
+  --ink: #221c3b;
+  --win-header: linear-gradient(135deg, #ff9ec0, #ffd97a);
+  --win-surface: #fffbf7;
 }
 
 /* Chaos Mode - screen shape responsive sizing */
 body[data-shape="pocket"] {
-  --fourie-size: 80px;
-  --marquee-speed: 15s;
+  --fourie-size: 85px;
+  --marquee-speed: 16s;
   --window-chrome: none;
   font-size: 13px;
 }
 
 body[data-shape="phone"] {
-  --fourie-size: 110px;
+  --fourie-size: 115px;
   --marquee-speed: 20s;
 }
 
 body[data-shape="tablet"] {
-  --fourie-size: 160px;
+  --fourie-size: 165px;
   --marquee-speed: 24s;
 }
 
 body[data-shape="desktop"] {
-  --fourie-size: 210px;
+  --fourie-size: 215px;
   --marquee-speed: 32s;
 }
 
 body[data-shape="cinema"] {
-  --fourie-size: 240px;
+  --fourie-size: 245px;
   --marquee-speed: 38s;
 }

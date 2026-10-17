@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useStore, WindowId } from "../core/store";
 import { audio } from "../core/audio";
-import { Sun, Moon, Laptop, FolderArchive, Music, MessageSquare, Trash2, HelpCircle } from "lucide-react";
+import { Sun, Moon, Heart, FolderArchive, Music, MessageSquare, Trash2, HelpCircle } from "lucide-react";
 
 interface TaskbarProps {
   visible: boolean;
@@ -46,11 +46,11 @@ export const Taskbar: React.FC<TaskbarProps> = ({ visible }) => {
         <div
           role="menu"
           aria-label="Start menu"
-          className="fixed bottom-[52px] left-2 z-[1001] w-64 bg-winborder border-2 border-white border-r-ink border-b-ink shadow-[4px_4px_0_#000] p-1 font-pixel text-xs text-ink"
+          className="fixed bottom-[60px] left-3 z-[1001] w-68 bg-[#1f194c] border-2 border-[#7c6fd6] rounded-2xl shadow-[0_12px_36px_rgba(0,0,0,0.6)] p-2 font-pixel text-xs text-white overflow-hidden"
         >
           {/* Start banner sidebar */}
           <div className="flex">
-            <div className="w-8 bg-win-header text-white font-pixel text-[10px] flex items-end justify-center pb-2 uppercase tracking-widest writing-vertical-lr select-none rotate-180">
+            <div className="w-8 bg-gradient-to-t from-[#5f27cd] to-[#a29bfe] rounded-lg text-white font-pixel text-[9px] flex items-end justify-center pb-2 uppercase tracking-widest writing-vertical-lr select-none rotate-180">
               FOURIE 404
             </div>
 
@@ -59,69 +59,69 @@ export const Taskbar: React.FC<TaskbarProps> = ({ visible }) => {
                 type="button"
                 role="menuitem"
                 onClick={() => handleAppLaunch("about")}
-                className="w-full text-left p-1.5 flex items-center gap-2.5 hover:bg-win-header hover:text-white rounded"
+                className="w-full text-left p-2 flex items-center gap-2.5 hover:bg-[#7c6fd6] rounded-xl transition-colors"
               >
-                <Laptop className="w-4 h-4 text-glitch-cyan" />
-                <span>About Fourie.txt</span>
+                <Heart className="w-4 h-4 text-[#ff9ec0] fill-[#ff9ec0]" />
+                <span>About Baby.txt</span>
               </button>
 
               <button
                 type="button"
                 role="menuitem"
                 onClick={() => handleAppLaunch("rescued")}
-                className="w-full text-left p-1.5 flex items-center gap-2.5 hover:bg-win-header hover:text-white rounded"
+                className="w-full text-left p-2 flex items-center gap-2.5 hover:bg-[#7c6fd6] rounded-xl transition-colors"
               >
-                <FolderArchive className="w-4 h-4 text-glitch-amber" />
-                <span>Rescued Pages</span>
+                <FolderArchive className="w-4 h-4 text-[#ffd97a]" />
+                <span>Cozy Parcels</span>
               </button>
 
               <button
                 type="button"
                 role="menuitem"
                 onClick={() => handleAppLaunch("lullaby")}
-                className="w-full text-left p-1.5 flex items-center gap-2.5 hover:bg-win-header hover:text-white rounded"
+                className="w-full text-left p-2 flex items-center gap-2.5 hover:bg-[#7c6fd6] rounded-xl transition-colors"
               >
-                <Music className="w-4 h-4 text-glitch-magenta" />
-                <span>Dial-Up Lullaby Lab</span>
+                <Music className="w-4 h-4 text-[#a89bf0]" />
+                <span>Bedtime Lullaby Lab</span>
               </button>
 
               <button
                 type="button"
                 role="menuitem"
                 onClick={() => handleAppLaunch("notes")}
-                className="w-full text-left p-1.5 flex items-center gap-2.5 hover:bg-win-header hover:text-white rounded"
+                className="w-full text-left p-2 flex items-center gap-2.5 hover:bg-[#7c6fd6] rounded-xl transition-colors"
               >
-                <MessageSquare className="w-4 h-4 text-glitch-green" />
-                <span>Lost & Found Notes</span>
+                <MessageSquare className="w-4 h-4 text-[#a3f7bf]" />
+                <span>Lost Wish Wall</span>
               </button>
 
               <button
                 type="button"
                 role="menuitem"
                 onClick={() => handleAppLaunch("chat")}
-                className="w-full text-left p-1.5 flex items-center gap-2.5 hover:bg-win-header hover:text-white rounded"
+                className="w-full text-left p-2 flex items-center gap-2.5 hover:bg-[#7c6fd6] rounded-xl transition-colors"
               >
-                <HelpCircle className="w-4 h-4 text-glitch-cyan" />
+                <HelpCircle className="w-4 h-4 text-[#7ce8ff]" />
                 <span>Chat with Fourie</span>
               </button>
 
-              <div className="h-[2px] bg-gray-400 my-1" />
+              <div className="h-[1px] bg-[#3d3368] my-1" />
 
               <button
                 type="button"
                 role="menuitem"
                 onClick={() => handleAppLaunch("bin")}
-                className="w-full text-left p-1.5 flex items-center gap-2.5 hover:bg-win-header hover:text-white rounded"
+                className="w-full text-left p-2 flex items-center gap-2.5 hover:bg-[#7c6fd6] rounded-xl transition-colors"
               >
-                <Trash2 className="w-4 h-4 text-red-500" />
-                <span>Recycle Bin</span>
+                <Trash2 className="w-4 h-4 text-[#ff80bf]" />
+                <span>Recycle Basket</span>
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Retro Taskbar */}
+      {/* Soothing Taskbar */}
       <nav
         aria-label="Desktop taskbar"
         className={`taskbar ${visible ? "on" : ""}`}
@@ -134,7 +134,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({ visible }) => {
           onClick={handleStartToggle}
           className="font-bold flex items-center gap-1.5"
         >
-          <span className="text-glitch-cyan font-pixel">✦</span>
+          <span className="text-[#ffd97a] font-pixel">✦</span>
           <span>Start</span>
         </button>
 
@@ -149,15 +149,15 @@ export const Taskbar: React.FC<TaskbarProps> = ({ visible }) => {
                 audio.click();
                 focusWindow(id);
               }}
-              className="text-[9px] uppercase px-2 py-1 truncate max-w-[120px]"
+              className="text-[9px] uppercase px-3 py-1 truncate max-w-[125px]"
             >
               {id === "about" && "About"}
-              {id === "rescued" && "Rescued"}
+              {id === "rescued" && "Parcels"}
               {id === "lullaby" && "Lullaby"}
-              {id === "notes" && "Notes"}
-              {id === "bin" && "Bin"}
+              {id === "notes" && "Wishes"}
+              {id === "bin" && "Basket"}
               {id === "chat" && "Chat"}
-              {id === "nowhere" && "404 Room"}
+              {id === "nowhere" && "Secret"}
             </button>
           ))}
         </div>
@@ -172,23 +172,23 @@ export const Taskbar: React.FC<TaskbarProps> = ({ visible }) => {
             audio.click();
             toggleTheme();
           }}
-          className="flex items-center gap-1 px-2 py-1 text-[9px]"
+          className="flex items-center gap-1.5 px-3 py-1 text-[9px]"
         >
           {theme === "night" ? (
             <>
-              <Moon className="w-3.5 h-3.5 text-glitch-cyan" />
+              <Moon className="w-3.5 h-3.5 text-[#ffd97a]" />
               <span className="hidden md:inline">Night</span>
             </>
           ) : (
             <>
-              <Sun className="w-3.5 h-3.5 text-glitch-amber" />
-              <span className="hidden md:inline">Day</span>
+              <Sun className="w-3.5 h-3.5 text-[#ffd97a]" />
+              <span className="hidden md:inline">Morning</span>
             </>
           )}
         </button>
 
-        {/* Retro Digital Clock */}
-        <div className="retro-bevel-inset px-2.5 py-1 text-[10px] font-pixel bg-white text-ink select-none">
+        {/* Digital Clock */}
+        <div className="px-3 py-1 text-[10px] font-pixel bg-[#161234] border border-[#483d7a] rounded-lg text-[#ffd97a] select-none">
           <time>{timeStr || "12:00"}</time>
         </div>
       </nav>

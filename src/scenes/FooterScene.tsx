@@ -3,7 +3,7 @@ import { Odometer } from "../components/Odometer";
 import { getRescuedCount } from "../services/supabase";
 import { useStore } from "../core/store";
 import { audio } from "../core/audio";
-import { Globe, Heart, Sparkles, Award } from "lucide-react";
+import { Globe, Heart, Sparkles, Moon } from "lucide-react";
 
 export const FooterScene: React.FC = () => {
   const [rescuedTotal, setRescuedTotal] = useState(404);
@@ -16,7 +16,7 @@ export const FooterScene: React.FC = () => {
 
   const handleWebringNav = (label: string) => {
     audio.click();
-    alert(`[404 Webring]: Hopping to ${label}! Fourie ensures you never hit a dead end.`);
+    alert(`[404 Baby Webring]: Hopping to ${label}! Fourie ensures you never hit a dead end.`);
   };
 
   const handleSecretClick = () => {
@@ -27,101 +27,102 @@ export const FooterScene: React.FC = () => {
   return (
     <footer
       id="scene-footer"
-      className="relative w-full bg-void-950 border-t-2 border-gray-800 text-paper p-8 pb-32 text-center font-display space-y-8 select-none"
+      className="relative w-full bg-[#0d0b1f] border-t-2 border-[#382f64] text-[#fffaf5] p-8 pb-32 text-center font-display space-y-8 select-none"
     >
       {/* Rescued Pages Global Odometer */}
-      <div className="max-w-md mx-auto p-4 bg-void-900 border-2 border-winborder rounded-lg shadow-xl space-y-2">
-        <span className="font-pixel text-[10px] text-glitch-cyan block">
-          GLOBAL RESCUED PAGES ODOMETER
+      <div className="max-w-md mx-auto p-4 bg-[#1a153c] border-2 border-[#7c6fd6] rounded-2xl shadow-xl space-y-2.5">
+        <span className="font-pixel text-[10px] text-[#ffd97a] flex items-center justify-center gap-1.5">
+          <Moon className="w-3.5 h-3.5 text-[#ffd97a]" />
+          <span>GLOBAL RESCUED DREAMS &amp; PAGES</span>
         </span>
         <div className="flex justify-center">
           <Odometer value={rescuedTotal} digits={6} />
         </div>
-        <p className="text-[11px] text-gray-400">
-          Updated on every visit and note preserved across the 404 sanctuary.
+        <p className="text-[11px] text-[#c8bffd]">
+          Tucked into bed on every visit and memory shared across the 404 nursery.
         </p>
       </div>
 
       {/* Retro 90s Webring Navigation Bar */}
-      <div className="max-w-xl mx-auto p-3 bg-void-900/80 border border-gray-700 rounded-lg space-y-2">
-        <div className="flex items-center justify-center gap-2 font-pixel text-xs text-glitch-amber">
-          <Globe className="w-4 h-4" />
-          <span>THE LOST WEB 404 RING</span>
+      <div className="max-w-xl mx-auto p-4 bg-[#181338]/90 border border-[#483d7a] rounded-2xl space-y-2.5 shadow-md">
+        <div className="flex items-center justify-center gap-2 font-pixel text-xs text-[#ffd97a]">
+          <Globe className="w-4 h-4 text-[#ff9ec0]" />
+          <span>THE LOST WEB 404 BABY RING</span>
         </div>
 
-        <p className="text-xs text-gray-400">
-          This site is member <strong>#0404</strong> in the Old-Web Preservation Ring.
+        <p className="text-xs text-[#c8bffd]">
+          This site is baby member <strong>#0404</strong> in the Old-Web Preservation Ring.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-2 pt-1 font-pixel text-[9px]">
           <button
             type="button"
-            onClick={() => handleWebringNav("Previous Webring Member")}
-            className="px-2.5 py-1 bg-void-800 border border-gray-600 hover:border-glitch-cyan rounded"
+            onClick={() => handleWebringNav("Previous Baby Webring Member")}
+            className="px-3 py-1.5 bg-[#251f50] border border-[#524484] hover:border-[#ffd97a] rounded-xl text-[#c8bffd]"
           >
-            &lt;&lt; Prev Site
+            &lt;&lt; Prev Baby
           </button>
           <button
             type="button"
             onClick={() => handleWebringNav("Ring Directory")}
-            className="px-2.5 py-1 bg-void-800 border border-gray-600 hover:border-glitch-cyan rounded text-glitch-cyan"
+            className="px-3 py-1.5 bg-[#251f50] border border-[#524484] hover:border-[#ffd97a] rounded-xl text-[#ffd97a]"
           >
             [Ring Hub]
           </button>
           <button
             type="button"
             onClick={() => handleWebringNav("Random Lost Site")}
-            className="px-2.5 py-1 bg-void-800 border border-gray-600 hover:border-glitch-cyan rounded"
+            className="px-3 py-1.5 bg-[#251f50] border border-[#524484] hover:border-[#ffd97a] rounded-xl text-[#c8bffd]"
           >
             Random ➔
           </button>
           <button
             type="button"
-            onClick={() => handleWebringNav("Next Webring Member")}
-            className="px-2.5 py-1 bg-void-800 border border-gray-600 hover:border-glitch-cyan rounded"
+            onClick={() => handleWebringNav("Next Baby Webring Member")}
+            className="px-3 py-1.5 bg-[#251f50] border border-[#524484] hover:border-[#ffd97a] rounded-xl text-[#c8bffd]"
           >
-            Next Site &gt;&gt;
+            Next Baby &gt;&gt;
           </button>
         </div>
       </div>
 
-      {/* 88x31 Badges Grid */}
+      {/* Badges Grid */}
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <div className="w-[88px] h-[31px] bg-gradient-to-r from-blue-900 to-indigo-900 border border-gray-500 flex flex-col items-center justify-center text-[7px] text-white font-pixel shadow-sm">
-          <span>NETSCAPE</span>
-          <span className="text-glitch-cyan">NOW 4.0</span>
+        <div className="w-[88px] h-[31px] bg-gradient-to-r from-[#483d8b] to-[#6a5acd] border border-[#a89bf0] rounded flex flex-col items-center justify-center text-[7px] text-white font-pixel shadow-sm">
+          <span>BEDTIME</span>
+          <span className="text-[#ffd97a]">CERTIFIED</span>
         </div>
 
-        <div className="w-[88px] h-[31px] bg-gradient-to-r from-red-900 to-yellow-900 border border-gray-500 flex flex-col items-center justify-center text-[7px] text-white font-pixel shadow-sm">
-          <span>NOTEPAD</span>
-          <span className="text-yellow-400">HAND-MADE</span>
+        <div className="w-[88px] h-[31px] bg-gradient-to-r from-[#b53471] to-[#ee5253] border border-[#ff9ec0] rounded flex flex-col items-center justify-center text-[7px] text-white font-pixel shadow-sm">
+          <span>SWEET DREAMS</span>
+          <span className="text-[#ffd97a]">404 ARCHIVE</span>
         </div>
 
-        <div className="w-[88px] h-[31px] bg-black border border-glitch-green flex flex-col items-center justify-center text-[7px] text-glitch-green font-pixel shadow-sm">
-          <span>ANY BROWSER</span>
-          <span className="text-white">COMPLIANT</span>
+        <div className="w-[88px] h-[31px] bg-[#1a1438] border border-[#ffd97a] rounded flex flex-col items-center justify-center text-[7px] text-[#ffd97a] font-pixel shadow-sm">
+          <span>BABY SPIRIT</span>
+          <span className="text-white">TRACK 2</span>
         </div>
 
-        <div className="w-[88px] h-[31px] bg-purple-900 border border-glitch-magenta flex flex-col items-center justify-center text-[7px] text-white font-pixel shadow-sm">
+        <div className="w-[88px] h-[31px] bg-[#5f27cd] border border-[#ff9ec0] rounded flex flex-col items-center justify-center text-[7px] text-white font-pixel shadow-sm">
           <span>WEBRING</span>
-          <span className="text-glitch-magenta">#404 MEMBER</span>
+          <span className="text-[#ff9ec0]">#404 BABY</span>
         </div>
 
         {/* Secret Unlocked Badge */}
         {secretUnlocked ? (
           <div
             onClick={handleSecretClick}
-            className="w-[88px] h-[31px] bg-gradient-to-r from-glitch-magenta to-indigo-900 border-2 border-glitch-amber flex flex-col items-center justify-center text-[7px] text-white font-pixel cursor-pointer animate-pulse shadow-[0_0_8px_#ffb703]"
+            className="w-[88px] h-[31px] bg-gradient-to-r from-[#ff9ec0] to-[#7c6fd6] border-2 border-[#ffd97a] rounded flex flex-col items-center justify-center text-[7px] text-white font-pixel cursor-pointer animate-pulse shadow-[0_0_12px_#ffd97a]"
             title="Click to revisit the Secret Backroom!"
           >
-            <span className="text-glitch-amber font-bold">404 MASTER</span>
-            <span className="text-[6px] text-glitch-cyan">SECRET UNLOCKED</span>
+            <span className="text-[#1c1838] font-bold">BABY MASTER</span>
+            <span className="text-[6px] text-white">SECRET UNLOCKED</span>
           </div>
         ) : (
           <div
             onClick={handleSecretClick}
-            className="w-[88px] h-[31px] bg-gray-900 border border-dashed border-gray-600 flex flex-col items-center justify-center text-[7px] text-gray-500 font-pixel cursor-pointer hover:border-glitch-cyan"
-            title="A secret badge is sleeping here... check the Recycle Bin or antenna!"
+            className="w-[88px] h-[31px] bg-[#161234] border border-dashed border-[#524484] rounded flex flex-col items-center justify-center text-[7px] text-[#8d7eb8] font-pixel cursor-pointer hover:border-[#ffd97a]"
+            title="A secret badge is sleeping here... check the Recycle Basket or antenna!"
           >
             <span>??? SECRET</span>
             <span className="text-[6px]">LOCKED</span>
@@ -130,26 +131,27 @@ export const FooterScene: React.FC = () => {
       </div>
 
       {/* Secret Hint */}
-      <p className="text-xs text-gray-500 italic max-w-md mx-auto">
-        "psst... have you checked inside the Recycle Bin, tapped Fourie's antenna 5 times, or tried visiting <span className="font-mono text-glitch-cyan">/nowhere</span> in the URL?"
+      <p className="text-xs text-[#8d7eb8] italic max-w-md mx-auto">
+        "psst... have you checked inside the Recycle Basket, tapped baby Fourie's star charm 5 times, or visited <span className="font-mono text-[#ffd97a]">/nowhere</span> in the address bar?"
       </p>
 
       {/* Required Attribution & Open Source Credits */}
-      <div className="pt-6 border-t border-gray-800 max-w-2xl mx-auto text-[11px] text-gray-400 leading-relaxed space-y-2">
+      <div className="pt-6 border-t border-[#2d2558] max-w-2xl mx-auto text-[11px] text-[#8d7eb8] leading-relaxed space-y-2">
         <p>
           <strong>Character, SVG Art &amp; Worldbuilding:</strong> Designed for Hackathon Track 2 ("Your Own Baby") featuring Fourie, child of the 404 page.
         </p>
         <p>
-          <strong>Audio:</strong> Procedurally synthesized via Web Audio API (OscillatorNode &amp; Gain envelopes; zero audio file dependencies).
+          <strong>Audio:</strong> Procedurally synthesized via Web Audio API (soothing sinusoidal music-box envelopes; zero external audio samples).
         </p>
         <p>
           <strong>Typography:</strong> "Press Start 2P", "VT323", and "Space Grotesk" via Google Fonts.
         </p>
         <p>
-          <strong>Built with:</strong> React 18, TypeScript, Vite, Tailwind CSS, Zustand, GSAP, Lenis, SunCalc, and Supabase.
+          <strong>Animation &amp; Tech Stack:</strong> React 18, Anime.js v4, TypeScript, Vite, Tailwind CSS, Zustand, SunCalc, and Supabase.
         </p>
-        <p className="text-gray-500 text-[10px] pt-2">
-          © 2026 Fourie 404 Lost &amp; Found Sanctuary. "Kuch kho gaya? Maine sambhal ke rakha hai."
+        <p className="text-[#a89bf0] text-[10px] pt-2 flex items-center justify-center gap-1">
+          <Heart className="w-3 h-3 text-[#ff9ec0] fill-[#ff9ec0]" />
+          <span>© 2026 Fourie 404 Sanctuary. "Kuch kho gaya? Maine sambhal ke rakha hai."</span>
         </p>
       </div>
     </footer>

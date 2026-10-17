@@ -46,16 +46,16 @@ export const FourieCharacter: React.FC<FourieProps> = ({
   const idleAnimRef = useRef<any>(null);
   const waveAnimRef = useRef<any>(null);
 
-  // 1. Core Idle Loop with Anime.js: Breathing, Floating, Aura Pulsing, Tail Ripple
+  // 1. Core Idle Loop with Anime.js: Gentle Bedtime Respiration & Float
   useEffect(() => {
     if (!bodyRef.current || !shadowRef.current || !auraRef.current) return;
 
-    // Organic floating and breathing with Anime.js
+    // Soothing gentle floating and breathing
     idleAnimRef.current = animate(bodyRef.current, {
-      translateY: [-7, 7],
+      translateY: [-6, 6],
       scaleY: [0.97, 1.03],
-      scaleX: [1.02, 0.98],
-      duration: mood === "sleepy" ? 2600 : 1800,
+      scaleX: [1.025, 0.975],
+      duration: mood === "sleepy" ? 2800 : 2000,
       alternate: true,
       loop: true,
       ease: "inOutSine",
@@ -63,59 +63,59 @@ export const FourieCharacter: React.FC<FourieProps> = ({
 
     // Dynamic ground shadow expansion
     const shadowAnim = animate(shadowRef.current, {
-      scaleX: [1.1, 0.85],
-      scaleY: [1.1, 0.85],
-      opacity: [0.5, 0.25],
-      duration: mood === "sleepy" ? 2600 : 1800,
+      scaleX: [1.12, 0.88],
+      scaleY: [1.12, 0.88],
+      opacity: [0.4, 0.2],
+      duration: mood === "sleepy" ? 2800 : 2000,
       alternate: true,
       loop: true,
       ease: "inOutSine",
     });
 
-    // Aura pulse
+    // Warm aura pulse
     const auraAnim = animate(auraRef.current, {
-      r: [70, 80],
-      opacity: [0.12, 0.28],
-      duration: 2200,
+      r: [72, 84],
+      opacity: [0.15, 0.35],
+      duration: 2400,
       alternate: true,
       loop: true,
       ease: "inOutSine",
     });
 
-    // Antenna sway
+    // Antenna sleepy sway
     let antennaAnim: any = null;
     if (antennaRef.current) {
       antennaAnim = animate(antennaRef.current, {
-        rotate: [-6, 6],
+        rotate: [-5, 5],
         transformOrigin: "100px 52px",
-        duration: 1400,
+        duration: 1600,
         alternate: true,
         loop: true,
         ease: "inOutQuad",
       });
     }
 
-    // Glowing packet orb pulsing
+    // Glowing butter star orb pulsing
     let orbGlowAnim: any = null;
     if (antennaOrbRef.current) {
       orbGlowAnim = animate(antennaOrbRef.current, {
-        r: [7, 9.5],
+        r: [7.5, 10],
         opacity: [0.85, 1],
-        duration: 850,
+        duration: 950,
         alternate: true,
         loop: true,
         ease: "inOutSine",
       });
     }
 
-    // Tail wisps floating
+    // Little cloud tail wisps floating
     let tailAnim: any = null;
     if (tailRef.current) {
       tailAnim = animate(tailRef.current, {
-        translateY: [-4, 4],
-        rotate: [-8, 8],
+        translateY: [-3, 3],
+        rotate: [-6, 6],
         transformOrigin: "100px 165px",
-        duration: 1600,
+        duration: 1800,
         alternate: true,
         loop: true,
         ease: "inOutSine",
@@ -143,21 +143,19 @@ export const FourieCharacter: React.FC<FourieProps> = ({
       const rightLid = rightEyelidRef.current;
       if (!leftLid || !rightLid) return;
 
-      // Anime.js rapid snap shut and smooth open
       animate([leftLid, rightLid], {
         scaleY: [0, 1, 0],
         transformOrigin: "center center",
-        duration: 160,
+        duration: 170,
         ease: "inOutQuad",
         onComplete: () => {
-          // Double-blink chance (30%)
-          if (Math.random() < 0.3) {
+          if (Math.random() < 0.35) {
             setTimeout(() => {
               if (leftEyelidRef.current && rightEyelidRef.current) {
                 animate([leftEyelidRef.current, rightEyelidRef.current], {
                   scaleY: [0, 1, 0],
                   transformOrigin: "center center",
-                  duration: 130,
+                  duration: 140,
                   ease: "inOutQuad",
                 });
               }
@@ -166,15 +164,15 @@ export const FourieCharacter: React.FC<FourieProps> = ({
         },
       });
 
-      const nextInterval = 2800 + Math.random() * 3400;
+      const nextInterval = 2800 + Math.random() * 3200;
       blinkTimeout = window.setTimeout(executeBlink, nextInterval);
     };
 
-    blinkTimeout = window.setTimeout(executeBlink, 2000);
+    blinkTimeout = window.setTimeout(executeBlink, 2200);
     return () => clearTimeout(blinkTimeout);
   }, [mood]);
 
-  // 3. Smooth Pointer-Tracking 3D Head Tilt
+  // 3. Smooth Pointer-Tracking Head Tilt
   useEffect(() => {
     let targetTilt = 0;
     let currentTilt = 0;
@@ -185,11 +183,11 @@ export const FourieCharacter: React.FC<FourieProps> = ({
       const rect = rootRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const diffX = (e.clientX - centerX) / (window.innerWidth / 2);
-      targetTilt = Math.max(-14, Math.min(14, diffX * 12));
+      targetTilt = Math.max(-10, Math.min(10, diffX * 8));
     };
 
     const tick = () => {
-      currentTilt += (targetTilt - currentTilt) * 0.1;
+      currentTilt += (targetTilt - currentTilt) * 0.08;
       if (bodyRef.current) {
         bodyRef.current.style.transform = `rotate(${currentTilt.toFixed(2)}deg)`;
       }
@@ -205,7 +203,7 @@ export const FourieCharacter: React.FC<FourieProps> = ({
     };
   }, []);
 
-  // 4. Hover State with Anime.js: Cheeks glow, Hand Waves, Pupils Dilate
+  // 4. Hover State: Cuddly Blushing & Soft Hand Wave
   const handlePointerEnter = useCallback(() => {
     if (!interactive) return;
     setIsHovered(true);
@@ -214,24 +212,22 @@ export const FourieCharacter: React.FC<FourieProps> = ({
       audio.click();
     }
 
-    // Blush cheeks with Anime.js
     if (cheeksRef.current) {
       animate(cheeksRef.current, {
-        opacity: [0.35, 0.85],
-        scale: [1, 1.25],
+        opacity: [0.45, 0.95],
+        scale: [1, 1.3],
         transformOrigin: "center center",
         duration: 350,
         ease: "outQuad",
       });
     }
 
-    // Joyful Hand Wave with Anime.js
     if (rightHandRef.current) {
       waveAnimRef.current = animate(rightHandRef.current, {
-        translateY: -14,
-        rotate: [-28, 28],
+        translateY: -12,
+        rotate: [-24, 24],
         transformOrigin: "42px 110px",
-        duration: 280,
+        duration: 320,
         alternate: true,
         loop: true,
         ease: "inOutSine",
@@ -242,17 +238,15 @@ export const FourieCharacter: React.FC<FourieProps> = ({
   const handlePointerLeave = useCallback(() => {
     setIsHovered(false);
 
-    // Return cheeks to normal
     if (cheeksRef.current) {
       animate(cheeksRef.current, {
-        opacity: 0.35,
+        opacity: 0.45,
         scale: 1,
         duration: 400,
         ease: "outQuad",
       });
     }
 
-    // Smoothly rest hand back to Fourie's side
     if (rightHandRef.current) {
       waveAnimRef.current?.pause?.();
       animate(rightHandRef.current, {
@@ -264,15 +258,14 @@ export const FourieCharacter: React.FC<FourieProps> = ({
     }
   }, []);
 
-  // 5. Jump & Squash/Stretch Timeline on Poke (Full Anime.js Choreography)
+  // 5. Jump & Soft Bounce on Poke
   const handlePoke = useCallback(
     (e: React.PointerEvent) => {
       if (!interactive) return;
 
-      // Android haptics
       if (typeof navigator !== "undefined" && "vibrate" in navigator) {
         try {
-          navigator.vibrate(18);
+          navigator.vibrate(15);
         } catch {}
       }
 
@@ -288,42 +281,36 @@ export const FourieCharacter: React.FC<FourieProps> = ({
       const bodyEl = bodyRef.current;
       if (!bodyEl) return;
 
-      // Anime.js Character Jump & Squash/Stretch Choreography Timeline
       const jumpTimeline = createTimeline();
 
       jumpTimeline
-        // Step 1: Anticipation (Squash down before jumping)
         .add(bodyEl, {
-          translateY: 10,
-          scaleY: 0.84,
-          scaleX: 1.16,
+          translateY: 8,
+          scaleY: 0.86,
+          scaleX: 1.14,
           duration: 120,
           ease: "inQuad",
         })
-        // Step 2: Launch into the air (Stretch vertically)
         .add(bodyEl, {
-          translateY: -32,
-          scaleY: 1.18,
-          scaleX: 0.88,
+          translateY: -26,
+          scaleY: 1.14,
+          scaleX: 0.9,
           duration: 260,
           ease: "outCubic",
         })
-        // Step 3: Peak float with wiggle
         .add(bodyEl, {
-          translateY: -28,
-          rotate: [-6, 6, 0],
+          translateY: -22,
+          rotate: [-4, 4, 0],
           duration: 180,
           ease: "inOutSine",
         })
-        // Step 4: Fall back down and land with impact squash
         .add(bodyEl, {
           translateY: 0,
-          scaleY: 0.88,
-          scaleX: 1.12,
+          scaleY: 0.9,
+          scaleX: 1.1,
           duration: 220,
           ease: "inQuad",
         })
-        // Step 5: Elastic recovery back to natural shape
         .add(bodyEl, {
           scaleY: 1,
           scaleX: 1,
@@ -331,10 +318,9 @@ export const FourieCharacter: React.FC<FourieProps> = ({
           ease: "outElastic",
         });
 
-      // Synchronize floating hands during jump
       if (rightHandRef.current && leftHandRef.current) {
         animate([rightHandRef.current, leftHandRef.current], {
-          translateY: [-8, -24, 0],
+          translateY: [-6, -20, 0],
           duration: 600,
           ease: "outQuad",
         });
@@ -353,13 +339,12 @@ export const FourieCharacter: React.FC<FourieProps> = ({
     const count = now - prev < 700 ? tapCount + 1 : 1;
     setTapCount(count);
 
-    audio.glitch();
+    audio.chime();
     bus.emit("poke", { x: e.clientX, y: e.clientY });
 
-    // Glitch jitter with Anime.js
     if (antennaRef.current) {
       animate(antennaRef.current, {
-        translateX: [-4, 4, -2, 2, 0],
+        translateX: [-3, 3, -1, 1, 0],
         duration: 250,
         ease: "inOutSine",
       });
@@ -370,11 +355,10 @@ export const FourieCharacter: React.FC<FourieProps> = ({
       bus.emit("secret", undefined);
       useStore.getState().unlockSecret();
 
-      // Celebration spin
       if (bodyRef.current) {
         animate(bodyRef.current, {
           rotate: [0, 360],
-          scale: [1, 1.25, 1],
+          scale: [1, 1.2, 1],
           duration: 800,
           ease: "outElastic",
         });
@@ -386,7 +370,7 @@ export const FourieCharacter: React.FC<FourieProps> = ({
     <div
       ref={rootRef}
       role="img"
-      aria-label={`Fourie the 404 spirit, currently ${mood}`}
+      aria-label={`Baby Fourie, the 404 nursery spirit, currently ${mood}`}
       style={{ width: size, height: size }}
       className={`relative select-none cursor-pointer overflow-visible ${className}`}
       onPointerDown={handlePoke}
@@ -395,197 +379,175 @@ export const FourieCharacter: React.FC<FourieProps> = ({
     >
       <svg
         viewBox="0 0 200 200"
-        className="w-full h-full overflow-visible drop-shadow-[0_10px_28px_rgba(0,240,255,0.3)]"
+        className="w-full h-full overflow-visible drop-shadow-[0_12px_32px_rgba(168,155,240,0.35)]"
       >
         <defs>
-          {/* Luminous Body Hologram Shader */}
-          <radialGradient id="fourieGlowGrad" cx="45%" cy="38%" r="65%">
-            <stop offset="0%" stopColor="#242b58" />
-            <stop offset="50%" stopColor="#141838" />
-            <stop offset="90%" stopColor="#0a0c20" />
-            <stop offset="100%" stopColor="#060714" />
+          {/* Soothing Baby Body Gradient: Deep Velvet Twilight to Pastel Lavender */}
+          <radialGradient id="babyFourieGlow" cx="42%" cy="36%" r="68%">
+            <stop offset="0%" stopColor="#2c275e" />
+            <stop offset="55%" stopColor="#1a163e" />
+            <stop offset="90%" stopColor="#120f2c" />
+            <stop offset="100%" stopColor="#0c0a20" />
           </radialGradient>
 
-          {/* Golden Orb Glow */}
-          <radialGradient id="orbGlow" cx="35%" cy="35%" r="65%">
+          {/* Warm Butter Star Glow */}
+          <radialGradient id="butterStarGlow" cx="35%" cy="35%" r="65%">
             <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="40%" stopColor="#ffb703" />
-            <stop offset="100%" stopColor="#ff5400" />
+            <stop offset="45%" stopColor="#ffd97a" />
+            <stop offset="100%" stopColor="#ffb347" />
           </radialGradient>
 
-          {/* Eye Glass Highlight */}
-          <linearGradient id="eyeShine" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.95" />
-            <stop offset="70%" stopColor="#0080ff" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#0033aa" stopOpacity="0.9" />
+          {/* Sweet Anime Eye Shimmer */}
+          <linearGradient id="sweetEyeGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#a89bf0" />
+            <stop offset="60%" stopColor="#7c6fd6" />
+            <stop offset="100%" stopColor="#43377d" />
           </linearGradient>
 
-          {/* Ghost Aura Blur Filter */}
-          <filter id="softAura" x="-25%" y="-25%" width="150%" height="150%">
-            <feGaussianBlur stdDeviation="8" result="blur" />
+          {/* Dreamy Cloud Blur Filter */}
+          <filter id="dreamyBlur" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="9" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-
-          {/* Cyber Glitch Filter */}
-          <filter id="cyberGlitch">
-            <feOffset dx="-3" dy="0" result="red" />
-            <feOffset dx="3" dy="0" result="blue" />
-            <feBlend mode="screen" in="SourceGraphic" in2="red" />
           </filter>
         </defs>
 
-        {/* Dynamic Luminous Aura */}
+        {/* Soft Dream Halo Aura */}
         <circle
           ref={auraRef}
           cx="100"
           cy="110"
-          r="74"
-          fill="#00f0ff"
-          opacity="0.18"
-          filter="url(#softAura)"
+          r="76"
+          fill="#a89bf0"
+          opacity="0.22"
+          filter="url(#dreamyBlur)"
         />
 
-        {/* Dynamic Ground Shadow */}
+        {/* Dynamic Soft Bedtime Shadow */}
         <ellipse
           ref={shadowRef}
           cx="100"
           cy="184"
           rx="52"
           ry="11"
-          fill="#000000"
-          opacity="0.45"
+          fill="#0a081a"
+          opacity="0.35"
           className="origin-center"
         />
 
-        {/* Floating Digital Spirit Wisps / Tail */}
-        <g ref={tailRef} opacity="0.6">
-          <path
-            d="M 80 155 Q 70 175 60 180 Q 75 170 85 158 Z"
-            fill="#00f0ff"
-            opacity="0.5"
-          />
-          <path
-            d="M 120 155 Q 130 175 140 180 Q 125 170 115 158 Z"
-            fill="#00f0ff"
-            opacity="0.5"
-          />
-          <circle cx="70" cy="178" r="2.5" fill="#00f0ff" opacity="0.7" />
-          <circle cx="130" cy="178" r="2.5" fill="#00f0ff" opacity="0.7" />
-          <circle cx="100" cy="182" r="3" fill="#ffb703" opacity="0.6" />
+        {/* Floating Little Sleepy Cloud Wisps */}
+        <g ref={tailRef} opacity="0.7">
+          <ellipse cx="80" cy="168" rx="14" ry="7" fill="#7c6fd6" opacity="0.4" />
+          <ellipse cx="120" cy="168" rx="14" ry="7" fill="#7c6fd6" opacity="0.4" />
+          <ellipse cx="100" cy="172" rx="18" ry="8" fill="#ffd97a" opacity="0.3" />
+          {/* Floating Bedtime Sparkles */}
+          <circle cx="68" cy="160" r="2.5" fill="#ffd97a" opacity="0.8" />
+          <circle cx="132" cy="160" r="2.5" fill="#ffd97a" opacity="0.8" />
         </g>
 
-        {/* RIGGED CHARACTED BODY GROUP */}
-        <g
-          ref={bodyRef}
-          className="origin-bottom"
-          filter={mood === "glitching" ? "url(#cyberGlitch)" : undefined}
-        >
-          {/* Animated Antenna Assembly */}
+        {/* RIGGED BABY CHARACTED BODY GROUP */}
+        <g ref={bodyRef} className="origin-bottom">
+          {/* Animated Sleepy Antenna & Butter Star */}
           <g ref={antennaRef}>
-            {/* Flexible Antenna Stem */}
+            {/* Soft Curled Wick / Antenna */}
             <path
-              d="M 100 52 C 95 36, 92 28, 100 16"
+              d="M 100 50 C 94 34, 91 26, 100 16"
               fill="none"
-              stroke="#00f0ff"
+              stroke="#ffd97a"
               strokeWidth="4"
               strokeLinecap="round"
             />
-            {/* Tiny Antenna Coil Rings */}
-            <circle cx="98" cy="38" r="3" fill="none" stroke="#00f0ff" strokeWidth="1.5" />
-            <circle cx="99" cy="27" r="3" fill="none" stroke="#00f0ff" strokeWidth="1.5" />
+            {/* Soft decorative pearl beads */}
+            <circle cx="97" cy="36" r="3.2" fill="#a89bf0" />
+            <circle cx="98" cy="26" r="3.2" fill="#ff9ec0" />
 
-            {/* Glowing Packet Receiver Orb (Tap 5x for Easter Egg) */}
+            {/* Glowing Butter Star Charm on Top */}
             <g className="cursor-pointer" onPointerDown={handleAntennaTap}>
               <circle cx="100" cy="14" r="16" fill="transparent" />
-              {/* Radiating Ping Ring */}
+              {/* Radiating Dream Pulse */}
               <circle
                 cx="100"
                 cy="14"
                 r="13"
                 fill="none"
-                stroke="#ffb703"
+                stroke="#ffd97a"
                 strokeWidth="1.5"
                 opacity={isHovered ? 0.8 : 0.4}
                 className="animate-ping origin-center"
               />
-              {/* Core Orb */}
+              {/* Star / Pearl Orb */}
               <circle
                 ref={antennaOrbRef}
                 cx="100"
                 cy="14"
-                r="7.5"
-                fill={mood === "glitching" ? "#ff007f" : "url(#orbGlow)"}
+                r="8"
+                fill="url(#butterStarGlow)"
                 stroke="#ffffff"
                 strokeWidth="1.8"
               />
             </g>
           </g>
 
-          {/* Main Rounded Ghost Spirit Body */}
+          {/* Main Cuddly Rounded Ghost Spirit Body */}
           <rect
-            x="46"
-            y="48"
-            width="108"
-            height="114"
-            rx="36"
-            fill="url(#fourieGlowGrad)"
-            stroke="#00f0ff"
-            strokeWidth="2.8"
+            x="44"
+            y="46"
+            width="112"
+            height="118"
+            rx="42"
+            fill="url(#babyFourieGlow)"
+            stroke="#a89bf0"
+            strokeWidth="3"
           />
 
-          {/* Cyber Grid Texture Lines inside Body */}
-          <path
-            d="M 54 82 L 146 82 M 54 112 L 146 112 M 54 142 L 146 142"
-            stroke="#00f0ff"
-            strokeWidth="0.6"
-            strokeDasharray="4 4"
-            opacity="0.18"
-          />
+          {/* Soft Pastel Highlights on Head & Tummy */}
+          <ellipse cx="100" cy="58" rx="34" ry="7" fill="#ffffff" opacity="0.12" />
 
-          {/* Blushing Cheeks */}
-          <g ref={cheeksRef} opacity="0.35">
-            <circle cx="67" cy="118" r="7.5" fill="#ff007f" filter="url(#softAura)" />
-            <circle cx="133" cy="118" r="7.5" fill="#ff007f" filter="url(#softAura)" />
-            <circle cx="67" cy="118" r="5" fill="#ff4090" />
-            <circle cx="133" cy="118" r="5" fill="#ff4090" />
+          {/* Sweet Rosy Cheeks (Blushing) */}
+          <g ref={cheeksRef} opacity="0.55">
+            <circle cx="66" cy="118" r="8" fill="#ff9ec0" filter="url(#dreamyBlur)" />
+            <circle cx="134" cy="118" r="8" fill="#ff9ec0" filter="url(#dreamyBlur)" />
+            <circle cx="66" cy="118" r="5" fill="#ffb3c6" />
+            <circle cx="134" cy="118" r="5" fill="#ffb3c6" />
           </g>
 
-          {/* Eye Sockets */}
+          {/* Sweet Large Baby Eye Sockets */}
           <ellipse
-            cx="76"
+            cx="75"
             cy="93"
-            rx="15"
-            ry="18"
-            fill="#060814"
-            stroke="#00f0ff"
+            rx="16"
+            ry="19"
+            fill="#09071c"
+            stroke="#a89bf0"
             strokeWidth="1.8"
           />
           <ellipse
-            cx="124"
+            cx="125"
             cy="93"
-            rx="15"
-            ry="18"
-            fill="#060814"
-            stroke="#00f0ff"
+            rx="16"
+            ry="19"
+            fill="#09071c"
+            stroke="#a89bf0"
             strokeWidth="1.8"
           />
 
-          {/* Animated Pupils (Track Pointer & Dilate on Hover) */}
+          {/* Big Adorable Pupils with Starry Glints */}
           <g ref={pupilsRef} id="fourie-pupils">
             {mood !== "sleepy" && (
               <>
-                {/* Left Pupil with Anime Highlights */}
+                {/* Left Pupil */}
                 <g ref={leftEyeRef} className="origin-center">
-                  <circle cx="76" cy="93" r={isHovered ? 8.5 : 7.2} fill="url(#eyeShine)" />
-                  <circle cx="74" cy="90" r="2.8" fill="#ffffff" />
-                  <circle cx="78" cy="95" r="1.2" fill="#ffffff" opacity="0.8" />
+                  <circle cx="75" cy="93" r={isHovered ? 9.5 : 8.2} fill="url(#sweetEyeGrad)" />
+                  {/* Starry Glints */}
+                  <circle cx="72" cy="89" r="3.2" fill="#ffffff" />
+                  <circle cx="77" cy="96" r="1.5" fill="#ffffff" opacity="0.9" />
                 </g>
 
-                {/* Right Pupil with Anime Highlights */}
+                {/* Right Pupil */}
                 <g ref={rightEyeRef} className="origin-center">
-                  <circle cx="124" cy="93" r={isHovered ? 8.5 : 7.2} fill="url(#eyeShine)" />
-                  <circle cx="122" cy="90" r="2.8" fill="#ffffff" />
-                  <circle cx="126" cy="95" r="1.2" fill="#ffffff" opacity="0.8" />
+                  <circle cx="125" cy="93" r={isHovered ? 9.5 : 8.2} fill="url(#sweetEyeGrad)" />
+                  {/* Starry Glints */}
+                  <circle cx="122" cy="89" r="3.2" fill="#ffffff" />
+                  <circle cx="127" cy="96" r="1.5" fill="#ffffff" opacity="0.9" />
                 </g>
               </>
             )}
@@ -594,40 +556,40 @@ export const FourieCharacter: React.FC<FourieProps> = ({
           {/* Animated Eyelids (Spontaneous Blinking via Anime.js) */}
           <path
             ref={leftEyelidRef}
-            d="M 61 75 C 61 75, 76 96, 91 75 L 91 95 C 91 95, 76 112, 61 95 Z"
-            fill="#141838"
-            stroke="#00f0ff"
+            d="M 59 74 C 59 74, 75 97, 91 74 L 91 97 C 91 97, 75 114, 59 97 Z"
+            fill="#1c183e"
+            stroke="#a89bf0"
             strokeWidth="2.5"
             style={{ transform: "scaleY(0)" }}
           />
           <path
             ref={rightEyelidRef}
-            d="M 109 75 C 109 75, 124 96, 139 75 L 139 95 C 139 95, 124 112, 109 95 Z"
-            fill="#141838"
-            stroke="#00f0ff"
+            d="M 109 74 C 109 74, 125 97, 141 74 L 141 97 C 141 97, 125 114, 109 97 Z"
+            fill="#1c183e"
+            stroke="#a89bf0"
             strokeWidth="2.5"
             style={{ transform: "scaleY(0)" }}
           />
 
-          {/* Sleepy Closed Eyes Fallback */}
+          {/* Sleepy Half-Lids / Dreaming Eyes */}
           {mood === "sleepy" && (
             <g>
               <path
-                d="M 65 95 Q 76 106 87 95"
+                d="M 64 96 Q 75 108 86 96"
                 fill="none"
-                stroke="#00f0ff"
+                stroke="#ffd97a"
                 strokeWidth="3.5"
                 strokeLinecap="round"
               />
               <path
-                d="M 113 95 Q 124 106 135 95"
+                d="M 114 96 Q 125 108 136 96"
                 fill="none"
-                stroke="#00f0ff"
+                stroke="#ffd97a"
                 strokeWidth="3.5"
                 strokeLinecap="round"
               />
-              <text x="144" y="68" fill="#ffb703" fontFamily="'Press Start 2P', monospace" fontSize="12">Z</text>
-              <text x="158" y="52" fill="#ffb703" fontFamily="'Press Start 2P', monospace" fontSize="9" opacity="0.7">z</text>
+              <text x="144" y="66" fill="#ffd97a" fontFamily="'Press Start 2P', monospace" fontSize="12">Z</text>
+              <text x="158" y="50" fill="#ff9ec0" fontFamily="'Press Start 2P', monospace" fontSize="9" opacity="0.8">z</text>
             </g>
           )}
 
@@ -635,43 +597,43 @@ export const FourieCharacter: React.FC<FourieProps> = ({
           {mood === "happy" && (
             <g>
               <path
-                d="M 64 95 Q 76 83 88 95"
+                d="M 63 95 Q 75 82 87 95"
                 fill="none"
-                stroke="#ffb703"
-                strokeWidth="3.8"
+                stroke="#ffd97a"
+                strokeWidth="4"
                 strokeLinecap="round"
               />
               <path
-                d="M 112 95 Q 124 83 136 95"
+                d="M 113 95 Q 125 82 137 95"
                 fill="none"
-                stroke="#ffb703"
-                strokeWidth="3.8"
+                stroke="#ffd97a"
+                strokeWidth="4"
                 strokeLinecap="round"
               />
             </g>
           )}
 
-          {/* Expressive Mouth */}
+          {/* Sweet Little Baby Mouth */}
           {mood === "happy" || isHovered ? (
             <path
-              d="M 91 118 Q 100 130 109 118"
-              fill="#ff007f"
-              stroke="#00f0ff"
+              d="M 91 118 Q 100 131 109 118"
+              fill="#ff9ec0"
+              stroke="#ffd97a"
               strokeWidth="2"
             />
           ) : mood === "sleepy" ? (
-            <ellipse cx="100" cy="119" rx="3.5" ry="2.2" fill="#00f0ff" opacity="0.7" />
+            <ellipse cx="100" cy="119" rx="3.5" ry="2.2" fill="#ffd97a" opacity="0.8" />
           ) : (
             <path
               d="M 93 119 Q 100 124 107 119"
               fill="none"
-              stroke="#00f0ff"
+              stroke="#ffd97a"
               strokeWidth="2.5"
               strokeLinecap="round"
             />
           )}
 
-          {/* 404 Rescued Belly Badge */}
+          {/* Baby's 404 Rescued Tummy Patch */}
           <g
             ref={bellyBadgeRef}
             className="cursor-pointer"
@@ -688,82 +650,81 @@ export const FourieCharacter: React.FC<FourieProps> = ({
             }}
           >
             <rect
-              x="66"
-              y="134"
-              width="68"
+              x="65"
+              y="136"
+              width="70"
               height="20"
-              rx="5"
-              fill="#060714"
-              stroke={isHovered ? "#00f0ff" : "#ffb703"}
+              rx="10"
+              fill="#100e26"
+              stroke={isHovered ? "#ffd97a" : "#a89bf0"}
               strokeWidth="2"
             />
             <text
               x="100"
-              y="148"
-              fill="#00f0ff"
+              y="150"
+              fill="#ffd97a"
               fontFamily="'Press Start 2P', monospace"
-              fontSize="9.5"
+              fontSize="9"
               textAnchor="middle"
               className="tracking-wider"
             >
-              404 LOST
+              ✦ 404 ✦
             </text>
           </g>
 
-          {/* Vintage Floppy Disk Satchel (Left Hip) */}
+          {/* Adorable Pastel Floppy Satchel (Cozy baby pouch with heart charm) */}
           <g transform="translate(136, 116)">
-            {/* Leather Satchel Strap */}
+            {/* Soft Ribbon Strap */}
             <line
               x1="-38"
               y1="-28"
               x2="8"
               y2="12"
-              stroke="#ffb703"
+              stroke="#ff9ec0"
               strokeWidth="2.8"
-              strokeDasharray="4 2"
             />
-            {/* Floppy Body */}
+            {/* Pastel Floppy Body */}
             <rect
               x="0"
               y="6"
               width="24"
               height="22"
-              rx="3"
-              fill="#101432"
-              stroke="#00f0ff"
-              strokeWidth="1.8"
+              rx="4"
+              fill="#251f50"
+              stroke="#a89bf0"
+              strokeWidth="2"
             />
-            {/* Metal Slider */}
-            <rect x="4" y="8" width="16" height="8" rx="1" fill="#c0c0c0" />
-            <circle cx="12" cy="20" r="3" fill="#ff007f" />
+            <rect x="4" y="8" width="16" height="8" rx="2" fill="#fffaf5" />
+            {/* Cute Little Heart on Floppy */}
+            <circle cx="12" cy="20" r="3" fill="#ff9ec0" />
           </g>
 
-          {/* Rigged Floating Left Hand */}
+          {/* Rigged Floating Baby Left Hand */}
           <g ref={leftHandRef} className="origin-center">
             <ellipse
-              cx="40"
+              cx="38"
               cy="124"
-              rx="7"
-              ry="9"
-              fill="#1a2046"
-              stroke="#00f0ff"
-              strokeWidth="2"
+              rx="8"
+              ry="10"
+              fill="#251f50"
+              stroke="#a89bf0"
+              strokeWidth="2.2"
             />
-            <circle cx="40" cy="124" r="2.5" fill="#ffb703" opacity="0.6" />
+            <circle cx="38" cy="124" r="3" fill="#ff9ec0" opacity="0.7" />
           </g>
 
-          {/* Rigged Floating Right Hand (Waves with Anime.js) */}
+          {/* Rigged Floating Baby Right Hand (Waves gently on hover) */}
           <g ref={rightHandRef} className="origin-top-left">
             <ellipse
-              cx="160"
+              cx="162"
               cy="124"
-              rx="7"
-              ry="9"
-              fill="#1a2046"
-              stroke="#00f0ff"
-              strokeWidth="2"
+              rx="8"
+              ry="10"
+              fill="#251f50"
+              stroke="#a89bf0"
+              strokeWidth="2.2"
             />
-            <circle cx="160" cy="124" r="2.5" fill="#ffb703" opacity="0.6" />
+            <circle cx="162" cy="124" r="3" fill="#ff9ec0" opacity="0.7" />
           </g>
         </g>
       </svg>

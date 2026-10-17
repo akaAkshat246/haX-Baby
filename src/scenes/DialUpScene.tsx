@@ -1,80 +1,76 @@
 import React, { useState } from "react";
 import { audio } from "../core/audio";
 import { bus } from "../core/bus";
-import { PhoneCall, Radio, Terminal, Volume2 } from "lucide-react";
+import { Music, Radio, Sparkles, Volume2 } from "lucide-react";
 
 export const DialUpScene: React.FC = () => {
-  const [dialing, setDialing] = useState(false);
+  const [playing, setPlaying] = useState(false);
   const [logs, setLogs] = useState<string[]>([
-    "MODEM READY: USRobotics Sportster 56K Faxmodem",
-    "PORT: COM2 / SPEED: 115200 BAUD",
-    "AWAITING CARRIER SIGNAL...",
+    "BEDTIME MUSIC BOX READY: Sportster 56K Lullaby Edition",
+    "STATUS: COZY BEDROOM CARRIER ACTIVE",
+    "LISTENING FOR FALLING NIGHT PACKETS...",
   ]);
 
-  const handleDial = async () => {
-    if (dialing) return;
-    setDialing(true);
+  const handlePlayLullaby = async () => {
+    if (playing) return;
+    setPlaying(true);
     await audio.unlock();
 
     setLogs([
-      "ATZ -> OK",
-      "ATDT 1-800-404-LOST...",
-      "DIALING CARRIER NUMBER...",
+      "ATZ -> OK (NIGHT MODE ENGAGED)",
+      "DIALING 1-800-404-LULLABY...",
+      "WARMING UP BEDTIME CHIMES...",
     ]);
 
     audio.playDialUpSimulation();
 
     setTimeout(() => {
-      setLogs((prev) => [...prev, "BEEP... BOOP... HIGH PITCH CARRIER (1200Hz) DETECTED"]);
+      setLogs((prev) => [...prev, "SWEET HARMONIC CARRIER DETECTED (392Hz + 523Hz)"]);
     }, 1200);
 
     setTimeout(() => {
       setLogs((prev) => [
         ...prev,
-        "CARRIER HANDSHAKE: V.90 56,000 BPS NEGOTIATED",
-        "PROTOCOL: LAPM / COMPRESSION: V.42bis",
-        "CONNECT 56000! ONLINE IN CYBERSPACE ✦",
+        "LULLABY RESOLUTION: 56,000 WARM BYTES DELIVERED",
+        "PROTOCOL: COZY SLEEP // BABY FOURIE IS SMILING ✦",
       ]);
-      setDialing(false);
+      setPlaying(false);
       bus.emit("poke", { x: window.innerWidth / 2, y: window.innerHeight / 2 });
-    }, 3200);
+    }, 3000);
   };
 
   return (
     <section
       id="scene-dialup"
-      className="relative min-h-[90dvh] w-full flex flex-col items-center justify-center p-6 text-center select-none"
+      className="relative min-h-[90dvh] w-full flex flex-col items-center justify-center p-6 text-center select-none bg-gradient-to-b from-[#14112e] via-[#1a153c] to-[#161234]"
     >
       <div className="max-w-2xl space-y-4 z-10 w-full">
-        <div className="inline-block px-3 py-1 bg-void-800 border border-glitch-cyan text-glitch-cyan font-pixel text-xs rounded uppercase">
-          Era 1: 1995-1999 // The Dial-Up Age
+        <div className="inline-block px-3.5 py-1 bg-[#231d4e] border border-[#a89bf0]/50 text-[#c8bffd] font-pixel text-xs rounded-full uppercase">
+          Era 1: 1995-1999 // The 56K Bedtime Lullaby
         </div>
 
-        <h2 className="text-2xl sm:text-4xl font-pixel text-paper tracking-wide">
-          THE 56K HANDSHAKE
+        <h2 className="text-2xl sm:text-4xl font-pixel text-[#ffffff] tracking-wide drop-shadow">
+          THE MODEM LULLABY
         </h2>
 
-        <p className="font-display text-sm text-gray-300 max-w-lg mx-auto leading-relaxed">
-          Before fiber-optics, the internet breathed through copper telephone lines. Fourie was lulled to sleep by the screech of dial-up modems singing in the dark. Whenever someone picked up the house phone and severed the link, Fourie caught the dropped packets.
+        <p className="font-display text-sm text-[#c8bffd] max-w-lg mx-auto leading-relaxed">
+          Back when the whole world went quiet at night, dial-up modems sang in the dark like little glowing music boxes. Whenever someone accidentally picked up the landline, Fourie caught the sleepy dropped packets and tucked them into bed.
         </p>
 
-        {/* Retro CRT Terminal Box */}
-        <div className="w-full bg-black border-4 border-winborder rounded p-4 text-left font-mono text-xs shadow-[0_0_20px_rgba(0,0,0,0.8)] relative overflow-hidden">
-          {/* CRT scanline highlight */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-glitch-green/5 to-transparent pointer-events-none" />
-
-          <div className="flex items-center justify-between border-b border-gray-700 pb-2 mb-3">
-            <span className="flex items-center gap-1.5 text-glitch-green font-pixel text-[10px]">
-              <Terminal className="w-3.5 h-3.5" />
-              <span>TERMINAL DIAL-UP EMULATOR</span>
+        {/* Soothing Terminal Box */}
+        <div className="w-full bg-[#120f2c] border-3 border-[#7c6fd6] rounded-2xl p-5 text-left font-mono text-xs shadow-[0_12px_36px_rgba(0,0,0,0.5)] relative overflow-hidden">
+          <div className="flex items-center justify-between border-b border-[#30285a] pb-2.5 mb-3">
+            <span className="flex items-center gap-2 text-[#ffd97a] font-pixel text-[10px]">
+              <Music className="w-3.5 h-3.5" />
+              <span>DIAL-UP LULLABY EMULATOR</span>
             </span>
-            <span className="text-[10px] text-gray-500 font-pixel">COM2: 56K</span>
+            <span className="text-[10px] text-[#a89bf0] font-pixel">56K SOOTHING HARMONICS</span>
           </div>
 
-          <div className="space-y-1 text-glitch-green min-h-[100px] text-[11px]">
+          <div className="space-y-1.5 text-[#a3f7bf] min-h-[90px] text-[11px]">
             {logs.map((log, i) => (
               <div key={i} className="flex gap-2">
-                <span className="text-gray-600">&gt;</span>
+                <span className="text-[#655896]">&gt;</span>
                 <span className={i === logs.length - 1 ? "animate-pulse" : ""}>
                   {log}
                 </span>
@@ -82,24 +78,24 @@ export const DialUpScene: React.FC = () => {
             ))}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-gray-800 flex flex-wrap items-center justify-between gap-2">
+          <div className="mt-4 pt-3.5 border-t border-[#26204c] flex flex-wrap items-center justify-between gap-2">
             <button
               type="button"
-              disabled={dialing}
-              onClick={handleDial}
-              className={`px-4 py-2 font-pixel text-xs rounded transition-all flex items-center gap-2 ${
-                dialing
-                  ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                  : "bg-glitch-cyan text-ink hover:bg-white active:scale-95 shadow-[0_0_12px_rgba(0,240,255,0.4)]"
+              disabled={playing}
+              onClick={handlePlayLullaby}
+              className={`px-5 py-2.5 font-pixel text-xs rounded-xl transition-all flex items-center gap-2 ${
+                playing
+                  ? "bg-[#2d2556] text-[#786b9e] cursor-not-allowed"
+                  : "bg-gradient-to-r from-[#ffd97a] to-[#ff9ec0] text-[#1c1838] font-bold hover:scale-105 active:scale-95 shadow-[0_4px_16px_rgba(255,217,122,0.4)]"
               }`}
             >
-              <PhoneCall className="w-4 h-4" />
-              <span>{dialing ? "Dialing Carrier..." : "Dial 56K Modem"}</span>
+              <Sparkles className="w-4 h-4 text-[#1c1838]" />
+              <span>{playing ? "Playing Lullaby..." : "Listen to Bedtime Modem"}</span>
             </button>
 
-            <span className="text-[10px] font-pixel text-gray-400 flex items-center gap-1">
-              <Volume2 className="w-3 h-3 text-glitch-amber" />
-              <span>Procedural Web Audio Synth</span>
+            <span className="text-[10px] font-pixel text-[#ffd97a] flex items-center gap-1">
+              <Volume2 className="w-3.5 h-3.5 text-[#ff9ec0]" />
+              <span>Procedural Web Audio Celesta</span>
             </span>
           </div>
         </div>

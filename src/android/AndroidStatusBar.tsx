@@ -72,11 +72,11 @@ export const AndroidStatusBar: React.FC = () => {
             audio.click();
             enterPanda();
           }}
-          className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#6366f1]/25 border border-indigo-400/40 text-indigo-300 hover:bg-[#6366f1]/40 text-[11px] font-mono transition-colors cursor-pointer"
-          title="Open 3D AI Panda Room"
+          className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#ec4899]/25 border border-pink-400/40 text-pink-300 hover:bg-[#ec4899]/40 text-[11px] font-mono transition-colors cursor-pointer"
+          title="Open 3D AI Kitty Room"
         >
-          <span>🐼</span>
-          <span>Panda Room</span>
+          <span>🐱</span>
+          <span>3D Kitty Room</span>
         </button>
 
         <div className="hidden md:flex items-center gap-2 px-3 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] font-mono text-[#d8b4c8]">

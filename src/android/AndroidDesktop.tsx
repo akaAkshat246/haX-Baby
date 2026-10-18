@@ -57,9 +57,9 @@ export const AndroidDesktop: React.FC = () => {
   const desktopApps: DesktopAppIcon[] = [
     {
       id: "panda" as any,
-      label: "AI Panda",
-      icon: <span className="text-2xl">🐼</span>,
-      bg: "bg-gradient-to-tr from-[#6366f1] via-[#818cf8] to-[#a855f7]",
+      label: "Talking Kitty",
+      icon: <span className="text-2xl">🐱</span>,
+      bg: "bg-gradient-to-tr from-[#ec4899] via-[#f472b6] to-[#a855f7]",
     },
     {
       id: "story",

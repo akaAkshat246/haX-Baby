@@ -147,11 +147,11 @@ export const StoryLanding: React.FC = () => {
               audio.click();
               enterPanda();
             }}
-            className="px-3.5 py-1.5 rounded-full text-xs font-semibold font-sans bg-gradient-to-r from-[#6366f1] to-[#a855f7] text-white shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer border border-white/20"
-            title="Open 3D AI Talking Panda Room"
+            className="px-3.5 py-1.5 rounded-full text-xs font-semibold font-sans bg-gradient-to-r from-[#ec4899] to-[#a855f7] text-white shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer border border-white/20"
+            title="Open 3D AI Talking Kitty Room"
           >
-            <span>🐼</span>
-            <span className="hidden sm:inline">AI Panda Room</span>
+            <span>🐱</span>
+            <span className="hidden sm:inline">3D Kitty Room</span>
           </button>
 
           {/* Dive Into Fourie's World Button */}

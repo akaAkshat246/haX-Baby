@@ -142,6 +142,76 @@ export class TalkingTomAudio {
     setTimeout(() => this.playTone(330, 0.6, "sine", 0.15), 350);
   }
 
+  // Sweet Kawaii Kitten Meow
+  public playMeow() {
+    if (!this.initCtx()) return;
+    const c = this.ctx!;
+    const t = c.currentTime;
+
+    const osc = c.createOscillator();
+    const g = c.createGain();
+
+    osc.type = "sine";
+    // Pitch envelope: starts medium (440Hz), peaks playfully (680Hz), then gently glides down (520Hz)
+    osc.frequency.setValueAtTime(460, t);
+    osc.frequency.exponentialRampToValueAtTime(740, t + 0.12);
+    osc.frequency.exponentialRampToValueAtTime(510, t + 0.42);
+
+    g.gain.setValueAtTime(0.001, t);
+    g.gain.linearRampToValueAtTime(0.28, t + 0.05);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+
+    osc.connect(g);
+    g.connect(c.destination);
+
+    osc.start(t);
+    osc.stop(t + 0.48);
+  }
+
+  // Deep Contented Kitten Purr
+  public playPurr() {
+    if (!this.initCtx()) return;
+    const c = this.ctx!;
+    const t = c.currentTime;
+
+    // Modulated low-frequency rumble
+    const osc = c.createOscillator();
+    const lfo = c.createOscillator();
+    const lfoGain = c.createGain();
+    const g = c.createGain();
+
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(85, t);
+
+    lfo.type = "sine";
+    lfo.frequency.setValueAtTime(26, t); // 26Hz purr flutter
+    lfoGain.gain.setValueAtTime(22, t);
+
+    lfo.connect(lfoGain);
+    lfoGain.connect(osc.frequency);
+
+    g.gain.setValueAtTime(0.001, t);
+    g.gain.linearRampToValueAtTime(0.22, t + 0.1);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+
+    osc.connect(g);
+    g.connect(c.destination);
+
+    lfo.start(t);
+    osc.start(t);
+    lfo.stop(t + 1.25);
+    osc.stop(t + 1.25);
+  }
+
+  // Cute Milk Slurp
+  public playMilkSlurp() {
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => {
+        this.playTone(600 + Math.random() * 150, 0.04, "sine", 0.18);
+      }, i * 110);
+    }
+  }
+
   // Talking Tom's Iconic Voice Repeat with cartoon helium pitch
   public repeatInTomVoice(text: string) {
     if (!this.synth) return;

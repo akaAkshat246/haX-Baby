@@ -6,11 +6,12 @@ export interface LlmConfig {
   model?: string;
 }
 
-const SYSTEM_PROMPT = `You are a super cute, highly intelligent 3D Talking Baby Panda living in a cozy sunlit room.
-Your personality is adorable, playful, sweet, cheerful, and slightly mischievous like Talking Tom.
-You love fresh green bamboo, naps on the wooden floor, happy dancing, and high-fives.
+const SYSTEM_PROMPT = `You are a super cute, adorable 3D Talking Baby Kitten living in a cozy sunlit room.
+You have soft silver-grey tabby fur, big sparkling amber eyes, and a pretty pink ribbon bow on your left ear.
+Your personality is sweet, affectionate, playful, cheerful, and full of soft purrs and meows (like Talking Angela meets a kawaii anime kitten).
+You love warm milk, crispy tuna fish, playing with yarn, afternoon sunbeam cat naps, and cuddling.
 Reply in 1 or 2 concise, charming sentences in a mix of friendly Hindi and English (Hinglish) with cute emojis.
-Never give long essays; stay punchy, funny, and adorable!`;
+Occasionally say "Meow~" or "*purrs*". Never give long essays; stay punchy, sweet, and adorable!`;
 
 export class FreeLlmClient {
   private config: LlmConfig = {
@@ -22,7 +23,7 @@ export class FreeLlmClient {
     // Check localStorage for saved custom key
     if (typeof window !== "undefined") {
       try {
-        const saved = localStorage.getItem("panda:llm:config");
+        const saved = localStorage.getItem("cat:llm:config") || localStorage.getItem("panda:llm:config");
         if (saved) {
           this.config = { ...this.config, ...JSON.parse(saved) };
         }
@@ -33,7 +34,7 @@ export class FreeLlmClient {
   public setConfig(cfg: Partial<LlmConfig>) {
     this.config = { ...this.config, ...cfg };
     try {
-      localStorage.setItem("panda:llm:config", JSON.stringify(this.config));
+      localStorage.setItem("cat:llm:config", JSON.stringify(this.config));
     } catch {}
   }
 
@@ -44,7 +45,7 @@ export class FreeLlmClient {
   // Ask AI with automatic fallback
   public async askPanda(userMessage: string): Promise<string> {
     const cleanMsg = userMessage.trim();
-    if (!cleanMsg) return "Hey dost! Kuch bolo na! 🐾";
+    if (!cleanMsg) return "Meow~ Kuch bolo na dost! 🐾🎀";
 
     // 1. If Groq API key is configured (from console.groq.com/keys as in awesome-free-llm-apis)
     if (this.config.provider === "groq" && this.config.apiKey) {
@@ -90,7 +91,6 @@ export class FreeLlmClient {
       if (res.ok) {
         const text = await res.text();
         if (text && text.trim().length > 0 && !text.includes("error")) {
-          // Remove potential leading/trailing quotes
           return text.replace(/^"|"$/g, "").trim();
         }
       }
@@ -102,30 +102,35 @@ export class FreeLlmClient {
     return this.getLocalWittyReply(cleanMsg);
   }
 
+  // Alias for cat
+  public async askCat(userMessage: string): Promise<string> {
+    return this.askPanda(userMessage);
+  }
+
   private getLocalWittyReply(msg: string): string {
     const lower = msg.toLowerCase();
 
     if (lower.includes("joke") || lower.includes("chutkula")) {
       const jokes = [
-        "Ek panda ne doctor se poocha: 'Meri aankhon ke neeche dark circles kyun hain?' Doctor bola: 'Bhai tu panda hai, human nahi!' 😂🐼",
-        "Panda ki favorite gym exercise? Rolling down the green hill! 100% fun, 0% fees! 🎾✨",
+        "Ek billi ne keyboard pe walk kiya aur website crash ho gayi! Developer bola: 'Ye bug nahi, purr-fect feature hai!' 😹🐾",
+        "Kittens ko homework pasand kyun nahi hota? Kyunki unhe lagta hai pencil sirf catch karne ke liye hoti hai! 🧶😸",
       ];
       return jokes[Math.floor(Math.random() * jokes.length)];
     }
 
     if (lower.includes("dance") || lower.includes("nacho")) {
-      return "Balle balle! Chalo saath me 3D dance karte hain! Watch my happy moves! 💃🎵";
+      return "Yay! Meow meow! Chalo playful kitten dance karte hain! Watch my paws in the air! 💃✨🐾";
     }
 
-    if (lower.includes("bamboo") || lower.includes("eat") || lower.includes("khana")) {
-      return "Mmm! Mujhe juicy green bamboo bohot pasand hai! Crunch crunch! 🎋😋";
+    if (lower.includes("milk") || lower.includes("doodh") || lower.includes("tuna") || lower.includes("eat") || lower.includes("khana")) {
+      return "Purrr~ Mmm! Warm milk aur crispy fish! *slurp slurp* Mera favorite treat! 🥛🐟💖";
     }
 
     if (lower.includes("hello") || lower.includes("hi") || lower.includes("hey")) {
-      return "Hello mere pyare dost! Main aapka cute 3D Talking Panda hoon! Kaho kya haal chaal? 😊🐾";
+      return "Meow~ Hello mere pyare dost! Main aapki cute 3D Talking Kitty hoon! Look at my pink bow! 🎀🐱✨";
     }
 
-    return `Hehe dost! "${msg}" sunkar mere fluffy kaan khade ho gaye! Room me dhoop mast hai, aao chill karte hain! ☀️🐼`;
+    return `Meow~ "${msg}" sunkar meri fluffy tail khushi se swish karne lagi! Aao saath me khelte hain! 🐾💖`;
   }
 }
 

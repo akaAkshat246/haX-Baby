@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Panda3DModel, PandaAnimState } from "./Panda3DModel";
+import { Cat3DModel, CatAnimState } from "./Cat3DModel";
 
 export interface Obstacle3D {
   id: string;
@@ -18,7 +18,12 @@ export class Room3DScene {
   public scene: THREE.Scene;
   public camera: THREE.PerspectiveCamera;
   public renderer: THREE.WebGLRenderer;
-  public panda: Panda3DModel;
+  public cat: Cat3DModel;
+
+  // Compatibility getter so existing hooks don't break
+  public get panda() {
+    return this.cat;
+  }
 
   private floorPlane: THREE.Mesh;
   private raycaster: THREE.Raycaster;
@@ -79,8 +84,22 @@ export class Room3DScene {
   ];
 
   public isFollowingCursor: boolean = true;
-  public onPandaPoke?: (part: string) => void;
-  public onPandaBump?: (obstacleName: string) => void;
+  public onCatPoke?: (part: string) => void;
+  public onCatBump?: (obstacleName: string) => void;
+
+  // Compatibility aliases
+  public get onPandaPoke() {
+    return this.onCatPoke;
+  }
+  public set onPandaPoke(fn: ((part: string) => void) | undefined) {
+    this.onCatPoke = fn;
+  }
+  public get onPandaBump() {
+    return this.onCatBump;
+  }
+  public set onPandaBump(fn: ((obstacleName: string) => void) | undefined) {
+    this.onCatBump = fn;
+  }
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -135,171 +154,153 @@ export class Room3DScene {
     // 4. Build 3D Room Environment
     this.floorPlane = this.buildRoom();
 
-    // 5. Add 3D Panda Model
-    this.panda = new Panda3DModel();
-    this.panda.group.position.set(0, 0, 1.2);
-    this.panda.targetPos.set(0, 0, 1.2);
-    this.scene.add(this.panda.group);
+    // 5. Add Cute 3D Kitten Model
+    this.cat = new Cat3DModel();
+    this.cat.group.position.set(0, 0, 1.2);
+    this.scene.add(this.cat.group);
 
     // 6. Floating Sunbeam Dust Particles
     this.dustPoints = this.buildSunbeamDust();
     this.scene.add(this.dustPoints);
 
-    // Event listeners
+    // Bind event handlers
     this.onWindowResize = this.onWindowResize.bind(this);
     this.onPointerMove = this.onPointerMove.bind(this);
     this.onPointerDown = this.onPointerDown.bind(this);
+    this.animate = this.animate.bind(this);
 
     window.addEventListener("resize", this.onWindowResize);
-    container.addEventListener("pointermove", this.onPointerMove);
-    container.addEventListener("pointerdown", this.onPointerDown);
+    this.container.addEventListener("pointermove", this.onPointerMove);
+    this.container.addEventListener("pointerdown", this.onPointerDown);
 
-    // Start 60fps render loop
-    this.animate = this.animate.bind(this);
-    this.animId = requestAnimationFrame(this.animate);
+    this.animate();
   }
 
-  // Build the complete 3D Room Furniture & Architecture
+  // Build the Cozy Modern Sunlit Bedroom
   private buildRoom(): THREE.Mesh {
-    // A. 3D Wooden Floor with warm parquet material
-    const floorGeo = new THREE.PlaneGeometry(18, 16);
+    // 1. Natural Hardwood Floor (Golden Oak)
+    const floorGeo = new THREE.PlaneGeometry(16, 14);
     const floorMat = new THREE.MeshStandardMaterial({
-      color: 0xc48247, // Warm rich honey parquet
-      roughness: 0.38,
+      color: 0xdf9b54, // warm golden oak wood
+      roughness: 0.45,
       metalness: 0.1,
     });
     const floor = new THREE.Mesh(floorGeo, floorMat);
     floor.rotation.x = -Math.PI / 2;
-    floor.position.y = 0;
     floor.receiveShadow = true;
     this.scene.add(floor);
 
-    // B. Back Wall with floor-to-ceiling panoramic window
+    // 2. Cozy Pastel Walls
     const wallMat = new THREE.MeshStandardMaterial({
-      color: 0xf5eee6,
+      color: 0xfdfbf7, // warm creamy white
       roughness: 0.9,
     });
 
-    // Left wall section
-    const leftWallGeo = new THREE.BoxGeometry(4, 8, 0.4);
-    const leftWall = new THREE.Mesh(leftWallGeo, wallMat);
-    leftWall.position.set(-6.5, 4, -4);
+    // Back Wall with Grand Window
+    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(16, 8), wallMat);
+    backWall.position.set(0, 4, -4);
+    backWall.receiveShadow = true;
+    this.scene.add(backWall);
+
+    // Left Wall
+    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(14, 8), wallMat);
+    leftWall.position.set(-8, 4, 3);
+    leftWall.rotation.y = Math.PI / 2;
     leftWall.receiveShadow = true;
     this.scene.add(leftWall);
 
-    // Right wall section
-    const rightWallGeo = new THREE.BoxGeometry(4.5, 8, 0.4);
-    const rightWall = new THREE.Mesh(rightWallGeo, wallMat);
-    rightWall.position.set(6.8, 4, -4);
-    rightWall.receiveShadow = true;
-    this.scene.add(rightWall);
+    // 3. Grand Sunlit Bay Window overlooking city skyline
+    const windowFrameGeo = new THREE.BoxGeometry(6.4, 4.4, 0.18);
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x2d3748, roughness: 0.5 });
+    const windowFrame = new THREE.Mesh(windowFrameGeo, frameMat);
+    windowFrame.position.set(0, 4.2, -3.92);
+    this.scene.add(windowFrame);
 
-    // Header above window
-    const windowHeaderGeo = new THREE.BoxGeometry(9.5, 1.8, 0.4);
-    const windowHeader = new THREE.Mesh(windowHeaderGeo, wallMat);
-    windowHeader.position.set(0.2, 7.1, -4);
-    this.scene.add(windowHeader);
-
-    // C. 3D Window Frame & City Skyline Panorama Backdrop
-    const frameMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1e, roughness: 0.4, metalness: 0.7 });
-    const frameGeo = new THREE.BoxGeometry(9.6, 6.2, 0.2);
-    // Outer frame and mullions
-    const mullionV1 = new THREE.Mesh(new THREE.BoxGeometry(0.12, 6.2, 0.25), frameMat);
-    mullionV1.position.set(-1.6, 3.1, -3.9);
-    this.scene.add(mullionV1);
-
-    const mullionV2 = new THREE.Mesh(new THREE.BoxGeometry(0.12, 6.2, 0.25), frameMat);
-    mullionV2.position.set(1.8, 3.1, -3.9);
-    this.scene.add(mullionV2);
-
-    // City Skyline Backdrop plane behind window
-    const skyTextureLoader = new THREE.TextureLoader();
-    const skyGeo = new THREE.PlaneGeometry(22, 14);
+    // Sky Backdrop Plane behind window
     const skyMat = new THREE.MeshBasicMaterial({
-      color: 0xffd8b4, // Warm sunset city skyline glow
+      color: 0xffe8d6, // warm morning golden hour glow
     });
-    // If room_bg is loaded, map it as background
-    skyTextureLoader.load("/assets/panda/room_bg.jpg", (tex) => {
-      skyMat.map = tex;
-      skyMat.color.setHex(0xffffff);
-      skyMat.needsUpdate = true;
-    });
-    const skyPlane = new THREE.Mesh(skyGeo, skyMat);
-    skyPlane.position.set(0, 4.5, -7.5);
+    const skyPlane = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 4.8), skyMat);
+    skyPlane.position.set(0, 4.2, -4.05);
     this.scene.add(skyPlane);
 
-    // D. 3D Modern Sofa (Right Side)
+    // Window Divider Bars
+    const barMat = new THREE.MeshStandardMaterial({ color: 0x1a202c });
+    const vertBar = new THREE.Mesh(new THREE.BoxGeometry(0.08, 4.2, 0.2), barMat);
+    vertBar.position.set(0, 4.2, -3.9);
+    this.scene.add(vertBar);
+
+    const horizBar = new THREE.Mesh(new THREE.BoxGeometry(6.2, 0.08, 0.2), barMat);
+    horizBar.position.set(0, 4.2, -3.9);
+    this.scene.add(horizBar);
+
+    // 4. Cozy Scandinavian Sofa (Right Side)
     const sofaGroup = new THREE.Group();
     sofaGroup.position.set(4.2, 0, -0.8);
-    sofaGroup.rotation.y = -0.15;
+    const sofaMat = new THREE.MeshStandardMaterial({ color: 0xeeece8, roughness: 0.85 });
 
-    const sofaFabricMat = new THREE.MeshStandardMaterial({ color: 0xd9caba, roughness: 0.85 });
-    const cushionBlueMat = new THREE.MeshStandardMaterial({ color: 0x6ba4b8, roughness: 0.8 });
-    const cushionCreamMat = new THREE.MeshStandardMaterial({ color: 0xf5ecd7, roughness: 0.8 });
-
-    // Base seat
-    const sofaBase = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.65, 1.6), sofaFabricMat);
-    sofaBase.position.y = 0.55;
+    // Sofa Base Cushion
+    const sofaBase = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.75, 1.8), sofaMat);
+    sofaBase.position.set(0, 0.38, 0);
     sofaBase.castShadow = true;
     sofaBase.receiveShadow = true;
     sofaGroup.add(sofaBase);
 
-    // Backrest
-    const sofaBack = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.4, 0.45), sofaFabricMat);
-    sofaBack.position.set(0, 1.25, -0.6);
+    // Sofa Backrest
+    const sofaBack = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.3, 0.45), sofaMat);
+    sofaBack.position.set(0, 1.02, -0.68);
     sofaBack.castShadow = true;
     sofaGroup.add(sofaBack);
 
-    // Armrests
-    const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.9, 1.6), sofaFabricMat);
-    leftArm.position.set(-1.7, 0.9, 0);
+    // Sofa Armrests
+    const armGeo = new THREE.BoxGeometry(0.38, 0.95, 1.8);
+    const leftArm = new THREE.Mesh(armGeo, sofaMat);
+    leftArm.position.set(-1.62, 0.58, 0);
     leftArm.castShadow = true;
     sofaGroup.add(leftArm);
 
-    const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.9, 1.6), sofaFabricMat);
-    rightArm.position.set(1.7, 0.9, 0);
+    const rightArm = new THREE.Mesh(armGeo, sofaMat);
+    rightArm.position.set(1.62, 0.58, 0);
     rightArm.castShadow = true;
     sofaGroup.add(rightArm);
 
-    // Cushions
-    const c1 = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.65, 0.25), cushionBlueMat);
-    c1.position.set(-1.1, 1.1, -0.3);
-    c1.rotation.y = 0.2;
-    sofaGroup.add(c1);
+    // Colorful Throw Pillows (Teal & Ochre)
+    const tealPillow = new THREE.Mesh(
+      new THREE.BoxGeometry(0.65, 0.65, 0.22),
+      new THREE.MeshStandardMaterial({ color: 0x38b2ac, roughness: 0.7 })
+    );
+    tealPillow.position.set(-1.1, 0.85, -0.35);
+    tealPillow.rotation.y = 0.25;
+    sofaGroup.add(tealPillow);
 
-    const c2 = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.65, 0.25), cushionCreamMat);
-    c2.position.set(1.1, 1.1, -0.3);
-    c2.rotation.y = -0.2;
-    sofaGroup.add(c2);
+    const ochrePillow = new THREE.Mesh(
+      new THREE.BoxGeometry(0.6, 0.6, 0.22),
+      new THREE.MeshStandardMaterial({ color: 0xdd6b20, roughness: 0.7 })
+    );
+    ochrePillow.position.set(1.1, 0.82, -0.35);
+    ochrePillow.rotation.y = -0.25;
+    sofaGroup.add(ochrePillow);
 
     this.scene.add(sofaGroup);
 
-    // E. 3D Coffee Table & Rug (in front of sofa)
-    const rugGeo = new THREE.PlaneGeometry(4.0, 2.6);
-    const rugMat = new THREE.MeshStandardMaterial({ color: 0xc8b59e, roughness: 0.95 });
-    const rug = new THREE.Mesh(rugGeo, rugMat);
-    rug.rotation.x = -Math.PI / 2;
-    rug.position.set(3.8, 0.01, 1.4);
-    rug.receiveShadow = true;
-    this.scene.add(rug);
-
+    // 5. Wooden Coffee Table with Kitten Milk Saucer
     const tableGroup = new THREE.Group();
     tableGroup.position.set(3.8, 0, 1.4);
-    const woodMat = new THREE.MeshStandardMaterial({ color: 0x935b30, roughness: 0.45 });
+    const woodMat = new THREE.MeshStandardMaterial({ color: 0xba793a, roughness: 0.6 });
 
-    const tableTop = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.1, 1.1), woodMat);
-    tableTop.position.y = 0.6;
+    const tableTop = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.12, 1.3), woodMat);
+    tableTop.position.set(0, 0.65, 0);
     tableTop.castShadow = true;
     tableTop.receiveShadow = true;
     tableGroup.add(tableTop);
 
-    // 4 Table Legs
-    const legGeo = new THREE.CylinderGeometry(0.04, 0.03, 0.6, 12);
+    // Table Legs
+    const legGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.65, 12);
     [
-      [-0.95, 0.3, -0.45],
-      [0.95, 0.3, -0.45],
-      [-0.95, 0.3, 0.45],
-      [0.95, 0.3, 0.45],
+      [-1.05, 0.32, -0.5],
+      [1.05, 0.32, -0.5],
+      [-1.05, 0.32, 0.5],
+      [1.05, 0.32, 0.5],
     ].forEach(([x, y, z]) => {
       const leg = new THREE.Mesh(legGeo, woodMat);
       leg.position.set(x, y, z);
@@ -307,33 +308,60 @@ export class Room3DScene {
       tableGroup.add(leg);
     });
 
-    // Panda Ceramic Mug on table
-    const mugGeo = new THREE.CylinderGeometry(0.1, 0.08, 0.18, 16);
-    const mugMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
-    const mug = new THREE.Mesh(mugGeo, mugMat);
-    mug.position.set(-0.4, 0.74, 0.1);
-    mug.castShadow = true;
-    tableGroup.add(mug);
+    // Milk Cup on table
+    const cup = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.14, 0.11, 0.28, 16),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 })
+    );
+    cup.position.set(-0.35, 0.82, 0.1);
+    tableGroup.add(cup);
+
     this.scene.add(tableGroup);
 
-    // F. 3D Cozy Knit Beanbag (Center-Left)
-    const beanbagGroup = new THREE.Group();
-    beanbagGroup.position.set(-1.8, 0, -1.8);
-    const beanbagMat = new THREE.MeshStandardMaterial({ color: 0xeadecd, roughness: 0.9 });
-    const beanbagMesh = new THREE.Mesh(new THREE.SphereGeometry(0.85, 24, 18), beanbagMat);
-    beanbagMesh.scale.set(1.25, 0.85, 1.25);
-    beanbagMesh.position.y = 0.6;
-    beanbagMesh.castShadow = true;
-    beanbagMesh.receiveShadow = true;
-    beanbagGroup.add(beanbagMesh);
-    this.scene.add(beanbagGroup);
+    // 6. Cute Beanbag Cushion (Left Side)
+    const beanbagGeo = new THREE.SphereGeometry(1.25, 24, 18);
+    beanbagGeo.scale(1.2, 0.65, 1.2);
+    const beanbagMat = new THREE.MeshStandardMaterial({ color: 0xffb5a7, roughness: 0.9 });
+    const beanbag = new THREE.Mesh(beanbagGeo, beanbagMat);
+    beanbag.position.set(-1.8, 0.38, -1.8);
+    beanbag.castShadow = true;
+    beanbag.receiveShadow = true;
+    this.scene.add(beanbag);
 
-    // G. 3D Study Desk (Left Side)
+    // 7. Potted Monstera / Fiddle Leaf Plant near window
+    const plantGroup = new THREE.Group();
+    plantGroup.position.set(0.6, 0, -3.2);
+
+    const pot = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.42, 0.3, 0.85, 18),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 })
+    );
+    pot.position.y = 0.42;
+    pot.castShadow = true;
+    plantGroup.add(pot);
+
+    const leafMat = new THREE.MeshStandardMaterial({ color: 0x276749, roughness: 0.45, side: THREE.DoubleSide });
+    for (let i = 0; i < 6; i++) {
+      const angle = (i / 6) * Math.PI * 2;
+      const leafStem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 1.4, 8), leafMat);
+      leafStem.position.set(Math.cos(angle) * 0.15, 0.9, Math.sin(angle) * 0.15);
+      leafStem.rotation.z = Math.cos(angle) * 0.5;
+      leafStem.rotation.x = Math.sin(angle) * 0.5;
+
+      const leafBlade = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.85, 5), leafMat);
+      leafBlade.position.set(0, 0.7, 0);
+      leafBlade.rotation.y = angle;
+      leafStem.add(leafBlade);
+      plantGroup.add(leafStem);
+    }
+    this.scene.add(plantGroup);
+
+    // 8. Minimalist Study Desk with Mini Laptop (Left Corner)
     const deskGroup = new THREE.Group();
     deskGroup.position.set(-4.6, 0, -1.2);
 
-    const deskTop = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.12, 1.4), woodMat);
-    deskTop.position.y = 1.6;
+    const deskTop = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.1, 1.4), woodMat);
+    deskTop.position.set(0, 1.6, 0);
     deskTop.castShadow = true;
     deskTop.receiveShadow = true;
     deskGroup.add(deskTop);
@@ -411,21 +439,21 @@ export class Room3DScene {
     this.raycaster.setFromCamera(this.mouseVec, this.camera);
 
     // 1. Raycast onto Floor Plane for 3D navigation
-    if (this.isFollowingCursor && this.panda.animState !== "sleep" && this.panda.animState !== "sit") {
+    if (this.isFollowingCursor && this.cat.animState !== "sleep" && this.cat.animState !== "sit") {
       const hits = this.raycaster.intersectObject(this.floorPlane);
       if (hits.length > 0) {
         const point = hits[0].point;
         // Clamp to walkable boundaries
         const clampedX = Math.max(this.bounds.minX, Math.min(this.bounds.maxX, point.x));
         const clampedZ = Math.max(this.bounds.minZ, Math.min(this.bounds.maxZ, point.z));
-        this.panda.targetPos.set(clampedX, 0, clampedZ);
+        this.cat.targetPos.set(clampedX, 0, clampedZ);
       }
     }
 
-    // 2. Head Tracking towards 3D cursor ray
+    // 2. Head & Eye Tracking towards 3D cursor ray
     const rayPoint = new THREE.Vector3();
     this.raycaster.ray.at(5.5, rayPoint);
-    this.panda.lookAtTarget(rayPoint);
+    this.cat.lookAtTarget(rayPoint);
   }
 
   // Pointer Down (Tap/Click to Walk or Poke Body Parts like Talking Tom!)
@@ -436,12 +464,12 @@ export class Room3DScene {
 
     this.raycaster.setFromCamera(this.mouseVec, this.camera);
 
-    // Check if clicked directly on Panda body meshes
-    const pandaHits = this.raycaster.intersectObjects(this.panda.group.children, true);
-    if (pandaHits.length > 0) {
+    // Check if clicked directly on Cat body meshes
+    const catHits = this.raycaster.intersectObjects(this.cat.group.children, true);
+    if (catHits.length > 0) {
       let partHit = "body";
-      let cur: any = pandaHits[0].object;
-      while (cur && cur !== this.panda.group) {
+      let cur: any = catHits[0].object;
+      while (cur && cur !== this.cat.group) {
         if (cur.userData && cur.userData.part) {
           partHit = cur.userData.part;
           break;
@@ -449,8 +477,8 @@ export class Room3DScene {
         cur = cur.parent;
       }
 
-      if (this.onPandaPoke) {
-        this.onPandaPoke(partHit);
+      if (this.onCatPoke) {
+        this.onCatPoke(partHit);
         return;
       }
     }
@@ -461,9 +489,9 @@ export class Room3DScene {
       const point = hits[0].point;
       const clampedX = Math.max(this.bounds.minX, Math.min(this.bounds.maxX, point.x));
       const clampedZ = Math.max(this.bounds.minZ, Math.min(this.bounds.maxZ, point.z));
-      this.panda.targetPos.set(clampedX, 0, clampedZ);
-      if (this.panda.animState !== "walk" && this.panda.animState !== "dance") {
-        this.panda.animState = "walk";
+      this.cat.targetPos.set(clampedX, 0, clampedZ);
+      if (this.cat.animState !== "walk" && this.cat.animState !== "dance") {
+        this.cat.animState = "walk";
       }
     }
   }
@@ -477,14 +505,14 @@ export class Room3DScene {
     this.renderer.setSize(width, height);
   }
 
-  // Main 60fps Animation Loop
+  // Main 60fps Animation Loop with 3D Collision Detection
   private animate() {
     const delta = this.clock.getDelta();
 
-    // 1. Move Panda smoothly in 3D towards targetPos
-    if (this.panda.animState === "walk") {
-      const cur = this.panda.group.position;
-      const target = this.panda.targetPos;
+    // 1. Move Cat smoothly in 3D towards targetPos
+    if (this.cat.animState === "walk") {
+      const cur = this.cat.group.position;
+      const target = this.cat.targetPos;
 
       const dx = target.x - cur.x;
       const dz = target.z - cur.z;
@@ -493,18 +521,18 @@ export class Room3DScene {
       if (dist > 0.15) {
         // Rotate smoothly towards walking direction
         const angle = Math.atan2(dx, dz);
-        let diff = angle - this.panda.group.rotation.y;
+        let diff = angle - this.cat.group.rotation.y;
         while (diff < -Math.PI) diff += Math.PI * 2;
         while (diff > Math.PI) diff -= Math.PI * 2;
-        this.panda.group.rotation.y += diff * 0.12;
+        this.cat.group.rotation.y += diff * 0.12;
 
         // Proposed next step in 3D
-        const step = Math.min(dist, delta * this.panda.walkSpeed * 0.95);
+        const step = Math.min(dist, delta * this.cat.walkSpeed * 0.95);
         const nextX = cur.x + (dx / dist) * step;
         const nextZ = cur.z + (dz / dist) * step;
 
-        // Collision Check against all obstacles (Panda radius = 0.7)
-        const pandaRadius = 0.7;
+        // Collision Check against all obstacles (Cat radius = 0.62)
+        const catRadius = 0.62;
         let hitObstacle: Obstacle3D | null = null;
         let pushX = 0;
         let pushZ = 0;
@@ -531,7 +559,7 @@ export class Room3DScene {
               const ox = nextX - obs.centerX;
               const oz = nextZ - obs.centerZ;
               const d = Math.sqrt(ox * ox + oz * oz);
-              if (d < obs.radius + pandaRadius) {
+              if (d < obs.radius + catRadius) {
                 hitObstacle = obs;
                 pushX = (ox / d) * 0.45;
                 pushZ = (oz / d) * 0.45;
@@ -539,16 +567,16 @@ export class Room3DScene {
               }
             } else {
               if (
-                nextX >= obs.minX - pandaRadius &&
-                nextX <= obs.maxX + pandaRadius &&
-                nextZ >= obs.minZ - pandaRadius &&
-                nextZ <= obs.maxZ + pandaRadius
+                nextX >= obs.minX - catRadius &&
+                nextX <= obs.maxX + catRadius &&
+                nextZ >= obs.minZ - catRadius &&
+                nextZ <= obs.maxZ + catRadius
               ) {
                 hitObstacle = obs;
-                const dLeft = Math.abs(nextX - (obs.minX - pandaRadius));
-                const dRight = Math.abs(nextX - (obs.maxX + pandaRadius));
-                const dTop = Math.abs(nextZ - (obs.minZ - pandaRadius));
-                const dBottom = Math.abs(nextZ - (obs.maxZ + pandaRadius));
+                const dLeft = Math.abs(nextX - (obs.minX - catRadius));
+                const dRight = Math.abs(nextX - (obs.maxX + catRadius));
+                const dTop = Math.abs(nextZ - (obs.minZ - catRadius));
+                const dBottom = Math.abs(nextZ - (obs.maxZ + catRadius));
                 const minD = Math.min(dLeft, dRight, dTop, dBottom);
                 if (minD === dLeft) pushX = -0.45;
                 else if (minD === dRight) pushX = 0.45;
@@ -565,15 +593,15 @@ export class Room3DScene {
           cur.x += pushX;
           cur.z += pushZ;
           target.copy(cur);
-          this.panda.animState = "bump";
+          this.cat.animState = "bump";
 
-          if (this.onPandaBump) {
-            this.onPandaBump(hitObstacle.name);
+          if (this.onCatBump) {
+            this.onCatBump(hitObstacle.name);
           }
 
           setTimeout(() => {
-            if (this.panda.animState === "bump") {
-              this.panda.animState = "idle";
+            if (this.cat.animState === "bump") {
+              this.cat.animState = "idle";
             }
           }, 850);
         } else {
@@ -583,12 +611,12 @@ export class Room3DScene {
         }
       } else {
         // Arrived at target, switch to idle breathing
-        this.panda.animState = "idle";
+        this.cat.animState = "idle";
       }
     }
 
-    // 2. Update Panda's 3D internal animations (walk, dance, sit, sleep, etc.)
-    this.panda.update(delta);
+    // 2. Update Cat's 3D internal animations (walk, dance, sit, sleep, purr, etc.)
+    this.cat.update(delta);
 
     // 3. Gentle dust particle drift
     if (this.dustPoints) {

@@ -68,9 +68,10 @@ interface AppState {
   toastMessage: string | null;
   showToast: (msg: string) => void;
 
-  // View mode: Story Landing vs Android Desktop
-  viewMode: "story" | "desktop";
-  setViewMode: (mode: "story" | "desktop") => void;
+  // View mode: 3D Talking Panda vs Story Landing vs Android Desktop
+  viewMode: "panda" | "story" | "desktop";
+  setViewMode: (mode: "panda" | "story" | "desktop") => void;
+  enterPanda: () => void;
   enterDesktop: (fullscreen?: boolean) => void;
   enterStory: () => void;
 
@@ -229,8 +230,11 @@ export const useStore = create<AppState>((set, get) => ({
   secretUnlocked: false,
   unlockSecret: () => set({ secretUnlocked: true }),
 
-  viewMode: "story",
+  viewMode: "panda",
   setViewMode: (viewMode) => set({ viewMode }),
+  enterPanda: () => {
+    set({ viewMode: "panda" });
+  },
   enterDesktop: (fullscreen = true) => {
     if (fullscreen && typeof document !== "undefined") {
       try {

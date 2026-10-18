@@ -18,6 +18,7 @@ import {
 
 export const StoryLanding: React.FC = () => {
   const enterDesktop = useStore((s) => s.enterDesktop);
+  const enterPanda = useStore((s) => s.enterPanda);
   const muted = useStore((s) => s.muted);
   const toggleMute = useStore((s) => s.toggleMute);
   const [isPlayingLullaby, setIsPlayingLullaby] = useState(false);
@@ -137,6 +138,20 @@ export const StoryLanding: React.FC = () => {
             title={muted ? "Unmute sounds" : "Mute sounds"}
           >
             {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+          </button>
+
+          {/* Open 3D AI Panda Room Button */}
+          <button
+            type="button"
+            onClick={() => {
+              audio.click();
+              enterPanda();
+            }}
+            className="px-3.5 py-1.5 rounded-full text-xs font-semibold font-sans bg-gradient-to-r from-[#6366f1] to-[#a855f7] text-white shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer border border-white/20"
+            title="Open 3D AI Talking Panda Room"
+          >
+            <span>🐼</span>
+            <span className="hidden sm:inline">AI Panda Room</span>
           </button>
 
           {/* Dive Into Fourie's World Button */}

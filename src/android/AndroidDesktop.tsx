@@ -52,8 +52,15 @@ export const AndroidDesktop: React.FC = () => {
   const sendMood = useStore((s) => s.sendMood);
   const showToast = useStore((s) => s.showToast);
   const enterStory = useStore((s) => s.enterStory);
+  const enterPanda = useStore((s) => s.enterPanda);
 
   const desktopApps: DesktopAppIcon[] = [
+    {
+      id: "panda" as any,
+      label: "AI Panda",
+      icon: <span className="text-2xl">🐼</span>,
+      bg: "bg-gradient-to-tr from-[#6366f1] via-[#818cf8] to-[#a855f7]",
+    },
     {
       id: "story",
       label: "Story Mode",
@@ -116,10 +123,15 @@ export const AndroidDesktop: React.FC = () => {
     },
   ];
 
-  const handleAppLaunch = (id: WindowId | "story") => {
+  const handleAppLaunch = (id: WindowId | "story" | "panda") => {
     if (id === "story") {
       audio.click();
       enterStory();
+      return;
+    }
+    if (id === "panda") {
+      audio.click();
+      enterPanda();
       return;
     }
     audio.click();

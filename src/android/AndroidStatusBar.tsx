@@ -9,6 +9,7 @@ export const AndroidStatusBar: React.FC = () => {
   const quickSettingsOpen = useStore((s) => s.quickSettingsOpen);
   const toggleQuickSettings = useStore((s) => s.toggleQuickSettings);
   const enterStory = useStore((s) => s.enterStory);
+  const enterPanda = useStore((s) => s.enterPanda);
 
   useEffect(() => {
     const updateTime = () => {
@@ -63,6 +64,19 @@ export const AndroidStatusBar: React.FC = () => {
         >
           <BookOpen className="w-3 h-3 text-[#ff85b8]" />
           <span>Story Landing</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            audio.click();
+            enterPanda();
+          }}
+          className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#6366f1]/25 border border-indigo-400/40 text-indigo-300 hover:bg-[#6366f1]/40 text-[11px] font-mono transition-colors cursor-pointer"
+          title="Open 3D AI Panda Room"
+        >
+          <span>🐼</span>
+          <span>Panda Room</span>
         </button>
 
         <div className="hidden md:flex items-center gap-2 px-3 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[11px] font-mono text-[#d8b4c8]">

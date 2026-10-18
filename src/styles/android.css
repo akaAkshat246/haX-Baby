@@ -1,0 +1,173 @@
+/* Android 15 & Material 3 Desktop OS Styling */
+
+:root {
+  --m3-surface: #0b0e14;
+  --m3-surface-container: #121620;
+  --m3-surface-container-high: #191f2c;
+  --m3-surface-container-highest: #22293a;
+  --m3-primary: #00ff66;
+  --m3-primary-container: rgba(0, 255, 102, 0.15);
+  --m3-on-primary: #003919;
+  --m3-secondary-cyan: #00e5ff;
+  --m3-secondary-amber: #ffb703;
+  --m3-secondary-purple: #b266ff;
+  --m3-secondary-pink: #ff3366;
+  --m3-outline: rgba(255, 255, 255, 0.12);
+  --m3-outline-variant: rgba(255, 255, 255, 0.06);
+  --m3-font: "Space Grotesk", "Inter", -apple-system, sans-serif;
+}
+
+/* Material Squircle App Icon */
+.android-squircle {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease;
+  user-select: none;
+}
+
+.android-squircle:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+.android-squircle:active {
+  transform: scale(0.92);
+}
+
+/* Android Freeform Desktop Window */
+.android-window {
+  position: fixed;
+  background: var(--m3-surface-container, #121620);
+  border: 1px solid var(--m3-outline, rgba(255, 255, 255, 0.12));
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  backdrop-filter: blur(28px);
+  transition: box-shadow 0.2s ease;
+}
+
+.android-window.maximized {
+  top: 36px !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: calc(100vh - 36px - 64px) !important;
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+  transform: none !important;
+}
+
+.android-window-header {
+  height: 48px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--m3-surface-container-high, #191f2c);
+  border-bottom: 1px solid var(--m3-outline, rgba(255, 255, 255, 0.08));
+  user-select: none;
+  cursor: grab;
+  touch-action: none;
+}
+
+.android-window-header:active {
+  cursor: grabbing;
+}
+
+.android-window-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--m3-surface, #0b0e14);
+}
+
+/* Material You Pill Quick Settings Tile */
+.m3-qs-tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f4f4f6;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.m3-qs-tile.active {
+  background: var(--m3-primary, #00ff66);
+  color: #003919;
+  border-color: var(--m3-primary, #00ff66);
+  box-shadow: 0 4px 18px rgba(0, 255, 102, 0.3);
+}
+
+.m3-qs-tile.active .tile-sub {
+  color: #003919;
+  opacity: 0.8;
+}
+
+/* Android Toast */
+.android-toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 10px 24px;
+  border-radius: 9999px;
+  background: #2a3142;
+  color: #ffffff;
+  font-family: var(--m3-font);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: toastPop 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes toastPop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* Android Navigation Pill Button */
+.android-nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9da3b4;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.android-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.android-nav-btn:active {
+  transform: scale(0.88);
+}

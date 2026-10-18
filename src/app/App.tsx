@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { AndroidDesktop } from "../android/AndroidDesktop";
 import { StoryLanding } from "../story/StoryLanding";
-import { PandaRoomStudio } from "../panda/PandaRoomStudio";
+import { TalkingPandaApp } from "../panda3d/TalkingPandaApp";
 import { initChaosObserver } from "../core/shape";
 import { useStore } from "../core/store";
 import { audio } from "../core/audio";
@@ -66,7 +66,7 @@ export const App: React.FC = () => {
   }, [openWindow, unlockSecret, showToast]);
 
   if (viewMode === "panda") {
-    return <PandaRoomStudio />;
+    return <TalkingPandaApp />;
   }
   if (viewMode === "story") {
     return <StoryLanding />;

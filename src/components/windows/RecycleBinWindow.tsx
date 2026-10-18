@@ -17,12 +17,11 @@ export const RecycleBinWindow: React.FC = () => {
       name: "lost-lullaby.mid",
       size: "4.2 KB",
       date: "10/17/1999",
-      icon: <FileMusic className="w-5 h-5 text-glitch-magenta" />,
+      icon: <FileMusic className="w-4 h-4 text-[#00ff66]" />,
       action: async () => {
         setPlayingSecret(true);
         await audio.unlock();
 
-        // Authentic secret pentatonic sequence from Section 4.6 of Addendum
         const SECRET_MELODY = [
           392, 440, 523.25, 440, 392, 329.63, 392, 0, 293.66, 329.63, 392, 329.63, 293.66, 261.63,
         ];
@@ -50,7 +49,7 @@ export const RecycleBinWindow: React.FC = () => {
       name: "dancing_baby_under_construction.gif",
       size: "24.8 KB",
       date: "04/02/1998",
-      icon: <Image className="w-5 h-5 text-glitch-amber" />,
+      icon: <Image className="w-4 h-4 text-[#ffb703]" />,
       action: () => {
         audio.squeak();
       },
@@ -60,7 +59,7 @@ export const RecycleBinWindow: React.FC = () => {
       name: "away_message_deep_thoughts.txt",
       size: "1.1 KB",
       date: "08/14/2002",
-      icon: <FileText className="w-5 h-5 text-glitch-cyan" />,
+      icon: <FileText className="w-4 h-4 text-[#00e5ff]" />,
       action: () => {
         audio.click();
       },
@@ -70,7 +69,7 @@ export const RecycleBinWindow: React.FC = () => {
       name: "secret_backroom_portal.key",
       size: "512 B",
       date: "TODAY",
-      icon: <Key className="w-5 h-5 text-glitch-green animate-pulse" />,
+      icon: <Key className="w-4 h-4 text-[#00ff66] animate-pulse" />,
       action: () => {
         audio.glitch();
         openWindow("nowhere");
@@ -79,58 +78,58 @@ export const RecycleBinWindow: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-4 font-display">
-      <div className="bg-win-header text-white p-2 text-xs font-pixel flex items-center justify-between">
-        <span className="flex items-center gap-1.5">
+    <div className="space-y-4 font-sans text-sm">
+      <div className="bg-[#0e1117] border border-white/10 p-3 rounded-xl text-xs font-mono flex items-center justify-between text-[#9da3b4]">
+        <span className="flex items-center gap-2 text-white">
           <Trash2 className="w-4 h-4 text-red-400" />
-          <span>RECYCLE BIN // DISCARDED BYTES</span>
+          <span>RECYCLE BASKET // DISCARDED BYTES</span>
         </span>
-        <span>4 ITEMS</span>
+        <span className="text-[#00ff66]">4 ITEMS</span>
       </div>
 
-      <p className="text-xs text-gray-700 leading-relaxed">
-        Everything deleted from the surface web ends up here. Fourie sifted through the trash and labeled these relics:
+      <p className="text-xs text-[#9da3b4] leading-relaxed">
+        Everything deleted from the surface web ends up here. Fourie sifted through the basket and cataloged these relics:
       </p>
 
       {playingSecret && (
-        <div className="p-2.5 bg-void-900 border-2 border-glitch-cyan rounded text-glitch-cyan text-xs font-pixel flex items-center gap-2 animate-pulse">
-          <Sparkles className="w-4 h-4 text-glitch-amber animate-spin" />
-          <span>PLAYING LOST LULLABY... DIMMING LIGHTS FOR FOURIE</span>
+        <div className="p-3 bg-[#090b10] border border-[#00ff66] rounded-xl text-[#00ff66] text-xs font-mono flex items-center gap-2 animate-pulse">
+          <Sparkles className="w-4 h-4 text-[#00ff66] animate-spin" />
+          <span>PLAYING FORGOTTEN LULLABY... DIMMING LIGHTS FOR BABY FOURIE</span>
         </div>
       )}
 
-      {/* Retro File List Table */}
-      <div className="bg-white border-2 border-gray-400 rounded overflow-hidden">
+      {/* Dark Table */}
+      <div className="bg-[#0e1117] border border-white/10 rounded-xl overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="bg-gray-200 border-b border-gray-400 font-pixel text-[9px] text-gray-700 select-none">
+          <thead className="bg-[#141822] border-b border-white/10 font-mono text-[10px] text-[#555c6d] uppercase select-none">
             <tr>
-              <th className="p-2">Name</th>
-              <th className="p-2">Size</th>
-              <th className="p-2">Origin Date</th>
+              <th className="p-3">Name</th>
+              <th className="p-3">Size</th>
+              <th className="p-3">Origin Date</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-white/5">
             {binItems.map((item) => (
               <tr
                 key={item.id}
                 onClick={item.action}
-                className="hover:bg-blue-100 cursor-pointer select-none transition-colors"
-                title="Double click or tap to inspect"
+                className="hover:bg-white/[0.04] cursor-pointer select-none transition-colors"
+                title="Click to inspect or play"
               >
-                <td className="p-2 flex items-center gap-2 font-medium text-ink">
+                <td className="p-3 flex items-center gap-2.5 font-medium text-white">
                   {item.icon}
-                  <span>{item.name}</span>
+                  <span className="font-mono text-xs">{item.name}</span>
                 </td>
-                <td className="p-2 text-gray-500 font-mono text-[11px]">{item.size}</td>
-                <td className="p-2 text-gray-500 font-mono text-[11px]">{item.date}</td>
+                <td className="p-3 text-[#555c6d] font-mono text-[11px]">{item.size}</td>
+                <td className="p-3 text-[#555c6d] font-mono text-[11px]">{item.date}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div className="text-[11px] font-pixel text-gray-600 bg-gray-100 p-2 border border-gray-300">
-        💡 Hint: Tap <span className="text-win-header underline font-bold">lost-lullaby.mid</span> to hear the forgotten song or <span className="text-win-header underline font-bold">secret_backroom_portal.key</span> to access the 404 Backroom!
+      <div className="text-xs font-mono text-[#555c6d] bg-white/[0.02] p-3 rounded-xl border border-white/10">
+        💡 Hint: Tap <span className="text-[#00ff66] underline">lost-lullaby.mid</span> to hear the forgotten song or <span className="text-[#00ff66] underline">secret_backroom_portal.key</span> to access the 404 Backroom!
       </div>
     </div>
   );

@@ -77,7 +77,6 @@ export const LullabyLabWindow: React.FC = () => {
       if (!isPlayingRef.current) return;
 
       while (nextTime < audio.now + 0.12) {
-        // Play note for active row in this step
         SCALE.forEach((scaleItem, rowIndex) => {
           if (gridRef.current[rowIndex]?.[step]) {
             audio.note(scaleItem.freq, Math.max(0, nextTime - audio.now), 0.9, "sine", 0.3);
@@ -85,7 +84,7 @@ export const LullabyLabWindow: React.FC = () => {
         });
 
         setCurrentStep(step);
-        nextTime += 60 / bpmRef.current / 2; // eighth notes
+        nextTime += 60 / bpmRef.current / 2;
         step = (step + 1) % STEPS;
       }
     }, 25);
@@ -118,31 +117,31 @@ export const LullabyLabWindow: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-sans text-sm">
       {/* Sequencer Header & Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-winborder retro-bevel">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 p-3 bg-[#0e1117] rounded-xl border border-white/10">
         <div className="flex items-center gap-2">
           {isPlaying ? (
             <button
               type="button"
               onClick={stopPlayback}
-              className="px-3 py-1.5 bg-red-600 text-white font-pixel text-xs retro-bevel active:retro-bevel-inset flex items-center gap-1.5"
+              className="px-3.5 py-1.5 bg-[#ff3366] text-white font-mono text-xs rounded-full flex items-center gap-1.5 font-medium hover:bg-[#ff4d79] transition-colors"
             >
-              <Square className="w-3.5 h-3.5" />
+              <Square className="w-3.5 h-3.5 fill-white" />
               <span>Stop</span>
             </button>
           ) : (
             <button
               type="button"
               onClick={startPlayback}
-              className="px-3 py-1.5 bg-green-700 text-white font-pixel text-xs retro-bevel active:retro-bevel-inset flex items-center gap-1.5"
+              className="px-3.5 py-1.5 bg-[#00ff66] text-black font-mono text-xs rounded-full flex items-center gap-1.5 font-medium hover:bg-[#00f59b] transition-colors"
             >
-              <Play className="w-3.5 h-3.5" />
+              <Play className="w-3.5 h-3.5 fill-black" />
               <span>Play Lullaby</span>
             </button>
           )}
 
-          <div className="flex items-center gap-1.5 ml-2 font-pixel text-[10px] text-ink">
+          <div className="flex items-center gap-1.5 ml-2 font-mono text-xs text-[#9da3b4]">
             <span>BPM:</span>
             <input
               type="range"
@@ -150,25 +149,25 @@ export const LullabyLabWindow: React.FC = () => {
               max="130"
               value={bpm}
               onChange={(e) => setBpm(Number(e.target.value))}
-              className="w-20 cursor-pointer"
+              className="w-18 cursor-pointer accent-[#00ff66]"
             />
-            <span className="w-6 text-right">{bpm}</span>
+            <span className="w-6 text-right text-white">{bpm}</span>
           </div>
         </div>
 
         {/* Preset buttons */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={() => loadPreset("dialup")}
-            className="px-2 py-1 text-[9px] font-pixel bg-white text-ink border border-gray-400 active:bg-gray-200"
+            className="px-2.5 py-1 text-[11px] font-mono bg-white/[0.04] text-[#9da3b4] border border-white/10 rounded-full hover:text-white hover:border-white/25 transition-colors"
           >
-            Modem 56k
+            56k Modem
           </button>
           <button
             type="button"
             onClick={() => loadPreset("sleepy")}
-            className="px-2 py-1 text-[9px] font-pixel bg-white text-ink border border-gray-400 active:bg-gray-200"
+            className="px-2.5 py-1 text-[11px] font-mono bg-white/[0.04] text-[#9da3b4] border border-white/10 rounded-full hover:text-white hover:border-white/25 transition-colors"
           >
             Sleepy Void
           </button>
@@ -176,7 +175,7 @@ export const LullabyLabWindow: React.FC = () => {
             type="button"
             onClick={clearGrid}
             title="Clear All"
-            className="p-1 bg-white text-ink border border-gray-400 active:bg-gray-200"
+            className="p-1.5 bg-white/[0.04] text-[#9da3b4] border border-white/10 rounded-full hover:text-white hover:border-white/25 transition-colors"
           >
             <RotateCcw className="w-3 h-3" />
           </button>
@@ -184,19 +183,19 @@ export const LullabyLabWindow: React.FC = () => {
       </div>
 
       {muted && (
-        <div className="p-1.5 bg-amber-100 text-amber-900 border border-amber-300 rounded text-xs flex items-center gap-2">
-          <Volume2 className="w-4 h-4 text-amber-600" />
+        <div className="p-2 bg-[#ffb703]/10 text-[#ffb703] border border-[#ffb703]/30 rounded-xl text-xs flex items-center gap-2 font-mono">
+          <Volume2 className="w-4 h-4 flex-shrink-0" />
           <span>Note: Sound is currently muted! Unmute at the top-right button to listen.</span>
         </div>
       )}
 
       {/* 16-Step Pentatonic Grid */}
-      <div className="p-2 bg-void-900 rounded retro-bevel-inset overflow-x-auto">
-        <div className="min-w-[340px] space-y-1">
+      <div className="p-3 bg-[#090b10] rounded-xl border border-white/10 overflow-x-auto">
+        <div className="min-w-[340px] space-y-1.5">
           {SCALE.map((scaleItem, rowIdx) => (
-            <div key={scaleItem.note} className="flex items-center gap-1">
+            <div key={scaleItem.note} className="flex items-center gap-1.5">
               {/* Pitch Note Label */}
-              <span className="w-7 text-[9px] font-pixel text-glitch-cyan select-none text-right pr-1">
+              <span className="w-7 text-[10px] font-mono text-[#00ff66] select-none text-right pr-1">
                 {scaleItem.note}
               </span>
 
@@ -215,11 +214,11 @@ export const LullabyLabWindow: React.FC = () => {
                       className={`h-5 rounded-sm transition-all border ${
                         active
                           ? isCurrent
-                            ? "bg-white border-glitch-cyan shadow-[0_0_8px_#00f0ff]"
-                            : "bg-glitch-cyan border-white"
+                            ? "bg-white border-[#00ff66] shadow-[0_0_8px_#00ff66]"
+                            : "bg-[#00ff66] border-[#00ff66]"
                           : isCurrent
-                          ? "bg-void-600 border-glitch-cyan"
-                          : "bg-void-800 border-void-700 hover:border-gray-500"
+                          ? "bg-white/20 border-white/40"
+                          : "bg-white/[0.02] border-white/10 hover:border-white/30"
                       }`}
                     />
                   );
@@ -231,8 +230,8 @@ export const LullabyLabWindow: React.FC = () => {
       </div>
 
       {/* Microcopy in Fourie's voice */}
-      <div className="flex items-center gap-2 text-xs text-gray-700 italic font-display">
-        <Sparkles className="w-4 h-4 text-glitch-amber flex-shrink-0" />
+      <div className="flex items-center gap-2 text-xs text-[#9da3b4] italic">
+        <Sparkles className="w-4 h-4 text-[#00ff66] flex-shrink-0" />
         <span>"Every modem handshake is just two computers singing a goodnight lullaby." — Fourie</span>
       </div>
     </div>

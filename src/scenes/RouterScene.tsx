@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { findShortestPath, NetworkGraph, NetworkNode } from "../ds/dijkstra";
 import { audio } from "../core/audio";
 import { bus } from "../core/bus";
-import { CheckCircle2, Moon, Sparkles } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 const NODES: Record<string, NetworkNode> = {
   dns: {
@@ -52,7 +52,7 @@ const NODES: Record<string, NetworkNode> = {
   },
   sanctuary: {
     id: "sanctuary",
-    name: "Fourie's Cozy Crib",
+    name: "Fourie's Sanctuary",
     era: "Present",
     x: 480,
     y: 120,
@@ -99,17 +99,16 @@ export const RouterScene: React.FC = () => {
     setPathLatency(distance);
 
     await audio.unlock();
-    // Play sweet music-box notes for each hop
     path.forEach((_, idx) => {
       setTimeout(() => {
         audio.note(523.25 + idx * 65, 0, 0.4, "sine", 0.25);
-      }, idx * 260);
+      }, idx * 220);
     });
 
     setTimeout(() => {
       audio.squeak();
       bus.emit("poke", { x: window.innerWidth / 2, y: window.innerHeight / 2 });
-    }, path.length * 260);
+    }, path.length * 220);
   };
 
   const isEdgeInPath = (from: string, to: string) => {
@@ -120,27 +119,33 @@ export const RouterScene: React.FC = () => {
   return (
     <section
       id="scene-router"
-      className="relative min-h-[90dvh] w-full flex flex-col items-center justify-center p-6 text-center select-none bg-gradient-to-b from-[#13102a] via-[#1b153d] to-[#120f28]"
+      className="relative min-h-[90dvh] w-full flex flex-col items-center justify-center p-6 text-center select-none bg-[#040404]"
     >
-      <div className="max-w-3xl space-y-4 z-10 w-full">
-        <div className="inline-block px-3.5 py-1 bg-[#231d4e] border border-[#a89bf0]/50 text-[#ffd97a] font-pixel text-xs rounded-full uppercase">
-          Artifact 3 // The Starry Delivery Map (Dijkstra Algo)
+      <div className="max-w-3xl space-y-4 z-10 w-full px-4">
+        {/* Editorial Section Index */}
+        <div className="editorial-index justify-center">
+          <span>06</span>
+          <span>/</span>
+          <span>Dijkstra Shortest Path · Packet Routing Graph</span>
         </div>
 
-        <h2 className="text-2xl sm:text-4xl font-pixel text-[#ffffff] tracking-wide drop-shadow">
-          DELIVER THE LOST MEMORY
+        <h2 className="text-3xl sm:text-5xl font-sans font-bold text-white tracking-tight">
+          Deliver the <span className="headline-serif">lost memory.</span>
         </h2>
 
-        <p className="font-display text-sm text-[#c8bffd] max-w-lg mx-auto leading-relaxed">
-          When an old web realm goes to sleep, its sweet memories float adrift. Tap any star below, and Fourie will find the shortest path across the night sky to tuck it into bed!
+        <p className="font-sans text-sm text-[#9da3b4] max-w-lg mx-auto leading-relaxed">
+          When an old web realm goes to sleep, its memories float adrift. Tap any star below, and Fourie will find the optimal path across the network using Dijkstra's algorithm.
         </p>
 
-        {/* Soothing Network SVG Map */}
-        <div className="w-full bg-[#151132] border-3 border-[#7c6fd6] rounded-2xl p-4 relative overflow-hidden shadow-2xl">
-          <div className="flex items-center justify-between text-[10px] font-pixel text-[#c8bffd] mb-3 border-b border-[#2d2558] pb-2.5">
-            <span>STARTING REALM: {NODES[selectedOrigin]?.name}</span>
-            <span className="text-[#ffd97a]">
-              PATH TIME: {pathLatency}ms ({activePath.length - 1} HOPS)
+        {/* Network Map Card */}
+        <div className="w-full bg-[#090b10] border border-white/10 rounded-2xl p-5 relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.85)]">
+          <div className="flex items-center justify-between text-xs font-mono text-[#9da3b4] mb-3 border-b border-white/10 pb-3">
+            <span className="flex items-center gap-2">
+              <span className="status-dot"></span>
+              <span>ORIGIN: {NODES[selectedOrigin]?.name}</span>
+            </span>
+            <span className="text-[#00ff66]">
+              LATENCY: {pathLatency}ms ({activePath.length - 1} HOPS)
             </span>
           </div>
 
@@ -162,17 +167,17 @@ export const RouterScene: React.FC = () => {
                       y1={fromNode.y}
                       x2={toNode.x}
                       y2={toNode.y}
-                      stroke={active ? "#ffd97a" : "#322a5e"}
-                      strokeWidth={active ? 3.5 : 1.8}
+                      stroke={active ? "#00ff66" : "rgba(255, 255, 255, 0.12)"}
+                      strokeWidth={active ? 3 : 1.5}
                       strokeDasharray={active ? "6 3" : undefined}
                       className={active ? "animate-pulse" : ""}
                     />
                     <text
                       x={(fromNode.x + toNode.x) / 2}
                       y={(fromNode.y + toNode.y) / 2 - 4}
-                      fill={active ? "#ffd97a" : "#655896"}
-                      fontSize="8"
-                      fontFamily="'Press Start 2P', monospace"
+                      fill={active ? "#00ff66" : "#555c6d"}
+                      fontSize="9"
+                      fontFamily="ui-monospace, monospace"
                       textAnchor="middle"
                     >
                       {edge.weight}ms
@@ -197,27 +202,28 @@ export const RouterScene: React.FC = () => {
                   <circle
                     cx={node.x}
                     cy={node.y}
-                    r={isTarget ? 24 : 18}
-                    fill={isTarget ? "#ffd97a" : isInPath ? "#ff9ec0" : "#241d48"}
-                    opacity={isInPath ? 0.35 : 0.2}
-                    className="group-hover:opacity-50 transition-opacity"
+                    r={isTarget ? 22 : 16}
+                    fill={isTarget ? "#00ff66" : isInPath ? "#00e5ff" : "rgba(255, 255, 255, 0.05)"}
+                    opacity={isInPath ? 0.3 : 0.15}
+                    className="group-hover:opacity-40 transition-opacity"
                   />
 
                   <circle
                     cx={node.x}
                     cy={node.y}
-                    r={isTarget ? 15 : 12}
-                    fill={isTarget ? "#7c6fd6" : isSelected ? "#ffd97a" : "#19143a"}
-                    stroke={isTarget ? "#ffd97a" : isInPath ? "#ff9ec0" : "#5a4d8c"}
-                    strokeWidth={isSelected ? 3 : 2}
+                    r={isTarget ? 14 : 11}
+                    fill={isTarget ? "#00ff66" : isSelected ? "#ffffff" : "#0e1117"}
+                    stroke={isTarget ? "#00ff66" : isInPath ? "#00e5ff" : "rgba(255, 255, 255, 0.2)"}
+                    strokeWidth={isSelected ? 2.5 : 1.5}
                   />
 
                   <text
                     x={node.x}
                     y={node.y + 3.5}
-                    fill="#ffffff"
+                    fill={isTarget ? "#040404" : isSelected ? "#040404" : "#ffffff"}
                     fontSize="7"
-                    fontFamily="'Press Start 2P', monospace"
+                    fontFamily="ui-monospace, monospace"
+                    fontWeight="bold"
                     textAnchor="middle"
                     className="pointer-events-none"
                   >
@@ -226,12 +232,12 @@ export const RouterScene: React.FC = () => {
 
                   <text
                     x={node.x}
-                    y={node.y + (node.y > 140 ? 25 : -18)}
-                    fill={isInPath ? "#ffd97a" : "#a89bf0"}
-                    fontSize="8.5"
-                    fontFamily="'Press Start 2P', monospace"
+                    y={node.y + (node.y > 140 ? 24 : -16)}
+                    fill={isInPath ? "#00ff66" : "#9da3b4"}
+                    fontSize="9"
+                    fontFamily="Space Grotesk, sans-serif"
                     textAnchor="middle"
-                    className="pointer-events-none font-bold"
+                    className="pointer-events-none font-medium"
                   >
                     {node.name}
                   </text>
@@ -241,15 +247,15 @@ export const RouterScene: React.FC = () => {
           </svg>
 
           {/* Path Details Bar */}
-          <div className="mt-3.5 p-3 bg-[#1e1846] rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs font-display text-[#c8bffd]">
-            <div className="flex items-center gap-2 font-pixel text-[10px] text-[#ffd97a]">
-              <CheckCircle2 className="w-4 h-4 text-[#ffd97a]" />
+          <div className="mt-4 p-3 bg-white/[0.03] border border-white/10 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-[#9da3b4]">
+            <div className="flex items-center gap-2 text-white">
+              <CheckCircle2 className="w-4 h-4 text-[#00ff66]" />
               <span>
                 ROUTE: {activePath.map((id) => NODES[id]?.name).join(" ➔ ")}
               </span>
             </div>
 
-            <div className="font-pixel text-[9px] text-[#ffccd5]">
+            <div className="text-[11px] text-[#00ff66]">
               MEMORIZED: {NODES[selectedOrigin]?.recoveredItem}
             </div>
           </div>

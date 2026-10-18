@@ -46,21 +46,21 @@ export const NotesWindow: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-sans text-sm">
       {/* Header with Odometer */}
-      <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-win-header text-white rounded">
+      <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-[#0e1117] border border-white/10 rounded-xl">
         <div>
-          <h3 className="font-pixel text-xs flex items-center gap-1.5">
-            <MessageSquare className="w-3.5 h-3.5 text-glitch-cyan" />
-            <span>LOST & FOUND GUESTBOOK</span>
+          <h3 className="font-mono text-xs flex items-center gap-2 text-white font-medium">
+            <MessageSquare className="w-4 h-4 text-[#00ff66]" />
+            <span>LOST &amp; FOUND GUESTBOOK</span>
           </h3>
-          <p className="text-[10px] text-gray-300 font-display">
+          <p className="text-[11px] text-[#9da3b4] mt-0.5">
             Leave a memory of a website, game, or friend you lost on the web.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="font-pixel text-[9px] text-glitch-green">TOTAL ARCHIVED:</span>
+        <div className="flex items-center gap-2 font-mono text-xs">
+          <span className="text-[#555c6d]">TOTAL ARCHIVED:</span>
           <Odometer value={404 + notes.length} digits={5} />
         </div>
       </div>
@@ -68,11 +68,11 @@ export const NotesWindow: React.FC = () => {
       {/* Submission Form */}
       <form
         onSubmit={handleSubmit}
-        className="p-3 bg-white border-2 border-gray-400 rounded space-y-2.5 font-display text-xs"
+        className="p-4 bg-[#0e1117] border border-white/10 rounded-xl space-y-3 font-sans text-xs"
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="font-pixel text-[9px] text-gray-700 block mb-1">
+            <label className="font-mono text-[10px] text-[#9da3b4] block mb-1 uppercase tracking-wider">
               YOUR NAME / HANDLE:
             </label>
             <input
@@ -82,29 +82,29 @@ export const NotesWindow: React.FC = () => {
               placeholder="e.g. StarGazer98"
               maxLength={24}
               required
-              className="w-full px-2 py-1 bg-gray-50 border border-gray-400 focus:outline-none focus:border-win-header"
+              className="w-full px-3 py-1.5 bg-[#090b10] border border-white/10 rounded-lg text-[#f4f4f6] focus:outline-none focus:border-[#00ff66] font-mono"
             />
           </div>
 
           <div>
-            <label className="font-pixel text-[9px] text-gray-700 block mb-1">
+            <label className="font-mono text-[10px] text-[#9da3b4] block mb-1 uppercase tracking-wider">
               WHAT DID YOU LOSE?
             </label>
             <input
               type="text"
               value={itemLost}
               onChange={(e) => setItemLost(e.target.value)}
-              placeholder="e.g. My GeoCities fan page, MSN quotes"
+              placeholder="e.g. My GeoCities fan page"
               maxLength={40}
               required
-              className="w-full px-2 py-1 bg-gray-50 border border-gray-400 focus:outline-none focus:border-win-header"
+              className="w-full px-3 py-1.5 bg-[#090b10] border border-white/10 rounded-lg text-[#f4f4f6] focus:outline-none focus:border-[#00ff66] font-mono"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="sm:col-span-2">
-            <label className="font-pixel text-[9px] text-gray-700 block mb-1">
+            <label className="font-mono text-[10px] text-[#9da3b4] block mb-1 uppercase tracking-wider">
               MEMORY NOTE (UNDER 160 CHARS):
             </label>
             <textarea
@@ -114,18 +114,18 @@ export const NotesWindow: React.FC = () => {
               maxLength={160}
               rows={2}
               required
-              className="w-full px-2 py-1 bg-gray-50 border border-gray-400 focus:outline-none focus:border-win-header resize-none"
+              className="w-full px-3 py-1.5 bg-[#090b10] border border-white/10 rounded-lg text-[#f4f4f6] focus:outline-none focus:border-[#00ff66] resize-none"
             />
           </div>
 
           <div>
-            <label className="font-pixel text-[9px] text-gray-700 block mb-1">
+            <label className="font-mono text-[10px] text-[#9da3b4] block mb-1 uppercase tracking-wider">
               ERA / TIME:
             </label>
             <select
               value={era}
               onChange={(e) => setEra(e.target.value)}
-              className="w-full px-2 py-1 bg-gray-50 border border-gray-400 focus:outline-none focus:border-win-header text-xs h-[34px]"
+              className="w-full px-2 py-1.5 bg-[#090b10] border border-white/10 rounded-lg text-[#f4f4f6] focus:outline-none focus:border-[#00ff66] text-xs h-[38px] font-mono"
             >
               <option value="90s Dial-Up">90s Dial-Up</option>
               <option value="2000s Web">2000s Webrings</option>
@@ -136,50 +136,47 @@ export const NotesWindow: React.FC = () => {
         </div>
 
         {status && (
-          <div className="text-[11px] font-pixel text-win-header animate-pulse">
+          <div className="text-xs font-mono text-[#00ff66] animate-pulse">
             {status}
           </div>
         )}
 
-        <div className="flex justify-end">
+        <div className="flex justify-end pt-1">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-4 py-1.5 bg-winborder text-ink font-pixel text-xs retro-bevel active:retro-bevel-inset flex items-center gap-1.5 hover:bg-gray-200"
+            className="px-4 py-2 bg-white text-black font-mono font-medium text-xs rounded-full hover:bg-[#00ff66] transition-colors flex items-center gap-1.5"
           >
-            <Send className="w-3.5 h-3.5 text-win-header" />
+            <Send className="w-3.5 h-3.5 text-black" />
             <span>{isSubmitting ? "Archiving..." : "Pin to Lost Wall"}</span>
           </button>
         </div>
       </form>
 
       {/* Notes Wall Feed */}
-      <div className="space-y-2.5 max-h-[320px] overflow-y-auto pr-1">
+      <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
         {notes.map((note) => (
           <div
             key={note.id}
-            className="p-2.5 bg-[#fffdf0] border border-amber-300 rounded shadow-sm space-y-1.5 relative overflow-hidden font-display text-xs text-ink"
+            className="p-3 bg-[#0e1117] border border-white/10 rounded-xl space-y-1.5 text-xs text-[#f4f4f6]"
           >
-            {/* Retro Post-It top strip */}
-            <div className="h-1 bg-amber-400 absolute top-0 left-0 right-0" />
-
-            <div className="flex items-center justify-between text-[10px] text-gray-600 font-pixel">
-              <span className="font-bold text-win-header">{note.name}</span>
-              <span className="flex items-center gap-1">
-                <Tag className="w-3 h-3 text-glitch-magenta" />
+            <div className="flex items-center justify-between text-[11px] font-mono text-[#9da3b4]">
+              <span className="font-medium text-white">{note.name}</span>
+              <span className="flex items-center gap-1 text-[#555c6d]">
+                <Tag className="w-3 h-3 text-[#00ff66]" />
                 <span>{note.era}</span>
               </span>
             </div>
 
-            <div className="text-xs font-bold text-void-900">
+            <div className="text-xs font-semibold text-[#00e5ff]">
               Lost: <span className="underline decoration-dotted">{note.item_lost}</span>
             </div>
 
-            <p className="text-gray-700 leading-relaxed italic">
+            <p className="text-[#9da3b4] leading-relaxed italic">
               "{note.message}"
             </p>
 
-            <div className="flex items-center gap-1 text-[9px] text-gray-400 font-pixel">
+            <div className="flex items-center gap-1 text-[10px] text-[#555c6d] font-mono pt-1">
               <Clock className="w-3 h-3" />
               <span>{new Date(note.created_at).toLocaleDateString()}</span>
             </div>

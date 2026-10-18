@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { getFourieReply, SUGGESTION_CHIPS } from "../../services/chat";
 import { audio } from "../../core/audio";
 import { useStore } from "../../core/store";
-import { Send, Bot, User, Sparkles } from "lucide-react";
+import { Send, Bot, User } from "lucide-react";
 
 interface Message {
   sender: "fourie" | "user";
@@ -44,7 +44,6 @@ export const ChatWindow: React.FC = () => {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
 
-    // Simulate Fourie antenna processing
     sendMood("SEARCHING" as any);
     setTimeout(() => {
       audio.squeak();
@@ -56,51 +55,54 @@ export const ChatWindow: React.FC = () => {
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, fourieMsg]);
-    }, 400);
+    }, 350);
   };
 
   return (
-    <div className="flex flex-col h-[380px] max-h-[60dvh]">
+    <div className="flex flex-col h-[390px] max-h-[60dvh] font-sans text-sm">
       {/* Messenger Header */}
-      <div className="bg-win-header text-white p-2 text-xs font-pixel flex items-center justify-between">
-        <span className="flex items-center gap-1.5">
-          <Bot className="w-4 h-4 text-glitch-cyan" />
-          <span>FOURIE INSTANT MESSENGER v4.04</span>
+      <div className="bg-[#0e1117] border border-white/10 p-2.5 rounded-xl text-xs font-mono flex items-center justify-between text-[#9da3b4] mb-3">
+        <span className="flex items-center gap-2 text-white">
+          <Bot className="w-4 h-4 text-[#00ff66]" />
+          <span>FOURIE MESSENGER v4.04</span>
         </span>
-        <span className="text-[9px] text-glitch-green animate-pulse">● ONLINE</span>
+        <span className="text-[10px] text-[#00ff66] flex items-center gap-1">
+          <span className="status-dot"></span>
+          <span>ONLINE</span>
+        </span>
       </div>
 
       {/* Message History Feed */}
-      <div className="flex-1 overflow-y-auto p-3 bg-[#eef1f6] space-y-3 font-display text-xs">
+      <div className="flex-1 overflow-y-auto p-3 bg-[#090b10] border border-white/10 rounded-xl space-y-3 font-sans text-xs">
         {messages.map((m, idx) => (
           <div
             key={idx}
-            className={`flex items-start gap-2 ${
+            className={`flex items-start gap-2.5 ${
               m.sender === "user" ? "flex-row-reverse" : ""
             }`}
           >
             <div
-              className={`w-7 h-7 rounded flex items-center justify-center text-xs flex-shrink-0 ${
+              className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs flex-shrink-0 font-mono font-bold ${
                 m.sender === "user"
-                  ? "bg-win-header text-white"
-                  : "bg-void-900 border border-glitch-cyan text-glitch-cyan"
+                  ? "bg-white text-black"
+                  : "bg-[#00ff66]/15 border border-[#00ff66]/40 text-[#00ff66]"
               }`}
             >
               {m.sender === "user" ? <User className="w-4 h-4" /> : "404"}
             </div>
 
             <div
-              className={`max-w-[78%] p-2.5 rounded shadow-sm text-ink ${
+              className={`max-w-[78%] p-3 rounded-2xl ${
                 m.sender === "user"
-                  ? "bg-blue-100 border border-blue-300 rounded-tr-none"
-                  : "bg-white border border-gray-300 rounded-tl-none"
+                  ? "bg-white/[0.08] border border-white/15 text-white rounded-tr-none"
+                  : "bg-[#0e1117] border border-white/10 text-[#f4f4f6] rounded-tl-none"
               }`}
             >
               <div className="flex items-center justify-between gap-4 mb-1">
-                <span className="font-pixel text-[9px] font-bold text-gray-600">
+                <span className="font-mono text-[10px] text-[#555c6d]">
                   {m.sender === "user" ? "You" : "Fourie"}
                 </span>
-                <span className="text-[9px] text-gray-400 font-mono">{m.time}</span>
+                <span className="text-[9px] text-[#555c6d] font-mono">{m.time}</span>
               </div>
               <p className="leading-relaxed">{m.text}</p>
             </div>
@@ -109,14 +111,14 @@ export const ChatWindow: React.FC = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Quick Suggestion Chips (Trie Topics) */}
-      <div className="p-2 bg-gray-200 border-t border-gray-300 overflow-x-auto whitespace-nowrap flex gap-1.5 scrollbar-thin">
+      {/* Quick Suggestion Chips */}
+      <div className="py-2 overflow-x-auto whitespace-nowrap flex gap-1.5">
         {SUGGESTION_CHIPS.map((chip, i) => (
           <button
             key={i}
             type="button"
             onClick={() => handleSend(chip)}
-            className="px-2 py-1 text-[9px] font-pixel bg-white text-ink border border-gray-400 rounded-full hover:bg-win-header hover:text-white transition-colors"
+            className="px-3 py-1 text-[11px] font-mono bg-white/[0.04] text-[#9da3b4] border border-white/10 rounded-full hover:border-[#00ff66]/40 hover:text-white transition-colors"
           >
             {chip}
           </button>
@@ -129,20 +131,20 @@ export const ChatWindow: React.FC = () => {
           e.preventDefault();
           handleSend();
         }}
-        className="p-2 bg-winborder border-t-2 border-white flex gap-2"
+        className="flex gap-2"
       >
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask Fourie in English or Hinglish..."
-          className="flex-1 px-2.5 py-1.5 bg-white border border-gray-400 text-xs font-display text-ink focus:outline-none focus:border-win-header"
+          className="flex-1 px-3 py-2 bg-[#090b10] border border-white/10 rounded-full text-xs text-[#f4f4f6] focus:outline-none focus:border-[#00ff66] font-sans"
         />
         <button
           type="submit"
-          className="px-3 py-1.5 bg-winborder text-ink font-pixel text-xs retro-bevel active:retro-bevel-inset flex items-center gap-1 hover:bg-gray-200"
+          className="px-4 py-2 bg-white text-black font-medium text-xs rounded-full hover:bg-[#00ff66] transition-colors flex items-center gap-1.5"
         >
-          <Send className="w-3.5 h-3.5 text-win-header" />
+          <Send className="w-3.5 h-3.5 text-black" />
           <span>Send</span>
         </button>
       </form>

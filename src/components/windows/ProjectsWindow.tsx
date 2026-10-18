@@ -1,7 +1,7 @@
 import React from "react";
 import { useStore } from "../../core/store";
 import { audio } from "../../core/audio";
-import { FolderArchive, Music, Network, Sparkles, ExternalLink } from "lucide-react";
+import { FolderArchive, Music, Network, ArrowUpRight } from "lucide-react";
 
 export const ProjectsWindow: React.FC = () => {
   const openWindow = useStore((s) => s.openWindow);
@@ -12,8 +12,8 @@ export const ProjectsWindow: React.FC = () => {
       title: "GeoCities Shrine & Glitch Archive",
       year: "Circa 1999",
       tag: "CULTURE ARTIFACT",
-      icon: <FolderArchive className="w-5 h-5 text-glitch-amber" />,
-      desc: "A fully authentic 90s web shrine preserved from the void. Features animated marquees, classic 'Under Construction' GIFs, 88x31 badges, and an interactive sticker playground.",
+      icon: <FolderArchive className="w-5 h-5 text-[#ffb703]" />,
+      desc: "An authentic early web shrine preserved from the void. Features animated marquees, classic 'Under Construction' GIFs, 88x31 badges, and an interactive sticker playground.",
       actionLabel: "Scroll to Shrine Scene",
       action: () => {
         audio.click();
@@ -26,7 +26,7 @@ export const ProjectsWindow: React.FC = () => {
       title: "Dial-Up Lullaby Lab",
       year: "Circa 2001",
       tag: "AUDIO SYNTHESIZER",
-      icon: <Music className="w-5 h-5 text-glitch-magenta" />,
+      icon: <Music className="w-5 h-5 text-[#00ff66]" />,
       desc: "A procedural 16-step pentatonic music box inspired by 56k dial-up carrier frequencies. Built purely with the Web Audio API with a look-ahead scheduler and custom modem presets.",
       actionLabel: "Open Lullaby Lab",
       action: () => {
@@ -39,7 +39,7 @@ export const ProjectsWindow: React.FC = () => {
       title: "Packet Recovery Router",
       year: "Circa 2004",
       tag: "DIJKSTRA GRAPH ALGO",
-      icon: <Network className="w-5 h-5 text-glitch-cyan" />,
+      icon: <Network className="w-5 h-5 text-[#00e5ff]" />,
       desc: "An interactive network topology map where Fourie traces lost data packets. Computes the optimal path through dead DNS servers and BBS hubs using Dijkstra's shortest-path algorithm.",
       actionLabel: "Scroll to Recovery Map",
       action: () => {
@@ -51,13 +51,16 @@ export const ProjectsWindow: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-4">
-      <div className="bg-win-header text-white p-2 text-xs font-pixel flex items-center justify-between">
-        <span>ARCHIVE DIRECTORY: /LOST_AND_FOUND/PARCELS</span>
-        <span>COUNT: 3 RESCUED</span>
+    <div className="space-y-4 font-sans text-sm">
+      <div className="p-3 bg-[#0e1117] rounded-xl border border-white/10 text-xs font-mono flex items-center justify-between text-[#9da3b4]">
+        <span className="flex items-center gap-2 text-white">
+          <span className="status-dot"></span>
+          <span>/LOST_AND_FOUND/PARCELS</span>
+        </span>
+        <span className="text-[#00ff66]">3 RESCUED</span>
       </div>
 
-      <p className="text-xs text-gray-700 leading-relaxed font-display">
+      <p className="text-xs text-[#9da3b4] leading-relaxed">
         Fourie caught these three digital monuments as they were slipping into the void. Each artifact is fully functional and interactive!
       </p>
 
@@ -65,24 +68,26 @@ export const ProjectsWindow: React.FC = () => {
         {projects.map((proj) => (
           <div
             key={proj.id}
-            className="p-3 bg-white border-2 border-gray-400 rounded shadow-sm hover:border-win-header transition-colors space-y-2"
+            className="p-3.5 bg-[#0e1117] border border-white/10 rounded-xl space-y-2 hover:border-white/20 transition-colors"
           >
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
-                {proj.icon}
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-lg bg-white/[0.04] border border-white/10">
+                  {proj.icon}
+                </div>
                 <div>
-                  <h4 className="font-bold text-xs text-ink">{proj.title}</h4>
-                  <span className="text-[10px] text-gray-500 font-pixel">
+                  <h4 className="font-semibold text-xs text-white">{proj.title}</h4>
+                  <span className="text-[10px] text-[#555c6d] font-mono">
                     {proj.year}
                   </span>
                 </div>
               </div>
-              <span className="text-[9px] font-pixel bg-gray-200 text-gray-800 px-1.5 py-0.5 border border-gray-400">
+              <span className="text-[10px] font-mono bg-white/[0.04] text-[#9da3b4] border border-white/10 px-2 py-0.5 rounded-full">
                 {proj.tag}
               </span>
             </div>
 
-            <p className="text-xs text-gray-600 leading-relaxed font-display">
+            <p className="text-xs text-[#9da3b4] leading-relaxed">
               {proj.desc}
             </p>
 
@@ -90,10 +95,10 @@ export const ProjectsWindow: React.FC = () => {
               <button
                 type="button"
                 onClick={proj.action}
-                className="px-3 py-1.5 bg-winborder text-ink font-pixel text-[10px] retro-bevel active:retro-bevel-inset flex items-center gap-1.5 hover:bg-gray-300"
+                className="px-3.5 py-1.5 bg-white text-black font-mono font-medium text-[11px] rounded-full hover:bg-[#00ff66] transition-colors flex items-center gap-1.5 group"
               >
                 <span>{proj.actionLabel}</span>
-                <ExternalLink className="w-3 h-3 text-win-header" />
+                <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </button>
             </div>
           </div>

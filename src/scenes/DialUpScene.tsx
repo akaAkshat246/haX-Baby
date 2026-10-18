@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { audio } from "../core/audio";
 import { bus } from "../core/bus";
-import { Music, Radio, Sparkles, Volume2 } from "lucide-react";
+import { Music, ArrowUpRight, Volume2 } from "lucide-react";
 
 export const DialUpScene: React.FC = () => {
   const [playing, setPlaying] = useState(false);
   const [logs, setLogs] = useState<string[]>([
     "BEDTIME MUSIC BOX READY: Sportster 56K Lullaby Edition",
-    "STATUS: COZY BEDROOM CARRIER ACTIVE",
+    "STATUS: BEDROOM CARRIER ACTIVE",
     "LISTENING FOR FALLING NIGHT PACKETS...",
   ]);
 
@@ -19,7 +19,7 @@ export const DialUpScene: React.FC = () => {
     setLogs([
       "ATZ -> OK (NIGHT MODE ENGAGED)",
       "DIALING 1-800-404-LULLABY...",
-      "WARMING UP BEDTIME CHIMES...",
+      "WARMING UP WEBAUDIO PENTATONIC CHIMES...",
     ]);
 
     audio.playDialUpSimulation();
@@ -42,61 +42,74 @@ export const DialUpScene: React.FC = () => {
   return (
     <section
       id="scene-dialup"
-      className="relative min-h-[90dvh] w-full flex flex-col items-center justify-center p-6 text-center select-none bg-gradient-to-b from-[#14112e] via-[#1a153c] to-[#161234]"
+      className="relative min-h-[90dvh] w-full flex flex-col items-center justify-center p-6 text-center select-none bg-[#040404]"
     >
-      <div className="max-w-2xl space-y-4 z-10 w-full">
-        <div className="inline-block px-3.5 py-1 bg-[#231d4e] border border-[#a89bf0]/50 text-[#c8bffd] font-pixel text-xs rounded-full uppercase">
-          Era 1: 1995-1999 // The 56K Bedtime Lullaby
+      <div className="max-w-3xl space-y-4 z-10 w-full px-4">
+        {/* Editorial Section Index */}
+        <div className="editorial-index justify-center">
+          <span>02</span>
+          <span>/</span>
+          <span>1995-1999 · The 56K Modem Lullaby</span>
         </div>
 
-        <h2 className="text-2xl sm:text-4xl font-pixel text-[#ffffff] tracking-wide drop-shadow">
-          THE MODEM LULLABY
+        <h2 className="text-3xl sm:text-5xl font-sans font-bold text-white tracking-tight">
+          The sound of <span className="headline-serif">bedtime dial-up.</span>
         </h2>
 
-        <p className="font-display text-sm text-[#c8bffd] max-w-lg mx-auto leading-relaxed">
-          Back when the whole world went quiet at night, dial-up modems sang in the dark like little glowing music boxes. Whenever someone accidentally picked up the landline, Fourie caught the sleepy dropped packets and tucked them into bed.
+        <p className="font-sans text-sm text-[#9da3b4] max-w-lg mx-auto leading-relaxed">
+          Back when the whole house went quiet at night, modems sang in the dark like little glowing music boxes. Whenever someone accidentally picked up the landline, Fourie caught the dropped packets and tucked them into bed.
         </p>
 
-        {/* Soothing Terminal Box */}
-        <div className="w-full bg-[#120f2c] border-3 border-[#7c6fd6] rounded-2xl p-5 text-left font-mono text-xs shadow-[0_12px_36px_rgba(0,0,0,0.5)] relative overflow-hidden">
-          <div className="flex items-center justify-between border-b border-[#30285a] pb-2.5 mb-3">
-            <span className="flex items-center gap-2 text-[#ffd97a] font-pixel text-[10px]">
-              <Music className="w-3.5 h-3.5" />
-              <span>DIAL-UP LULLABY EMULATOR</span>
-            </span>
-            <span className="text-[10px] text-[#a89bf0] font-pixel">56K SOOTHING HARMONICS</span>
-          </div>
-
-          <div className="space-y-1.5 text-[#a3f7bf] min-h-[90px] text-[11px]">
-            {logs.map((log, i) => (
-              <div key={i} className="flex gap-2">
-                <span className="text-[#655896]">&gt;</span>
-                <span className={i === logs.length - 1 ? "animate-pulse" : ""}>
-                  {log}
+        {/* haX Baby Style 3D Terminal Card */}
+        <div className="build-window w-full max-w-2xl mx-auto pt-2">
+          <div className="build-window-inner bg-[#090b10] border border-white/10 rounded-2xl p-5 text-left font-mono text-xs shadow-[0_20px_50px_rgba(0,0,0,0.85)] relative overflow-hidden">
+            {/* Window Bar with 3 Dots */}
+            <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3.5">
+              <div className="flex items-center gap-3">
+                <div className="win__dots">
+                  <span className="win__dot win__dot--close" />
+                  <span className="win__dot win__dot--min" />
+                  <span className="win__dot win__dot--max" />
+                </div>
+                <span className="flex items-center gap-2 text-white/90 text-xs font-medium">
+                  <Music className="w-3.5 h-3.5 text-[#00ff66]" />
+                  <span>MODEM_LULLABY.EMU</span>
                 </span>
               </div>
-            ))}
-          </div>
+              <span className="text-[11px] text-[#555c6d] font-mono">56K PROCEDURAL SYNTH</span>
+            </div>
 
-          <div className="mt-4 pt-3.5 border-t border-[#26204c] flex flex-wrap items-center justify-between gap-2">
-            <button
-              type="button"
-              disabled={playing}
-              onClick={handlePlayLullaby}
-              className={`px-5 py-2.5 font-pixel text-xs rounded-xl transition-all flex items-center gap-2 ${
-                playing
-                  ? "bg-[#2d2556] text-[#786b9e] cursor-not-allowed"
-                  : "bg-gradient-to-r from-[#ffd97a] to-[#ff9ec0] text-[#1c1838] font-bold hover:scale-105 active:scale-95 shadow-[0_4px_16px_rgba(255,217,122,0.4)]"
-              }`}
-            >
-              <Sparkles className="w-4 h-4 text-[#1c1838]" />
-              <span>{playing ? "Playing Lullaby..." : "Listen to Bedtime Modem"}</span>
-            </button>
+            {/* Terminal Feed */}
+            <div className="space-y-2 text-[#00ff66] min-h-[96px] text-xs">
+              {logs.map((log, i) => (
+                <div key={i} className="flex gap-2">
+                  <span className="text-[#555c6d]">&gt;</span>
+                  <span className={i === logs.length - 1 ? "animate-pulse" : "text-white/80"}>
+                    {log}
+                  </span>
+                </div>
+              ))}
+            </div>
 
-            <span className="text-[10px] font-pixel text-[#ffd97a] flex items-center gap-1">
-              <Volume2 className="w-3.5 h-3.5 text-[#ff9ec0]" />
-              <span>Procedural Web Audio Celesta</span>
-            </span>
+            {/* Bottom Actions Row */}
+            <div className="mt-5 pt-3.5 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+              <button
+                type="button"
+                disabled={playing}
+                onClick={handlePlayLullaby}
+                className={`hax-button-primary group ${
+                  playing ? "!bg-white/20 !text-[#9da3b4] cursor-not-allowed" : ""
+                }`}
+              >
+                <span>{playing ? "Playing 56K Lullaby..." : "Listen to Bedtime Modem"}</span>
+                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </button>
+
+              <span className="text-[11px] font-mono text-[#9da3b4] flex items-center gap-1.5">
+                <Volume2 className="w-3.5 h-3.5 text-[#00ff66]" />
+                <span>Web Audio Sinusoidal Celesta</span>
+              </span>
+            </div>
           </div>
         </div>
       </div>

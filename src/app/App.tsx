@@ -129,7 +129,10 @@ export const App: React.FC = () => {
   }, [openWindow, closeAllWindows, unlockSecret]);
 
   return (
-    <div className="relative min-h-screen bg-void-900 text-paper overflow-x-hidden">
+    <div className="relative min-h-screen bg-[#040404] text-[#f4f4f6] overflow-x-hidden selection:bg-[#00ff66] selection:text-black">
+      {/* Subtle Dot Grid Background Overlay */}
+      <div className="hax-grid-bg" aria-hidden="true" />
+
       {/* 60fps Zero-GC Particle Canvas Overlay */}
       <SparkCanvas />
 
@@ -139,25 +142,26 @@ export const App: React.FC = () => {
       {/* Global Fixed Mute Toggle */}
       <MuteButton />
 
-      {/* Retro OS Boot Moment Overlay */}
+      {/* haX Baby Style Boot Moment Overlay */}
       {booting && (
         <div
           role="status"
           aria-live="polite"
           onClick={() => setBooting(false)}
-          className="fixed inset-0 z-[2000] bg-black text-glitch-green font-pixel text-xs p-6 flex flex-col justify-center items-center text-center cursor-pointer select-none space-y-3"
+          className="fixed inset-0 z-[2000] bg-[#040404]/95 backdrop-blur-xl text-[#00ff66] font-mono text-xs p-6 flex flex-col justify-center items-center text-center cursor-pointer select-none space-y-3"
         >
-          <div className="text-sm font-bold animate-pulse text-glitch-cyan">
-            FOURIE 404 RESCUE OS // BIOS v4.04
+          <div className="flex items-center gap-2 text-sm font-bold text-white tracking-wider">
+            <span className="status-dot"></span>
+            <span>FOURIE 404 SANCTUARY // BOOT SEQUENCE</span>
           </div>
-          <div className="text-gray-400 text-[10px]">
-            CHECKING RECOVERED SECTORS... [OK]
+          <div className="text-[#9da3b4] text-xs">
+            VERIFYING RECOVERED SECTORS... [OK]
           </div>
-          <div className="text-gray-400 text-[10px]">
-            LOADING PROCEDURAL MODEM SEQUENCER... [OK]
+          <div className="text-[#9da3b4] text-xs">
+            CALIBRATING 56K WEBAUDIO CELESTA... [OK]
           </div>
-          <div className="text-glitch-green text-[10px] animate-bounce">
-            LOST &amp; FOUND SANCTUARY READY. TAP TO SKIP.
+          <div className="text-[#00ff66] text-xs pt-2">
+            LOST &amp; FOUND SANCTUARY READY. CLICK ANYWHERE TO ENTER.
           </div>
         </div>
       )}
@@ -173,7 +177,7 @@ export const App: React.FC = () => {
         <FooterScene />
       </main>
 
-      {/* Windows 98/2000 Taskbar */}
+      {/* Floating Taskbar Dock */}
       <Taskbar visible={taskbarVisible} />
     </div>
   );

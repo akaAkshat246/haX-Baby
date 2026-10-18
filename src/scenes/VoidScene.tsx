@@ -4,7 +4,7 @@ import { useStore } from "../core/store";
 import { audio } from "../core/audio";
 import { bus } from "../core/bus";
 import SunCalc from "suncalc";
-import { Moon, Sparkles, ChevronDown, Heart } from "lucide-react";
+import { Moon, Sparkles, ArrowUpRight, ArrowDown } from "lucide-react";
 
 export const VoidScene: React.FC = () => {
   const mood = useStore((s) => s.mood);
@@ -25,61 +25,86 @@ export const VoidScene: React.FC = () => {
     bus.emit("poke", { x: e.clientX, y: e.clientY });
   };
 
+  const scrollToDesktop = () => {
+    audio.click();
+    document.getElementById("scene-desktop")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <section
       id="scene-void"
-      className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center p-6 text-center select-none overflow-hidden bg-gradient-to-b from-[#100e26] via-[#161338] to-[#14112e]"
+      className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center p-6 text-center select-none overflow-hidden bg-[#040404]"
     >
-      {/* Background Floating Dream Lights */}
-      <div className="absolute top-1/4 left-10 w-48 h-48 bg-[#7c6fd6]/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/3 right-10 w-56 h-56 bg-[#ffd97a]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-[#ff9ec0]/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Background Soft Glows matching hax.baby */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-[#00ff66]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-[#00e5ff]/5 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Moon Illumination Badge */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1.5 bg-[#201b44]/80 backdrop-blur-md border border-[#483d7a] rounded-full font-pixel text-[10px] text-[#ffd97a] z-10 shadow-lg">
-        <Moon className="w-3.5 h-3.5 text-[#ffd97a] animate-pulse" />
-        <span>MOONLIGHT: {Math.round(moonIllumination * 100)}% ILLUMINATED</span>
-      </div>
-
-      {/* Soothing Hero Baby Title */}
-      <div className="max-w-2xl space-y-3.5 z-10 pt-14">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-[#ff9ec0]/15 border border-[#ff9ec0]/40 text-[#ffccd5] font-pixel text-[10px] rounded-full tracking-wider uppercase">
-          <Heart className="w-3 h-3 text-[#ff9ec0] fill-[#ff9ec0]" />
-          <span>Track 2: Your Own Baby // 404 Sanctuary</span>
+      {/* Top Header Row with Badges */}
+      <div className="z-10 pt-10 pb-4 flex flex-wrap items-center justify-center gap-2.5">
+        <div className="hax-badge">
+          <span className="status-dot"></span>
+          <span>haX Baby 2025 · Track 2</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-pixel text-[#ffffff] tracking-tight drop-shadow-[0_4px_24px_rgba(168,155,240,0.5)]">
-          MEET FOURIE
+        <div className="hax-badge">
+          <Moon className="w-3.5 h-3.5 text-[#ffb703] animate-pulse" />
+          <span>Moonlight: {Math.round(moonIllumination * 100)}% illuminated</span>
+        </div>
+      </div>
+
+      {/* Editorial Section Label */}
+      <div className="editorial-index z-10 mb-2">
+        <span>01</span>
+        <span>/</span>
+        <span>A small beginning in the 404 gap</span>
+      </div>
+
+      {/* Editorial Headline with Italic Keyword */}
+      <div className="max-w-3xl space-y-4 z-10 px-4">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl font-sans font-bold tracking-tight text-white leading-[1.08]">
+          Every deleted page <span className="headline-serif">finds a baby.</span>
         </h1>
 
-        <p className="font-display text-lg sm:text-xl text-[#ffd97a] font-medium max-w-lg mx-auto italic drop-shadow">
-          "Kuch kho gaya? Maine sambhal ke rakha hai."
+        <p className="text-lg sm:text-2xl font-sans text-white/90 font-light max-w-xl mx-auto">
+          "Kuch kho gaya? <span className="text-[#00ff66] font-normal">Maine sambhal ke rakha hai.</span>"
         </p>
 
-        <p className="font-display text-xs sm:text-sm text-[#c8bffd] max-w-md mx-auto leading-relaxed">
-          Jab internet par koi webpage delete ho jaata hai, us gap se ek chhota sa baby spirit paida hota hai: <strong>Fourie</strong>. Wo Internet ke cozy *Lost &amp; Found Office* me khoye hue pages ko sambhal ke rakhta hai.
+        <p className="text-xs sm:text-sm text-[#9da3b4] max-w-lg mx-auto leading-relaxed font-sans">
+          When a webpage is deleted on the web, a quiet gap remains. Out of that digital vacuum emerges <strong>Fourie</strong>, the palm-sized caretaker of the Lost &amp; Found sanctuary.
         </p>
       </div>
 
-      {/* Fourie Interactive Mascot Centerpiece */}
+      {/* Interactive Mascot Centerpiece */}
       <div className="relative my-7 z-10 flex flex-col items-center">
         <FourieCharacter size={225} />
 
-        {/* Gentle Wake / Tickle Button */}
-        <button
-          type="button"
-          onClick={handleWake}
-          className="mt-4 px-5 py-2.5 bg-[#251f50] border-2 border-[#ffd97a] text-[#ffd97a] font-pixel text-xs rounded-full shadow-[0_4px_20px_rgba(255,217,122,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
-        >
-          <Sparkles className="w-3.5 h-3.5 text-[#ffd97a] animate-spin" />
-          <span>{mood === "sleepy" ? "Gently Wake Baby Fourie" : "Tickle Little Star Charm"}</span>
-        </button>
+        {/* Action Buttons in hax.baby Pill Style */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mt-5">
+          <button
+            type="button"
+            onClick={handleWake}
+            className="hax-button-primary group"
+          >
+            <Sparkles className="w-4 h-4 text-[#040404]" />
+            <span>{mood === "sleepy" ? "Wake Baby Fourie" : "Tickle Star Charm"}</span>
+            <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={scrollToDesktop}
+            className="hax-button-secondary group"
+          >
+            <span>Open Bedroom OS</span>
+            <ArrowDown className="w-4 h-4 text-[#9da3b4] transition-transform group-hover:translate-y-0.5" />
+          </button>
+        </div>
       </div>
 
-      {/* Soothing Scroll Down Cue */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-[#8b7db8] font-pixel text-[9px] animate-bounce z-10">
-        <span>SCROLL DOWN INTO BEDTIME ERAS</span>
-        <ChevronDown className="w-4 h-4 text-[#ffd97a]" />
+      {/* Minimal Scroll Down Cue */}
+      <div className="editorial-index text-[10px] text-[#555c6d] pt-4 z-10 flex items-center gap-1.5 animate-pulse">
+        <span>SCROLL DOWN INTO ERAS</span>
+        <span>↓</span>
       </div>
     </section>
   );

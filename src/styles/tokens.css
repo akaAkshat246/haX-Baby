@@ -1,49 +1,63 @@
 :root {
-  /* Soothing Baby Nursery & Cozy Night Palette */
-  --ink: #1e1b38;
-  --paper: #fffaf5;
-  --accent: #ff9ec0;
-  --lavender: #a89bf0;
-  --lavender-soft: #c8bffd;
-  --butter-glow: #ffd97a;
-  --butter-soft: #fff1b8;
-  --baby-cyan: #7ce8ff;
-  --mint-dream: #a3f7bf;
-  --blush-rose: #ffccd5;
+  /* haX Baby OLED & Acid Green Signature Palette */
+  --bg-oled: #040404;
+  --bg-surface: #090b10;
+  --bg-card: #0e1117;
+  --bg-card-hover: #131720;
 
-  /* Deep Cozy Night Sky */
-  --void-bg: #131129;
-  --void-deep: #0d0b1f;
-  --void-card: #1c183a;
-  --void-border: #352f63;
+  --border-dim: rgba(255, 255, 255, 0.08);
+  --border-bright: rgba(255, 255, 255, 0.18);
 
-  /* Retro Pastel Window Chrome */
-  --win-header: linear-gradient(135deg, #6c5ce7, #a29bfe);
-  --win-header-active: linear-gradient(135deg, #7c6fd6, #b8a9ec);
-  --win-surface: #f9f6f0;
-  --win-card: #ffffff;
-  --win-shadow: 0 12px 32px rgba(10, 8, 28, 0.45);
+  --shine-green: #00ff66;
+  --shine-green-soft: rgba(0, 255, 102, 0.12);
+  --shine-lime: #00f59b;
+  --shine-cyan: #00e5ff;
+  --shine-amber: #ffb703;
+  --shine-purple: #b266ff;
+  --shine-crimson: #ff3366;
+
+  --text-main: #f4f4f6;
+  --text-muted: #9da3b4;
+  --text-dim: #555c6d;
+
+  /* Void & Surface mapping */
+  --void-bg: #040404;
+  --void-deep: #000000;
+  --void-card: #090b10;
+  --void-border: rgba(255, 255, 255, 0.08);
+
+  /* Window & Card tokens */
+  --win-header: #0e1117;
+  --win-header-active: #131722;
+  --win-surface: #090b10;
+  --win-card: #0e1117;
+  --win-border: rgba(255, 255, 255, 0.12);
+  --win-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.1);
 
   --pixel: "Press Start 2P", monospace;
   --vt: "VT323", monospace;
   --display: "Space Grotesk", sans-serif;
+  --sans: "Space Grotesk", "Inter", -apple-system, sans-serif;
+  --serif: "Newsreader", Georgia, serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Sizing tokens */
-  --fourie-size: 210px;
+  --fourie-size: 215px;
   --marquee-speed: 26s;
   --window-chrome: block;
 }
 
-/* Day Mode / Sunny Nursery Morning */
+/* Day Mode / High Contrast Matrix Day */
 body[data-theme="day"] {
-  --void-bg: #fdf8f4;
-  --void-deep: #f5ebe1;
-  --void-card: #ffffff;
-  --void-border: #ebd8c8;
-  --paper: #2d264a;
-  --ink: #221c3b;
-  --win-header: linear-gradient(135deg, #ff9ec0, #ffd97a);
-  --win-surface: #fffbf7;
+  --bg-oled: #08090d;
+  --bg-surface: #0f121a;
+  --bg-card: #151924;
+  --void-bg: #08090d;
+  --void-deep: #050608;
+  --void-card: #0f121a;
+  --void-border: rgba(255, 255, 255, 0.12);
+  --win-surface: #0f121a;
+  --win-header: #151924;
 }
 
 /* Chaos Mode - screen shape responsive sizing */

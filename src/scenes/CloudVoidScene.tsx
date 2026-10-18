@@ -2,16 +2,16 @@ import React from "react";
 import { audio } from "../core/audio";
 import { bus } from "../core/bus";
 import { useStore } from "../core/store";
-import { Sparkles, FolderDown, Heart } from "lucide-react";
+import { Sparkles, ArrowDown } from "lucide-react";
 
 export const CloudVoidScene: React.FC = () => {
   const openWindow = useStore((s) => s.openWindow);
 
   const brokenLinks = [
-    { url: "http://angelfire.com/anime/coolgoku", status: "LOST IN 2001" },
-    { url: "http://myspace.com/top8_friends", status: "ASLEEP IN CACHE" },
-    { url: "http://clubpenguin.com/miniclip/play", status: "SAFE IN POUCH" },
-    { url: "http://geocities.ws/cyber_shrine", status: "PROTECTED BY FOURIE" },
+    { url: "http://angelfire.com/anime/coolgoku", status: "LOST IN 2001", tag: "Angelfire" },
+    { url: "http://myspace.com/top8_friends", status: "ASLEEP IN CACHE", tag: "MySpace" },
+    { url: "http://clubpenguin.com/miniclip/play", status: "SAFE IN SATCHEL", tag: "Miniclip" },
+    { url: "http://geocities.ws/cyber_shrine", status: "PROTECTED BY FOURIE", tag: "GeoCities" },
   ];
 
   const handleRescuePacket = (linkUrl: string, e: React.MouseEvent) => {
@@ -30,52 +30,57 @@ export const CloudVoidScene: React.FC = () => {
   return (
     <section
       id="scene-cloud"
-      className="relative min-h-[90dvh] w-full flex flex-col items-center justify-center p-6 text-center select-none bg-gradient-to-b from-[#14112e] via-[#1a1438] to-[#13102d]"
+      className="relative min-h-[90dvh] w-full flex flex-col items-center justify-center p-6 text-center select-none bg-[#040404]"
     >
-      <div className="max-w-2xl space-y-4 z-10 w-full">
-        <div className="inline-block px-3.5 py-1 bg-[#231d4e] border border-[#a89bf0]/50 text-[#c8bffd] font-pixel text-xs rounded-full uppercase">
-          Era 3: Modern Day // Catching Falling Web Stars
+      <div className="max-w-3xl space-y-4 z-10 w-full px-4">
+        {/* Editorial Section Index */}
+        <div className="editorial-index justify-center">
+          <span>04</span>
+          <span>/</span>
+          <span>Modern Web · Catching Falling Web Stars</span>
         </div>
 
-        <h2 className="text-2xl sm:text-4xl font-pixel text-[#ffffff] tracking-wide drop-shadow">
-          THE PACKET VACUUM
+        <h2 className="text-3xl sm:text-5xl font-sans font-bold text-white tracking-tight">
+          Catching falling <span className="headline-serif">web stars.</span>
         </h2>
 
-        <p className="font-display text-sm text-[#c8bffd] max-w-lg mx-auto leading-relaxed">
-          In today's fast web, pages vanish quietly without a trace. But whenever a link breaks or a server goes to sleep, the sweet lost packets fall through the clouds straight into baby Fourie's floppy pouch.
+        <p className="font-sans text-sm text-[#9da3b4] max-w-lg mx-auto leading-relaxed">
+          In today's web, pages vanish quietly without notice. But whenever a link breaks or a server goes down, the lost packets fall straight into baby Fourie's floppy satchel.
         </p>
 
         {/* Floating Broken Hyperlinks */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl mx-auto pt-2">
           {brokenLinks.map((item, idx) => (
             <button
               key={idx}
               type="button"
               onClick={(e) => handleRescuePacket(item.url, e)}
-              className="p-3 bg-[#1e1846]/70 border border-[#483d7a] hover:border-[#ffd97a] rounded-xl flex items-center justify-between text-left group transition-all shadow-md hover:scale-102"
-              title="Click to tuck this lost memory into bed!"
+              className="p-3.5 bg-[#090b10] border border-white/10 hover:border-[#00ff66]/50 rounded-xl flex items-center justify-between text-left group transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:scale-[1.02]"
+              title="Click to rescue this memory!"
             >
-              <div className="overflow-hidden">
-                <span className="font-mono text-xs text-[#c8bffd] group-hover:text-[#ffd97a] truncate block">
-                  {item.url}
-                </span>
-                <span className="font-pixel text-[9px] text-[#ff9ec0]">
-                  {item.status}
+              <div className="overflow-hidden space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs text-white/90 group-hover:text-[#00ff66] truncate block transition-colors">
+                    {item.url}
+                  </span>
+                </div>
+                <span className="font-mono text-[10px] text-[#555c6d] block">
+                  {item.status} · {item.tag}
                 </span>
               </div>
-              <Sparkles className="w-4 h-4 text-[#ffd97a] opacity-60 group-hover:opacity-100 group-hover:scale-110 flex-shrink-0" />
+              <Sparkles className="w-4 h-4 text-[#00ff66] opacity-40 group-hover:opacity-100 group-hover:scale-110 flex-shrink-0 transition-all ml-2" />
             </button>
           ))}
         </div>
 
-        <div className="pt-4">
+        <div className="pt-5">
           <button
             type="button"
             onClick={handleEnterOS}
-            className="px-6 py-3 bg-gradient-to-r from-[#7c6fd6] to-[#a29bfe] text-[#ffffff] font-pixel text-xs rounded-2xl shadow-[0_4px_24px_rgba(124,111,214,0.45)] hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-2 font-bold"
+            className="hax-button-primary group"
           >
-            <FolderDown className="w-4 h-4 text-[#ffd97a]" />
-            <span>Enter Baby Fourie's Bedroom OS</span>
+            <span>Enter Fourie's Bedroom OS</span>
+            <ArrowDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
           </button>
         </div>
       </div>

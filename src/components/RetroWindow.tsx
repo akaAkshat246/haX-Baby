@@ -108,9 +108,16 @@ export const RetroWindow: React.FC<RetroWindowProps> = ({
         className="win__bar flex items-center justify-between"
         onPointerDown={handleBarPointerDown}
       >
-        <div className="flex items-center gap-2 select-none overflow-hidden text-ellipsis whitespace-nowrap">
-          <span>{icon}</span>
-          <span className="font-pixel text-[11px] truncate tracking-wide">{title}</span>
+        <div className="flex items-center gap-3 select-none overflow-hidden text-ellipsis whitespace-nowrap">
+          <div className="win__dots">
+            <span className="win__dot win__dot--close" />
+            <span className="win__dot win__dot--min" />
+            <span className="win__dot win__dot--max" />
+          </div>
+          <div className="flex items-center gap-1.5 overflow-hidden">
+            <span className="text-sm">{icon}</span>
+            <span className="font-mono text-xs text-white/90 truncate tracking-wide font-medium">{title}</span>
+          </div>
         </div>
 
         <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -119,7 +126,7 @@ export const RetroWindow: React.FC<RetroWindowProps> = ({
             aria-label={`Close ${title}`}
             onClick={handleClose}
             onPointerDown={(e) => e.stopPropagation()}
-            className="w-6 h-6 flex items-center justify-center font-bold text-xs"
+            className="win__close-btn"
           >
             ✕
           </button>
@@ -127,14 +134,17 @@ export const RetroWindow: React.FC<RetroWindowProps> = ({
       </div>
 
       {/* Window Body */}
-      <div className="win__body flex-1 overflow-y-auto font-display text-sm">
+      <div className="win__body flex-1 overflow-y-auto font-sans text-sm text-[#f4f4f6]">
         {children}
       </div>
 
-      {/* Retro Status Bar */}
-      <div className="retro-bevel-inset mx-2 mb-2 px-2 py-1 flex items-center justify-between text-[10px] font-pixel text-gray-700 bg-gray-200">
-        <span>STATUS: RESCUED</span>
-        <span>404 OFFICE</span>
+      {/* Sleek hax.baby Status Footer */}
+      <div className="border-t border-white/10 px-3 py-1.5 flex items-center justify-between text-[11px] font-mono text-[#555c6d] bg-[#0e1117]/80">
+        <span className="flex items-center gap-1.5">
+          <span className="status-dot"></span>
+          <span className="text-[#9da3b4]">PARCEL CACHE ACTIVE</span>
+        </span>
+        <span>404 SANCTUARY</span>
       </div>
     </div>
   );

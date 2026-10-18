@@ -10,26 +10,33 @@ html, body {
   padding: 0;
   width: 100%;
   min-height: 100dvh;
-  background-color: var(--void-bg);
-  color: var(--paper);
+  background-color: var(--bg-oled, #040404);
+  color: var(--text-main, #f4f4f6);
+  font-family: var(--sans);
   overflow-x: hidden;
 }
 
-/* Custom scrollbar */
+/* haX Baby Sleek Scrollbar */
 ::-webkit-scrollbar {
-  width: 12px;
-  background: #2a2a3e;
+  width: 6px;
+  height: 6px;
+  background: #090b10;
 }
 ::-webkit-scrollbar-thumb {
-  background: #4f527a;
-  border: 2px solid #2a2a3e;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #6d71a8;
+  background: #00ff66;
 }
 
 /* Focus outline for high accessibility */
 :focus-visible {
-  outline: 2px dashed #00f0ff;
-  outline-offset: 3px;
+  outline: 2px solid #00ff66;
+  outline-offset: 2px;
+}
+
+::selection {
+  background: #00ff66;
+  color: #040404;
 }

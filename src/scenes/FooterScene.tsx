@@ -27,59 +27,66 @@ export const FooterScene: React.FC = () => {
   return (
     <footer
       id="scene-footer"
-      className="relative w-full bg-[#0d0b1f] border-t-2 border-[#382f64] text-[#fffaf5] p-8 pb-32 text-center font-display space-y-8 select-none"
+      className="relative w-full bg-[#040404] border-t border-white/10 text-[#f4f4f6] p-8 pb-32 text-center font-sans space-y-8 select-none"
     >
+      {/* Editorial Section Index */}
+      <div className="editorial-index justify-center">
+        <span>07</span>
+        <span>/</span>
+        <span>Preservation Ledger &amp; Field Notes</span>
+      </div>
+
       {/* Rescued Pages Global Odometer */}
-      <div className="max-w-md mx-auto p-4 bg-[#1a153c] border-2 border-[#7c6fd6] rounded-2xl shadow-xl space-y-2.5">
-        <span className="font-pixel text-[10px] text-[#ffd97a] flex items-center justify-center gap-1.5">
-          <Moon className="w-3.5 h-3.5 text-[#ffd97a]" />
-          <span>GLOBAL RESCUED DREAMS &amp; PAGES</span>
+      <div className="max-w-md mx-auto p-5 bg-[#090b10] border border-white/10 rounded-2xl shadow-xl space-y-3">
+        <span className="font-mono text-xs text-[#9da3b4] flex items-center justify-center gap-2">
+          <Moon className="w-3.5 h-3.5 text-[#00ff66]" />
+          <span>GLOBAL RESCUED MEMORIES &amp; PAGES</span>
         </span>
         <div className="flex justify-center">
           <Odometer value={rescuedTotal} digits={6} />
         </div>
-        <p className="text-[11px] text-[#c8bffd]">
-          Tucked into bed on every visit and memory shared across the 404 nursery.
+        <p className="text-xs text-[#555c6d] font-sans">
+          Preserved on every visit and memory shared across the 404 sanctuary.
         </p>
       </div>
 
-      {/* Retro 90s Webring Navigation Bar */}
-      <div className="max-w-xl mx-auto p-4 bg-[#181338]/90 border border-[#483d7a] rounded-2xl space-y-2.5 shadow-md">
-        <div className="flex items-center justify-center gap-2 font-pixel text-xs text-[#ffd97a]">
-          <Globe className="w-4 h-4 text-[#ff9ec0]" />
-          <span>THE LOST WEB 404 BABY RING</span>
+      {/* Webring Navigation Bar */}
+      <div className="max-w-xl mx-auto p-4 bg-[#090b10] border border-white/10 rounded-2xl space-y-3 shadow-md">
+        <div className="flex items-center justify-center gap-2 font-mono text-xs text-white">
+          <Globe className="w-4 h-4 text-[#00ff66]" />
+          <span>THE 404 BABY WEBRING ARCHIVE</span>
         </div>
 
-        <p className="text-xs text-[#c8bffd]">
-          This site is baby member <strong>#0404</strong> in the Old-Web Preservation Ring.
+        <p className="text-xs text-[#9da3b4]">
+          This site is member <strong>#0404</strong> in the Old-Web Preservation Ring.
         </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-2 pt-1 font-pixel text-[9px]">
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-1 font-mono text-xs">
           <button
             type="button"
             onClick={() => handleWebringNav("Previous Baby Webring Member")}
-            className="px-3 py-1.5 bg-[#251f50] border border-[#524484] hover:border-[#ffd97a] rounded-xl text-[#c8bffd]"
+            className="px-3 py-1.5 bg-white/[0.04] border border-white/10 hover:border-white/25 rounded-full text-[#9da3b4] hover:text-white transition-colors"
           >
             &lt;&lt; Prev Baby
           </button>
           <button
             type="button"
             onClick={() => handleWebringNav("Ring Directory")}
-            className="px-3 py-1.5 bg-[#251f50] border border-[#524484] hover:border-[#ffd97a] rounded-xl text-[#ffd97a]"
+            className="px-3 py-1.5 bg-white/[0.04] border border-[#00ff66]/40 hover:border-[#00ff66] rounded-full text-[#00ff66] transition-colors"
           >
             [Ring Hub]
           </button>
           <button
             type="button"
             onClick={() => handleWebringNav("Random Lost Site")}
-            className="px-3 py-1.5 bg-[#251f50] border border-[#524484] hover:border-[#ffd97a] rounded-xl text-[#c8bffd]"
+            className="px-3 py-1.5 bg-white/[0.04] border border-white/10 hover:border-white/25 rounded-full text-[#9da3b4] hover:text-white transition-colors"
           >
             Random ➔
           </button>
           <button
             type="button"
             onClick={() => handleWebringNav("Next Baby Webring Member")}
-            className="px-3 py-1.5 bg-[#251f50] border border-[#524484] hover:border-[#ffd97a] rounded-xl text-[#c8bffd]"
+            className="px-3 py-1.5 bg-white/[0.04] border border-white/10 hover:border-white/25 rounded-full text-[#9da3b4] hover:text-white transition-colors"
           >
             Next Baby &gt;&gt;
           </button>
@@ -88,40 +95,40 @@ export const FooterScene: React.FC = () => {
 
       {/* Badges Grid */}
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <div className="w-[88px] h-[31px] bg-gradient-to-r from-[#483d8b] to-[#6a5acd] border border-[#a89bf0] rounded flex flex-col items-center justify-center text-[7px] text-white font-pixel shadow-sm">
+        <div className="w-[88px] h-[31px] bg-[#0e1117] border border-white/10 rounded flex flex-col items-center justify-center text-[7px] text-white font-mono shadow-sm">
           <span>BEDTIME</span>
-          <span className="text-[#ffd97a]">CERTIFIED</span>
+          <span className="text-[#00ff66]">CERTIFIED</span>
         </div>
 
-        <div className="w-[88px] h-[31px] bg-gradient-to-r from-[#b53471] to-[#ee5253] border border-[#ff9ec0] rounded flex flex-col items-center justify-center text-[7px] text-white font-pixel shadow-sm">
+        <div className="w-[88px] h-[31px] bg-[#0e1117] border border-white/10 rounded flex flex-col items-center justify-center text-[7px] text-white font-mono shadow-sm">
           <span>SWEET DREAMS</span>
-          <span className="text-[#ffd97a]">404 ARCHIVE</span>
+          <span className="text-[#ff3366]">404 ARCHIVE</span>
         </div>
 
-        <div className="w-[88px] h-[31px] bg-[#1a1438] border border-[#ffd97a] rounded flex flex-col items-center justify-center text-[7px] text-[#ffd97a] font-pixel shadow-sm">
+        <div className="w-[88px] h-[31px] bg-[#0e1117] border border-[#00ff66]/40 rounded flex flex-col items-center justify-center text-[7px] text-[#00ff66] font-mono shadow-sm">
           <span>BABY SPIRIT</span>
           <span className="text-white">TRACK 2</span>
         </div>
 
-        <div className="w-[88px] h-[31px] bg-[#5f27cd] border border-[#ff9ec0] rounded flex flex-col items-center justify-center text-[7px] text-white font-pixel shadow-sm">
+        <div className="w-[88px] h-[31px] bg-[#0e1117] border border-white/10 rounded flex flex-col items-center justify-center text-[7px] text-white font-mono shadow-sm">
           <span>WEBRING</span>
-          <span className="text-[#ff9ec0]">#404 BABY</span>
+          <span className="text-[#00e5ff]">#404 BABY</span>
         </div>
 
         {/* Secret Unlocked Badge */}
         {secretUnlocked ? (
           <div
             onClick={handleSecretClick}
-            className="w-[88px] h-[31px] bg-gradient-to-r from-[#ff9ec0] to-[#7c6fd6] border-2 border-[#ffd97a] rounded flex flex-col items-center justify-center text-[7px] text-white font-pixel cursor-pointer animate-pulse shadow-[0_0_12px_#ffd97a]"
+            className="w-[88px] h-[31px] bg-[#00ff66] text-black rounded flex flex-col items-center justify-center text-[7px] font-mono cursor-pointer animate-pulse shadow-[0_0_15px_#00ff66]"
             title="Click to revisit the Secret Backroom!"
           >
-            <span className="text-[#1c1838] font-bold">BABY MASTER</span>
-            <span className="text-[6px] text-white">SECRET UNLOCKED</span>
+            <span className="font-bold">BABY MASTER</span>
+            <span className="text-[6px]">SECRET UNLOCKED</span>
           </div>
         ) : (
           <div
             onClick={handleSecretClick}
-            className="w-[88px] h-[31px] bg-[#161234] border border-dashed border-[#524484] rounded flex flex-col items-center justify-center text-[7px] text-[#8d7eb8] font-pixel cursor-pointer hover:border-[#ffd97a]"
+            className="w-[88px] h-[31px] bg-[#090b10] border border-dashed border-white/20 rounded flex flex-col items-center justify-center text-[7px] text-[#555c6d] font-mono cursor-pointer hover:border-[#00ff66]"
             title="A secret badge is sleeping here... check the Recycle Basket or antenna!"
           >
             <span>??? SECRET</span>
@@ -131,26 +138,23 @@ export const FooterScene: React.FC = () => {
       </div>
 
       {/* Secret Hint */}
-      <p className="text-xs text-[#8d7eb8] italic max-w-md mx-auto">
-        "psst... have you checked inside the Recycle Basket, tapped baby Fourie's star charm 5 times, or visited <span className="font-mono text-[#ffd97a]">/nowhere</span> in the address bar?"
+      <p className="text-xs text-[#555c6d] italic max-w-md mx-auto font-mono">
+        "psst... have you checked inside the Recycle Basket, tapped baby Fourie's star charm 5 times, or visited <span className="text-[#00ff66]">/nowhere</span> in the address bar?"
       </p>
 
       {/* Required Attribution & Open Source Credits */}
-      <div className="pt-6 border-t border-[#2d2558] max-w-2xl mx-auto text-[11px] text-[#8d7eb8] leading-relaxed space-y-2">
+      <div className="pt-6 border-t border-white/10 max-w-2xl mx-auto text-xs text-[#555c6d] leading-relaxed space-y-2 font-mono">
         <p>
-          <strong>Character, SVG Art &amp; Worldbuilding:</strong> Designed for Hackathon Track 2 ("Your Own Baby") featuring Fourie, child of the 404 page.
+          <strong className="text-white">Character, SVG Rig &amp; Worldbuilding:</strong> Designed for haX Baby Hackathon Track 2 ("Your Own Baby") featuring Fourie, child of the 404 page.
         </p>
         <p>
-          <strong>Audio:</strong> Procedurally synthesized via Web Audio API (soothing sinusoidal music-box envelopes; zero external audio samples).
+          <strong className="text-white">Audio:</strong> Procedurally synthesized via Web Audio API (sine-wave music box envelopes; zero external audio samples).
         </p>
         <p>
-          <strong>Typography:</strong> "Press Start 2P", "VT323", and "Space Grotesk" via Google Fonts.
+          <strong className="text-white">Stack:</strong> React 18, TypeScript, Anime.js v4, Vite, Tailwind CSS, Zustand, SunCalc, Supabase.
         </p>
-        <p>
-          <strong>Animation &amp; Tech Stack:</strong> React 18, Anime.js v4, TypeScript, Vite, Tailwind CSS, Zustand, SunCalc, and Supabase.
-        </p>
-        <p className="text-[#a89bf0] text-[10px] pt-2 flex items-center justify-center gap-1">
-          <Heart className="w-3 h-3 text-[#ff9ec0] fill-[#ff9ec0]" />
+        <p className="text-[#9da3b4] text-xs pt-3 flex items-center justify-center gap-1.5">
+          <Heart className="w-3.5 h-3.5 text-[#00ff66] fill-[#00ff66]" />
           <span>© 2026 Fourie 404 Sanctuary. "Kuch kho gaya? Maine sambhal ke rakha hai."</span>
         </p>
       </div>

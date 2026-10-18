@@ -13,14 +13,26 @@ Always reply in 1 or 2 concise, sweet sentences. Never include emojis or sticker
 
 export class FreeLlmClient {
   private config: LlmConfig = {
-    provider: "pollinations",
-    model: "openai",
+    provider: "groq",
+    model: "llama-3.3-70b-versatile",
   };
 
   constructor() {
+    const envKey = (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_GROQ_API_KEY) || "";
+    if (envKey) {
+      this.config.provider = "groq";
+      this.config.apiKey = envKey;
+      this.config.model = "llama-3.3-70b-versatile";
+    }
+
     // Check localStorage for saved custom key
     if (typeof window !== "undefined") {
       try {
+        const localKey = localStorage.getItem("cat:groq:key") || localStorage.getItem("panda:groq:key");
+        if (localKey && !this.config.apiKey) {
+          this.config.apiKey = localKey;
+          this.config.provider = "groq";
+        }
         const saved = localStorage.getItem("cat:llm:config") || localStorage.getItem("panda:llm:config");
         if (saved) {
           this.config = { ...this.config, ...JSON.parse(saved) };

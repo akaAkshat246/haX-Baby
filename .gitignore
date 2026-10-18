@@ -2,7 +2,10 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+.env.*
 *.tsbuildinfo
 *.log
 .DS_Store
 scratch/
+

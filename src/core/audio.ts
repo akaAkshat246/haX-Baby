@@ -152,6 +152,44 @@ export class AudioEngine {
       this.chime();
     }, 1800);
   }
+
+  private lullabyTimer?: any;
+  public isLullabyPlaying: boolean = false;
+
+  public toggleLullaby(): boolean {
+    if (this.isLullabyPlaying) {
+      this.stopLullaby();
+      return false;
+    } else {
+      this.startLullaby();
+      return true;
+    }
+  }
+
+  public startLullaby() {
+    this.unlock();
+    this.isLullabyPlaying = true;
+    const notes = [523.25, 659.25, 783.99, 1046.5, 880, 659.25, 587.33, 523.25];
+    let step = 0;
+    const playStep = () => {
+      if (!this.isLullabyPlaying) return;
+      this.note(notes[step % notes.length], 0, 1.2, "sine", 0.18);
+      if (step % 4 === 0) {
+        this.note(261.63, 0, 2.0, "sine", 0.12);
+      }
+      step++;
+      this.lullabyTimer = setTimeout(playStep, 650);
+    };
+    playStep();
+  }
+
+  public stopLullaby() {
+    this.isLullabyPlaying = false;
+    if (this.lullabyTimer) {
+      clearTimeout(this.lullabyTimer);
+      this.lullabyTimer = undefined;
+    }
+  }
 }
 
 export const audio = new AudioEngine();

@@ -36,10 +36,11 @@ import {
   Award,
   Key,
   Sparkles,
+  BookOpen,
 } from "lucide-react";
 
 interface DesktopAppIcon {
-  id: WindowId;
+  id: WindowId | "story";
   label: string;
   icon: React.ReactNode;
   bg: string;
@@ -50,13 +51,20 @@ export const AndroidDesktop: React.FC = () => {
   const mood = useStore((s) => s.mood);
   const sendMood = useStore((s) => s.sendMood);
   const showToast = useStore((s) => s.showToast);
+  const enterStory = useStore((s) => s.enterStory);
 
   const desktopApps: DesktopAppIcon[] = [
+    {
+      id: "story",
+      label: "Story Mode",
+      icon: <BookOpen className="w-6 h-6 text-[#3d001e]" />,
+      bg: "bg-gradient-to-tr from-[#ff85b8] via-[#ffa8d0] to-[#ffd1e6]",
+    },
     {
       id: "about",
       label: "About Fourie",
       icon: <Heart className="w-6 h-6 text-white" />,
-      bg: "bg-gradient-to-tr from-[#00b0ff] to-[#00e5ff]",
+      bg: "bg-gradient-to-tr from-[#ff6b9d] to-[#ff85b8]",
     },
     {
       id: "rescued",
@@ -68,53 +76,52 @@ export const AndroidDesktop: React.FC = () => {
       id: "lullaby",
       label: "Lullaby Lab",
       icon: <Music className="w-6 h-6 text-black" />,
-      bg: "bg-gradient-to-tr from-[#00e676] to-[#69f0ae]",
+      bg: "bg-gradient-to-tr from-[#5eead4] to-[#99f6e4]",
     },
     {
       id: "chat",
       label: "Messages",
       icon: <MessageSquare className="w-6 h-6 text-white" />,
-      bg: "bg-gradient-to-tr from-[#7c4dff] to-[#b388ff]",
+      bg: "bg-gradient-to-tr from-[#c084fc] to-[#e879f9]",
     },
     {
       id: "notes",
       label: "Lost Notes",
       icon: <Heart className="w-6 h-6 text-white" />,
-      bg: "bg-gradient-to-tr from-[#ff1744] to-[#ff5252]",
+      bg: "bg-gradient-to-tr from-[#ff3377] to-[#ff7597]",
     },
     {
       id: "router",
       label: "Star Router",
       icon: <Network className="w-6 h-6 text-white" />,
-      bg: "bg-gradient-to-tr from-[#2979ff] to-[#448aff]",
+      bg: "bg-gradient-to-tr from-[#818cf8] to-[#a5b4fc]",
     },
     {
       id: "geocities",
       label: "Web Archive",
       icon: <Globe className="w-6 h-6 text-white" />,
-      bg: "bg-gradient-to-tr from-[#aa00ff] to-[#ea80fc]",
+      bg: "bg-gradient-to-tr from-[#e879f9] to-[#f472b6]",
     },
     {
       id: "bin",
       label: "Recycle Basket",
       icon: <Trash2 className="w-6 h-6 text-white" />,
-      bg: "bg-gradient-to-tr from-[#78909c] to-[#b0bec5]",
+      bg: "bg-gradient-to-tr from-[#64748b] to-[#94a3b8]",
     },
     {
       id: "webring",
       label: "Webring Hub",
       icon: <Award className="w-6 h-6 text-white" />,
-      bg: "bg-gradient-to-tr from-[#00bfa5] to-[#64ffda]",
-    },
-    {
-      id: "nowhere",
-      label: "Secret Room",
-      icon: <Key className="w-6 h-6 text-white" />,
-      bg: "bg-gradient-to-tr from-[#d500f9] to-[#f50057]",
+      bg: "bg-gradient-to-tr from-[#2dd4bf] to-[#5eead4]",
     },
   ];
 
-  const handleAppLaunch = (id: WindowId) => {
+  const handleAppLaunch = (id: WindowId | "story") => {
+    if (id === "story") {
+      audio.click();
+      enterStory();
+      return;
+    }
     audio.click();
     openWindow(id);
   };
@@ -128,10 +135,10 @@ export const AndroidDesktop: React.FC = () => {
   };
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#07090e] text-[#f4f4f6] font-sans select-none selection:bg-[#00ff66] selection:text-black">
+    <div className="relative w-screen h-screen overflow-hidden bg-[#0e0714] text-[#fff0f7] font-sans select-none selection:bg-[#ff85b8] selection:text-[#3d001e]">
       {/* Dynamic Ambient Background Glows */}
-      <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-[#00ff66]/6 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[450px] h-[450px] bg-[#00e5ff]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/3 w-[550px] h-[550px] bg-[#ff85b8]/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#c084fc]/8 rounded-full blur-[130px] pointer-events-none" />
 
       {/* Zero-GC Particle Canvas Overlay */}
       <SparkCanvas />
@@ -150,8 +157,8 @@ export const AndroidDesktop: React.FC = () => {
         {/* Centerpiece: Fourie Living Mascot Companion */}
         <div className="relative my-4 flex flex-col items-center justify-center text-center">
           {/* Material You Speech Bubble */}
-          <div className="mb-2 px-4 py-1.5 rounded-full bg-[#121620]/90 border border-white/10 shadow-lg text-xs font-sans text-white/90 flex items-center gap-2 animate-bounce">
-            <Sparkles className="w-3.5 h-3.5 text-[#00ff66]" />
+          <div className="mb-2 px-4 py-1.5 rounded-full bg-[#1b0e24]/90 border border-[#ff85b8]/35 shadow-[0_4px_20px_rgba(255,133,184,0.3)] text-xs font-sans text-white/95 flex items-center gap-2 animate-bounce">
+            <Heart className="w-3.5 h-3.5 text-[#ff85b8] fill-[#ff85b8]" />
             <span>"Kuch kho gaya? Maine sambhal ke rakha hai."</span>
           </div>
 
@@ -163,7 +170,7 @@ export const AndroidDesktop: React.FC = () => {
             <FourieCharacter size={200} />
           </div>
 
-          <div className="mt-2 text-[11px] font-mono text-[#555c6d] uppercase tracking-widest">
+          <div className="mt-2 text-[11px] font-mono text-[#d8b4c8]/70 uppercase tracking-widest">
             Tap companion to tickle star charm
           </div>
         </div>

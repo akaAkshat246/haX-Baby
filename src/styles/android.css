@@ -1,19 +1,19 @@
 /* Android 15 & Material 3 Desktop OS Styling */
 
 :root {
-  --m3-surface: #0b0e14;
-  --m3-surface-container: #121620;
-  --m3-surface-container-high: #191f2c;
-  --m3-surface-container-highest: #22293a;
-  --m3-primary: #00ff66;
-  --m3-primary-container: rgba(0, 255, 102, 0.15);
-  --m3-on-primary: #003919;
-  --m3-secondary-cyan: #00e5ff;
-  --m3-secondary-amber: #ffb703;
-  --m3-secondary-purple: #b266ff;
-  --m3-secondary-pink: #ff3366;
-  --m3-outline: rgba(255, 255, 255, 0.12);
-  --m3-outline-variant: rgba(255, 255, 255, 0.06);
+  --m3-surface: #120817;
+  --m3-surface-container: #1b0e22;
+  --m3-surface-container-high: #261430;
+  --m3-surface-container-highest: #331a40;
+  --m3-primary: #ff85b8;
+  --m3-primary-container: rgba(255, 133, 184, 0.2);
+  --m3-on-primary: #3d001e;
+  --m3-secondary-cyan: #5eead4;
+  --m3-secondary-amber: #fde047;
+  --m3-secondary-purple: #c084fc;
+  --m3-secondary-pink: #ff3377;
+  --m3-outline: rgba(255, 182, 217, 0.18);
+  --m3-outline-variant: rgba(255, 182, 217, 0.08);
   --m3-font: "Space Grotesk", "Inter", -apple-system, sans-serif;
 }
 
@@ -170,4 +170,69 @@
 
 .android-nav-btn:active {
   transform: scale(0.88);
+}
+
+/* Story Landing Page & Artwork in Motion */
+@keyframes kenBurnsSoft {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.06) translate(-1%, -1%);
+  }
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes haloRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+    filter: drop-shadow(0 0 15px rgba(255, 133, 184, 0.4));
+  }
+  50% {
+    opacity: 0.95;
+    filter: drop-shadow(0 0 30px rgba(255, 133, 184, 0.8));
+  }
+}
+
+.motion-art-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 182, 217, 0.25);
+  box-shadow: 0 20px 50px rgba(18, 9, 25, 0.7), 0 0 40px rgba(255, 133, 184, 0.15);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.motion-art-frame:hover {
+  border-color: rgba(255, 182, 217, 0.5);
+  box-shadow: 0 30px 70px rgba(18, 9, 25, 0.85), 0 0 60px rgba(255, 133, 184, 0.3);
+}
+
+.motion-art-img {
+  animation: kenBurnsSoft 16s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.glow-halo-ring {
+  animation: haloRotate 24s linear infinite;
 }

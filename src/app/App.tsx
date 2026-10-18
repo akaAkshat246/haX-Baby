@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { AndroidDesktop } from "../android/AndroidDesktop";
+import { StoryLanding } from "../story/StoryLanding";
 import { initChaosObserver } from "../core/shape";
 import { useStore } from "../core/store";
 import { audio } from "../core/audio";
@@ -19,6 +20,7 @@ const KONAMI_SEQUENCE = [
 ];
 
 export const App: React.FC = () => {
+  const viewMode = useStore((s) => s.viewMode);
   const openWindow = useStore((s) => s.openWindow);
   const unlockSecret = useStore((s) => s.unlockSecret);
   const showToast = useStore((s) => s.showToast);
@@ -62,5 +64,6 @@ export const App: React.FC = () => {
     };
   }, [openWindow, unlockSecret, showToast]);
 
-  return <AndroidDesktop />;
+  return viewMode === "story" ? <StoryLanding /> : <AndroidDesktop />;
 };
+

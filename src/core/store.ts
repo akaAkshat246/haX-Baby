@@ -68,6 +68,12 @@ interface AppState {
   toastMessage: string | null;
   showToast: (msg: string) => void;
 
+  // View mode: Story Landing vs Android Desktop
+  viewMode: "story" | "desktop";
+  setViewMode: (mode: "story" | "desktop") => void;
+  enterDesktop: (fullscreen?: boolean) => void;
+  enterStory: () => void;
+
   // Secret state
   secretUnlocked: boolean;
   unlockSecret: () => void;
@@ -222,4 +228,29 @@ export const useStore = create<AppState>((set, get) => ({
 
   secretUnlocked: false,
   unlockSecret: () => set({ secretUnlocked: true }),
+
+  viewMode: "story",
+  setViewMode: (viewMode) => set({ viewMode }),
+  enterDesktop: (fullscreen = true) => {
+    if (fullscreen && typeof document !== "undefined") {
+      try {
+        const elem = document.documentElement as any;
+        if (!document.fullscreenElement) {
+          if (elem.requestFullscreen) {
+            elem.requestFullscreen().catch(() => {});
+          } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+          } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+          }
+        }
+      } catch (err) {
+        // fullscreen rejected or blocked by browser policy
+      }
+    }
+    set({ viewMode: "desktop" });
+  },
+  enterStory: () => {
+    set({ viewMode: "story" });
+  },
 }));

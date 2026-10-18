@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Room3DScene } from "./Room3DScene";
 import { tomAudio } from "./TalkingTomAudio";
+import { freeLlm, LlmConfig } from "./freeLlmClient";
 import { useStore } from "../core/store";
 import confetti from "canvas-confetti";
 import {
@@ -24,6 +25,10 @@ import {
   Coffee,
   Heart,
   Wind,
+  Bot,
+  Settings,
+  HelpCircle,
+  Check,
 } from "lucide-react";
 
 export const TalkingPandaApp: React.FC = () => {
@@ -35,11 +40,16 @@ export const TalkingPandaApp: React.FC = () => {
 
   // UI States
   const [isMobileFrame, setIsMobileFrame] = useState(false);
-  const [speechBubbleText, setSpeechBubbleText] = useState("Hey! I'm your 3D Talking Panda! 🐾");
+  const [speechBubbleText, setSpeechBubbleText] = useState("Hey! I'm your cute 3D Talking Panda! 🐾");
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [chatInput, setChatInput] = useState("");
   const [walkSpeed, setWalkSpeed] = useState(4.0);
+  const [aiChatMode, setAiChatMode] = useState(true); // AI Brain vs Mimic Repeat
+  const [showLlmModal, setShowLlmModal] = useState(false);
+  const [llmProvider, setLlmProvider] = useState<"pollinations" | "groq">("pollinations");
+  const [groqKey, setGroqKey] = useState("");
+  const [isSavedKey, setIsSavedKey] = useState(false);
 
   // Sub-menus
   const [activeMenu, setActiveMenu] = useState<"none" | "feed" | "actions" | "wardrobe">("none");
@@ -48,6 +58,13 @@ export const TalkingPandaApp: React.FC = () => {
 
   // Floating heart / particle animation trigger
   const [reactionOverlay, setReactionOverlay] = useState<string | null>(null);
+
+  // Load initial LLM configuration
+  useEffect(() => {
+    const cfg = freeLlm.getConfig();
+    setLlmProvider(cfg.provider === "groq" ? "groq" : "pollinations");
+    if (cfg.apiKey) setGroqKey(cfg.apiKey);
+  }, []);
 
   // Initialize Three.js 3D Room Scene
   useEffect(() => {
@@ -65,6 +82,13 @@ export const TalkingPandaApp: React.FC = () => {
     tomAudio.onSpeechEnd = () => {
       setIsSpeaking(false);
       if (sceneRef.current) sceneRef.current.panda.isSpeaking = false;
+    };
+
+    // Handle 3D Physical Obstacle Collision Bump!
+    scene.onPandaBump = (obstacleName: string) => {
+      tomAudio.playBoing();
+      triggerReaction("💥");
+      setSpeechBubbleText(`Oof! Bumped into ${obstacleName}! 😅🐾`);
     };
 
     // Handle 3D Raycasted Pokes like Talking Tom!
@@ -114,18 +138,35 @@ export const TalkingPandaApp: React.FC = () => {
     setTimeout(() => setReactionOverlay(null), 1000);
   };
 
-  // Talking Tom's Listen & High-Pitch Repeat
+  // Talking Tom's Listen & Voice Interaction (AI Brain vs Repeat)
   const handleTalkButton = () => {
     if (isListening) return;
     setIsListening(true);
     setSpeechBubbleText("Listening to you... Speak something! 🎤");
 
-    tomAudio.listen((transcript) => {
+    tomAudio.listen(async (transcript) => {
       setIsListening(false);
+      if (!transcript || transcript.trim().length === 0) {
+        setSpeechBubbleText("I couldn't hear clearly! Try speaking again! 🐾");
+        return;
+      }
+
       setSpeechBubbleText(`"${transcript}"`);
 
-      // Repeat back in funny cartoon helium voice!
-      tomAudio.repeatInTomVoice(transcript);
+      if (aiChatMode) {
+        // AI Brain Mode (Free LLM)
+        setSpeechBubbleText(`Thinking... 🐾💭`);
+        try {
+          const reply = await freeLlm.askPanda(transcript);
+          setSpeechBubbleText(reply);
+          tomAudio.repeatInTomVoice(reply);
+        } catch {
+          tomAudio.repeatInTomVoice(transcript);
+        }
+      } else {
+        // Classic Talking Tom Mimic Repeat
+        tomAudio.repeatInTomVoice(transcript);
+      }
     });
   };
 
@@ -179,7 +220,7 @@ export const TalkingPandaApp: React.FC = () => {
 
       case "walk":
         p.animState = "walk";
-        setSpeechBubbleText("Walking around! Move your cursor on the floor! 🐾");
+        setSpeechBubbleText("Walking around! Click on the floor or bump into furniture! 🐾");
         break;
     }
     setActiveMenu("none");
@@ -239,30 +280,55 @@ export const TalkingPandaApp: React.FC = () => {
     }
   };
 
-  // Chat message submit
-  const handleSendChat = (e?: React.FormEvent) => {
+  // Chat message submit with Free LLM Brain
+  const handleSendChat = async (e?: React.FormEvent, customQuery?: string) => {
     if (e) e.preventDefault();
-    if (!chatInput.trim()) return;
+    const query = (customQuery || chatInput).trim();
+    if (!query) return;
 
-    const text = chatInput.trim();
-    setChatInput("");
-    setSpeechBubbleText(`"${text}"`);
+    if (!customQuery) setChatInput("");
+    setSpeechBubbleText(`Thinking... 🐾💭`);
 
     // Intelligent answers & voice repeat
-    const lower = text.toLowerCase();
-    if (lower.includes("dance")) {
+    const lower = query.toLowerCase();
+    if (lower.includes("dance") || lower.includes("nacho")) {
       handleAction("dance");
+      return;
     } else if (lower.includes("bamboo") || lower.includes("eat") || lower.includes("khana")) {
       handleFeed("bamboo");
+      return;
     } else if (lower.includes("chili") || lower.includes("mirchi")) {
       handleFeed("chili");
+      return;
     } else if (lower.includes("sleep") || lower.includes("so jao")) {
       handleAction("sleep");
+      return;
     } else if (lower.includes("fart")) {
       handleAction("fart");
-    } else {
-      tomAudio.repeatInTomVoice(text);
+      return;
     }
+
+    // Ask Free LLM API
+    try {
+      const reply = await freeLlm.askPanda(query);
+      setSpeechBubbleText(reply);
+      tomAudio.repeatInTomVoice(reply);
+    } catch {
+      tomAudio.repeatInTomVoice(query);
+    }
+  };
+
+  // Save LLM Config
+  const handleSaveLlmConfig = () => {
+    freeLlm.setConfig({
+      provider: llmProvider,
+      apiKey: groqKey.trim() || undefined,
+    });
+    setIsSavedKey(true);
+    setTimeout(() => {
+      setIsSavedKey(false);
+      setShowLlmModal(false);
+    }, 800);
   };
 
   // Fullscreen trigger
@@ -299,6 +365,31 @@ export const TalkingPandaApp: React.FC = () => {
 
         {/* Center / Right: View & Frame Switchers */}
         <div className="pointer-events-auto flex items-center gap-2 p-1 rounded-2xl bg-[#141624]/85 backdrop-blur-xl border border-white/10 shadow-xl">
+          {/* AI Mode Toggle (Free LLM vs Mimic) */}
+          <button
+            type="button"
+            onClick={() => setAiChatMode(!aiChatMode)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              aiChatMode
+                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-indigo-500/20"
+                : "text-white/70 hover:text-white hover:bg-white/10"
+            }`}
+            title="Toggle between AI Conversational Brain (Free LLM) and Talking Tom Repeater"
+          >
+            <Bot className="w-3.5 h-3.5" />
+            <span>{aiChatMode ? "AI Brain: ON" : "Mimic Mode"}</span>
+          </button>
+
+          {/* Free LLM Config Settings */}
+          <button
+            type="button"
+            onClick={() => setShowLlmModal(true)}
+            className="p-1.5 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            title="Free LLM API Settings (Groq / Pollinations)"
+          >
+            <Settings className="w-3.5 h-3.5" />
+          </button>
+
           {/* Mobile vs Desktop Frame Switcher */}
           <button
             type="button"
@@ -586,19 +677,19 @@ export const TalkingPandaApp: React.FC = () => {
             </form>
 
             <div className="flex flex-wrap gap-1 text-[10px]">
-              {["Dance karo!", "Bamboo khao!", "Chili khao!", "Tell me a joke"].map((chip) => (
+              {[
+                "Tell me a joke",
+                "Who are you?",
+                "Dance karo!",
+                "Bamboo khao!",
+                "Walk to table",
+                "What is your room?",
+              ].map((chip) => (
                 <button
                   key={chip}
                   type="button"
-                  onClick={() => {
-                    setChatInput(chip);
-                    const lower = chip.toLowerCase();
-                    if (lower.includes("dance")) handleAction("dance");
-                    else if (lower.includes("bamboo")) handleFeed("bamboo");
-                    else if (lower.includes("chili")) handleFeed("chili");
-                    else tomAudio.repeatInTomVoice(chip);
-                  }}
-                  className="px-2 py-0.5 rounded-lg bg-white/5 hover:bg-indigo-500/20 text-white/80 border border-white/10 cursor-pointer"
+                  onClick={() => handleSendChat(undefined, chip)}
+                  className="px-2 py-0.5 rounded-lg bg-white/5 hover:bg-indigo-500/25 text-white/85 border border-white/10 cursor-pointer transition-colors"
                 >
                   {chip}
                 </button>
@@ -632,6 +723,119 @@ export const TalkingPandaApp: React.FC = () => {
           <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/50 rounded-full z-50 pointer-events-none" />
         )}
       </div>
+
+      {/* Free LLM API Settings Modal */}
+      {showLlmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-fadeIn">
+          <div className="w-full max-w-md p-6 rounded-3xl bg-[#141624] border border-white/15 shadow-2xl text-white space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bot className="w-5 h-5 text-indigo-400" />
+                <h3 className="font-bold text-base">Free LLM API Brain</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowLlmModal(false)}
+                className="text-white/50 hover:text-white p-1 text-sm cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-white/70 leading-relaxed">
+              Panda uses free, high-speed LLM APIs recommended in{" "}
+              <a
+                href="https://github.com/open-free-llm-api/awesome-freellm-apis"
+                target="_blank"
+                rel="noreferrer"
+                className="text-indigo-400 underline hover:text-indigo-300 font-medium"
+              >
+                awesome-freellm-apis
+              </a>
+              . By default, Pollinations AI runs with 0 API keys needed!
+            </p>
+
+            {/* Provider selection */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-white/80">API Provider</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setLlmProvider("pollinations")}
+                  className={`p-2.5 rounded-xl border text-xs font-medium text-left transition-colors cursor-pointer ${
+                    llmProvider === "pollinations"
+                      ? "bg-indigo-600/30 border-indigo-400 text-white"
+                      : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10"
+                  }`}
+                >
+                  <div className="font-bold flex items-center justify-between">
+                    <span>Pollinations AI</span>
+                    {llmProvider === "pollinations" && <Check className="w-3.5 h-3.5 text-emerald-400" />}
+                  </div>
+                  <div className="text-[10px] text-emerald-400 mt-0.5">100% Free · No Key Needed</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setLlmProvider("groq")}
+                  className={`p-2.5 rounded-xl border text-xs font-medium text-left transition-colors cursor-pointer ${
+                    llmProvider === "groq"
+                      ? "bg-indigo-600/30 border-indigo-400 text-white"
+                      : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10"
+                  }`}
+                >
+                  <div className="font-bold flex items-center justify-between">
+                    <span>Groq Cloud</span>
+                    {llmProvider === "groq" && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                  </div>
+                  <div className="text-[10px] text-amber-400 mt-0.5">Free Key · Llama 3.3 70B</div>
+                </button>
+              </div>
+            </div>
+
+            {llmProvider === "groq" && (
+              <div className="space-y-1.5 animate-fadeIn">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-white/80">Groq API Key</label>
+                  <a
+                    href="https://console.groq.com/keys"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[10px] text-indigo-400 underline hover:text-indigo-300"
+                  >
+                    Get free Groq key ↗
+                  </a>
+                </div>
+                <input
+                  type="password"
+                  value={groqKey}
+                  onChange={(e) => setGroqKey(e.target.value)}
+                  placeholder="gsk_..."
+                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-400 font-mono"
+                />
+              </div>
+            )}
+
+            <div className="pt-2 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowLlmModal(false)}
+                className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs text-white font-medium cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveLlmConfig}
+                className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs text-white font-bold flex items-center gap-1.5 cursor-pointer shadow-lg"
+              >
+                {isSavedKey ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : null}
+                <span>{isSavedKey ? "Saved!" : "Save Settings"}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

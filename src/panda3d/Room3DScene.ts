@@ -1,6 +1,19 @@
 import * as THREE from "three";
 import { Panda3DModel, PandaAnimState } from "./Panda3DModel";
 
+export interface Obstacle3D {
+  id: string;
+  name: string;
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
+  isCircle?: boolean;
+  centerX?: number;
+  centerZ?: number;
+  radius?: number;
+}
+
 export class Room3DScene {
   public scene: THREE.Scene;
   public camera: THREE.PerspectiveCamera;
@@ -21,12 +34,53 @@ export class Room3DScene {
   public bounds = {
     minX: -4.8,
     maxX: 4.8,
-    minZ: -2.5, // near the window
-    maxZ: 4.5,  // foreground near camera
+    minZ: -2.3, // near the window
+    maxZ: 4.2,  // foreground near camera
   };
+
+  // 3D Furniture Obstacles for realistic bumping physics
+  public obstacles: Obstacle3D[] = [
+    {
+      id: "sofa",
+      name: "Comfy Sofa",
+      minX: 2.2,
+      maxX: 6.2,
+      minZ: -1.8,
+      maxZ: 0.2,
+    },
+    {
+      id: "coffee_table",
+      name: "Coffee Table",
+      minX: 2.4,
+      maxX: 5.2,
+      minZ: 0.65,
+      maxZ: 2.15,
+    },
+    {
+      id: "study_desk",
+      name: "Study Desk",
+      minX: -6.0,
+      maxX: -3.2,
+      minZ: -2.1,
+      maxZ: -0.3,
+    },
+    {
+      id: "beanbag",
+      name: "Cozy Beanbag",
+      isCircle: true,
+      centerX: -1.8,
+      centerZ: -1.8,
+      radius: 1.25,
+      minX: -3.05,
+      maxX: -0.55,
+      minZ: -3.05,
+      maxZ: -0.55,
+    },
+  ];
 
   public isFollowingCursor: boolean = true;
   public onPandaPoke?: (part: string) => void;
+  public onPandaBump?: (obstacleName: string) => void;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -444,10 +498,89 @@ export class Room3DScene {
         while (diff > Math.PI) diff -= Math.PI * 2;
         this.panda.group.rotation.y += diff * 0.12;
 
-        // Step forward in 3D
+        // Proposed next step in 3D
         const step = Math.min(dist, delta * this.panda.walkSpeed * 0.95);
-        cur.x += (dx / dist) * step;
-        cur.z += (dz / dist) * step;
+        const nextX = cur.x + (dx / dist) * step;
+        const nextZ = cur.z + (dz / dist) * step;
+
+        // Collision Check against all obstacles (Panda radius = 0.7)
+        const pandaRadius = 0.7;
+        let hitObstacle: Obstacle3D | null = null;
+        let pushX = 0;
+        let pushZ = 0;
+
+        // 1. Check room boundaries
+        if (nextX < this.bounds.minX) {
+          hitObstacle = { id: "wall_left", name: "Wall", minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
+          pushX = 0.35;
+        } else if (nextX > this.bounds.maxX) {
+          hitObstacle = { id: "wall_right", name: "Wall", minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
+          pushX = -0.35;
+        } else if (nextZ < this.bounds.minZ) {
+          hitObstacle = { id: "window", name: "Window Glass", minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
+          pushZ = 0.35;
+        } else if (nextZ > this.bounds.maxZ) {
+          hitObstacle = { id: "wall_front", name: "Edge of Room", minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
+          pushZ = -0.35;
+        }
+
+        // 2. Check 3D Furniture Obstacles
+        if (!hitObstacle) {
+          for (const obs of this.obstacles) {
+            if (obs.isCircle && obs.centerX !== undefined && obs.centerZ !== undefined && obs.radius) {
+              const ox = nextX - obs.centerX;
+              const oz = nextZ - obs.centerZ;
+              const d = Math.sqrt(ox * ox + oz * oz);
+              if (d < obs.radius + pandaRadius) {
+                hitObstacle = obs;
+                pushX = (ox / d) * 0.45;
+                pushZ = (oz / d) * 0.45;
+                break;
+              }
+            } else {
+              if (
+                nextX >= obs.minX - pandaRadius &&
+                nextX <= obs.maxX + pandaRadius &&
+                nextZ >= obs.minZ - pandaRadius &&
+                nextZ <= obs.maxZ + pandaRadius
+              ) {
+                hitObstacle = obs;
+                const dLeft = Math.abs(nextX - (obs.minX - pandaRadius));
+                const dRight = Math.abs(nextX - (obs.maxX + pandaRadius));
+                const dTop = Math.abs(nextZ - (obs.minZ - pandaRadius));
+                const dBottom = Math.abs(nextZ - (obs.maxZ + pandaRadius));
+                const minD = Math.min(dLeft, dRight, dTop, dBottom);
+                if (minD === dLeft) pushX = -0.45;
+                else if (minD === dRight) pushX = 0.45;
+                else if (minD === dTop) pushZ = -0.45;
+                else pushZ = 0.45;
+                break;
+              }
+            }
+          }
+        }
+
+        if (hitObstacle) {
+          // BUMP! Never walk inside the obstacle, bounce back!
+          cur.x += pushX;
+          cur.z += pushZ;
+          target.copy(cur);
+          this.panda.animState = "bump";
+
+          if (this.onPandaBump) {
+            this.onPandaBump(hitObstacle.name);
+          }
+
+          setTimeout(() => {
+            if (this.panda.animState === "bump") {
+              this.panda.animState = "idle";
+            }
+          }, 850);
+        } else {
+          // Clean safe step
+          cur.x = nextX;
+          cur.z = nextZ;
+        }
       } else {
         // Arrived at target, switch to idle breathing
         this.panda.animState = "idle";

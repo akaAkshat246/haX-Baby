@@ -150,7 +150,7 @@ export const StoryLanding: React.FC = () => {
             className="px-3.5 py-1.5 rounded-full text-xs font-semibold font-sans bg-gradient-to-r from-[#ec4899] to-[#a855f7] text-white shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer border border-white/20"
             title="Open 3D AI Talking Kitty Room"
           >
-            <span>🐱</span>
+            <Sparkles className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">3D Kitty Room</span>
           </button>
 
@@ -256,22 +256,22 @@ export const StoryLanding: React.FC = () => {
             {/* Feature Highlights Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-4 max-w-2xl mx-auto text-left">
               <div className="p-3.5 rounded-2xl bg-[#14081c]/80 border border-white/5">
-                <div className="text-lg mb-1">🧸</div>
+                <Sparkles className="w-5 h-5 text-pink-400 mb-1" />
                 <div className="text-xs font-bold text-white">Living Mascot</div>
                 <div className="text-[11px] text-[#8b6880]">Reactive Companion</div>
               </div>
               <div className="p-3.5 rounded-2xl bg-[#14081c]/80 border border-white/5">
-                <div className="text-lg mb-1">🎹</div>
+                <Volume2 className="w-5 h-5 text-purple-400 mb-1" />
                 <div className="text-xs font-bold text-white">Lullaby Lab</div>
                 <div className="text-[11px] text-[#8b6880]">16-Step Synthesizer</div>
               </div>
               <div className="p-3.5 rounded-2xl bg-[#14081c]/80 border border-white/5">
-                <div className="text-lg mb-1">💌</div>
+                <Heart className="w-5 h-5 text-rose-400 mb-1" />
                 <div className="text-xs font-bold text-white">Lost Notes</div>
                 <div className="text-[11px] text-[#8b6880]">Sanctuary Guestbook</div>
               </div>
               <div className="p-3.5 rounded-2xl bg-[#14081c]/80 border border-white/5">
-                <div className="text-lg mb-1">🌐</div>
+                <Maximize2 className="w-5 h-5 text-cyan-400 mb-1" />
                 <div className="text-xs font-bold text-white">1999 Shrine</div>
                 <div className="text-[11px] text-[#8b6880]">GeoCities Relics</div>
               </div>
@@ -285,11 +285,11 @@ export const StoryLanding: React.FC = () => {
                 className="w-full sm:w-auto px-8 sm:px-12 py-4 rounded-full text-base sm:text-lg font-bold font-sans bg-gradient-to-r from-[#ff85b8] via-[#ffa8d0] to-[#fde047] text-[#340018] shadow-[0_8px_32px_rgba(255,133,184,0.6)] hover:shadow-[0_12px_45px_rgba(255,133,184,0.85)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer border border-white/40"
               >
                 <Maximize2 className="w-5 h-5" />
-                <span>✨ Dive Into Fourie's World · Launch Android OS ✨</span>
+                <span>Dive Into Fourie's World · Launch Android OS</span>
               </button>
 
               <div className="text-xs font-mono text-[#ffb6d9] flex items-center gap-2">
-                <span>✦ Automatically switches browser to Fullscreen Mode ✦</span>
+                <span>Automatically switches browser to Fullscreen Mode</span>
               </div>
             </div>
           </div>

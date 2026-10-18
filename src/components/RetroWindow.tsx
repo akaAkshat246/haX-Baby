@@ -5,7 +5,7 @@ import { audio } from "../core/audio";
 interface RetroWindowProps {
   id: WindowId;
   title: string;
-  icon?: string;
+  icon?: React.ReactNode;
   defaultXOffset?: number;
   children: React.ReactNode;
 }
@@ -13,7 +13,7 @@ interface RetroWindowProps {
 export const RetroWindow: React.FC<RetroWindowProps> = ({
   id,
   title,
-  icon = "📁",
+  icon,
   defaultXOffset = 0,
   children,
 }) => {

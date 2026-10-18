@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { audio } from "../core/audio";
 import { bus } from "../core/bus";
+import { Star, Heart, Moon, Sun, Cloud } from "lucide-react";
 
 interface Sticker {
   id: number;
@@ -51,10 +52,10 @@ export const GeoCitiesScene: React.FC = () => {
         {/* Nostalgic hax.baby Marquee */}
         <div className="w-full bg-[#090b10] border-y border-white/10 py-2.5 overflow-hidden text-xs font-mono text-[#00ff66]">
           <div className="animate-marquee whitespace-nowrap flex gap-10">
-            <span>✦ WELCOME TO BABY FOURIE'S COZY CORNER</span>
-            <span className="text-white/60">✦ SLEEP TIGHT IN THE 404 SANCTUARY</span>
-            <span>✦ NO DIGITAL MEMORY IS EVER LOST</span>
-            <span className="text-white/60">✦ BEST VIEWED IN 800x600 NOSTALGIA</span>
+            <span>WELCOME TO BABY FOURIE'S COZY CORNER</span>
+            <span className="text-white/60">SLEEP TIGHT IN THE 404 SANCTUARY</span>
+            <span>NO DIGITAL MEMORY IS EVER LOST</span>
+            <span className="text-white/60">BEST VIEWED IN 800x600 NOSTALGIA</span>
           </div>
         </div>
 
@@ -62,15 +63,15 @@ export const GeoCitiesScene: React.FC = () => {
           In the 2000s, websites were intimate personal scrapbooks with animated glitter, starry backgrounds, and webrings. When whole GeoCities neighborhoods went dark, Fourie caught the sparkle in their satchel.
         </p>
 
-        {/* Sticker Stamp Selector */}
+        {/* Pin Stamp Selector */}
         <div className="flex flex-wrap items-center justify-center gap-2 font-mono text-xs pt-1">
-          <span className="text-[#555c6d] uppercase tracking-wider text-[11px]">STAMP:</span>
+          <span className="text-[#555c6d] uppercase tracking-wider text-[11px]">MARKER:</span>
           {[
-            { id: "star", label: "⭐ Star" },
-            { id: "heart", label: "💖 Heart" },
-            { id: "moon", label: "🌙 Moon" },
-            { id: "teddy", label: "🧸 Baby" },
-            { id: "cloud", label: "☁️ Cloud" },
+            { id: "star", label: "Star", icon: <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" /> },
+            { id: "heart", label: "Heart", icon: <Heart className="w-3.5 h-3.5 text-pink-400 fill-pink-400" /> },
+            { id: "moon", label: "Moon", icon: <Moon className="w-3.5 h-3.5 text-cyan-400 fill-cyan-400" /> },
+            { id: "sun", label: "Sun", icon: <Sun className="w-3.5 h-3.5 text-amber-400 fill-amber-400" /> },
+            { id: "cloud", label: "Cloud", icon: <Cloud className="w-3.5 h-3.5 text-purple-400 fill-purple-400" /> },
           ].map((item) => (
             <button
               key={item.id}
@@ -79,43 +80,44 @@ export const GeoCitiesScene: React.FC = () => {
                 audio.click();
                 setSelectedSticker(item.id);
               }}
-              className={`px-3.5 py-1.5 rounded-full border transition-all text-xs ${
+              className={`px-3.5 py-1.5 rounded-full border transition-all text-xs flex items-center gap-1.5 ${
                 selectedSticker === item.id
                   ? "bg-[#00ff66] text-black border-[#00ff66] font-semibold shadow-[0_0_12px_rgba(0,255,102,0.4)]"
                   : "bg-white/[0.04] text-[#9da3b4] border-white/10 hover:border-white/20 hover:text-white"
               }`}
             >
-              {item.label}
+              {item.icon}
+              <span>{item.label}</span>
             </button>
           ))}
         </div>
 
-        {/* Interactive Sticker Scrapbook Corkboard */}
+        {/* Interactive Pin Corkboard */}
         <div
           onClick={handleBoardClick}
           className="w-full h-[280px] bg-[#090b10] border border-white/10 rounded-2xl relative overflow-hidden cursor-crosshair shadow-[0_20px_50px_rgba(0,0,0,0.85)] group"
-          title="Click anywhere to stamp glitter stickers!"
+          title="Click anywhere to place neon memory markers!"
         >
           {/* Subtle dot-grid pattern */}
           <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#00ff66_1px,transparent_1px)] [background-size:24px_24px]" />
 
           {/* Prompt banner in center */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none text-center font-mono text-[#555c6d] text-xs select-none">
-            [ CLICK ANYWHERE TO STAMP BABY MEMORIES ]
+            [ CLICK ANYWHERE TO PLACE NEON MEMORY MARKERS ]
           </div>
 
-          {/* Stamped Stickers */}
+          {/* Stamped Markers */}
           {stickers.map((s) => (
             <div
               key={s.id}
               style={{ left: `${s.x}%`, top: `${s.y}%` }}
-              className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none text-2xl animate-bounce"
+              className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none"
             >
-              {s.type === "star" && "⭐"}
-              {s.type === "heart" && "💖"}
-              {s.type === "moon" && "🌙"}
-              {s.type === "teddy" && "🧸"}
-              {s.type === "cloud" && "☁️"}
+              {s.type === "star" && <Star className="w-6 h-6 text-yellow-400 fill-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" />}
+              {s.type === "heart" && <Heart className="w-6 h-6 text-pink-400 fill-pink-400 drop-shadow-[0_0_8px_rgba(244,114,182,0.8)]" />}
+              {s.type === "moon" && <Moon className="w-6 h-6 text-cyan-400 fill-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />}
+              {s.type === "sun" && <Sun className="w-6 h-6 text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]" />}
+              {s.type === "cloud" && <Cloud className="w-6 h-6 text-purple-400 fill-purple-400 drop-shadow-[0_0_8px_rgba(192,132,252,0.8)]" />}
             </div>
           ))}
         </div>

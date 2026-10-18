@@ -40,7 +40,7 @@ export const App: React.FC = () => {
         audio.glitch();
         unlockSecret();
         openWindow("nowhere");
-        showToast("Easter Egg: Secret Backroom Unlocked! 🎮");
+        showToast("Easter Egg: Secret Backroom Unlocked!");
         konamiBuffer.clear();
       }
     };

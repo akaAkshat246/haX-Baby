@@ -3,7 +3,6 @@ import { Room3DScene } from "./Room3DScene";
 import { tomAudio } from "./TalkingTomAudio";
 import { freeLlm, LlmConfig } from "./freeLlmClient";
 import { useStore } from "../core/store";
-import confetti from "canvas-confetti";
 import {
   Mic,
   MicOff,
@@ -29,6 +28,8 @@ import {
   Settings,
   HelpCircle,
   Check,
+  Crown,
+  Disc,
 } from "lucide-react";
 
 export const TalkingPandaApp: React.FC = () => {
@@ -40,7 +41,7 @@ export const TalkingPandaApp: React.FC = () => {
 
   // UI States
   const [isMobileFrame, setIsMobileFrame] = useState(false);
-  const [speechBubbleText, setSpeechBubbleText] = useState("Meow! I'm your cute 3D Talking Kitty! 🎀🐾");
+  const [lastSpeechText, setLastSpeechText] = useState("Hello friend! I am your cute 3D kawaii kitten.");
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [chatInput, setChatInput] = useState("");
@@ -56,9 +57,6 @@ export const TalkingPandaApp: React.FC = () => {
   const [hasBow, setHasBow] = useState(true); // Pink bow enabled by default as in reference image!
   const [hasSunglasses, setHasSunglasses] = useState(false);
   const [hasHat, setHasHat] = useState(false);
-
-  // Floating heart / particle animation trigger
-  const [reactionOverlay, setReactionOverlay] = useState<string | null>(null);
 
   // Load initial LLM configuration
   useEffect(() => {
@@ -88,8 +86,7 @@ export const TalkingPandaApp: React.FC = () => {
     // Handle 3D Physical Obstacle Collision Bump!
     scene.onCatBump = (obstacleName: string) => {
       tomAudio.playBoing();
-      triggerReaction("💥");
-      setSpeechBubbleText(`Oof! Bumped my little nose into the ${obstacleName}! 😅🐾`);
+      setLastSpeechText(`Bumped into the ${obstacleName}!`);
     };
 
     // Handle 3D Raycasted Pokes like Talking Tom / Talking Angela!
@@ -97,24 +94,21 @@ export const TalkingPandaApp: React.FC = () => {
       if (part === "head") {
         tomAudio.playPurr();
         scene.cat.animState = "purr";
-        setSpeechBubbleText("Purrrr~ Chin scratches feel so heavenly! 😻💖");
-        triggerReaction("💖");
+        setLastSpeechText("Purr, chin scratches feel so wonderful.");
         setTimeout(() => {
           if (scene.cat.animState === "purr") scene.cat.animState = "idle";
         }, 1600);
       } else if (part === "belly") {
         tomAudio.playGiggle();
         scene.cat.animState = "poke_belly";
-        setSpeechBubbleText("Hehe! Tummy tickles! Wiggle wiggle! 😂💖");
-        triggerReaction("❤️");
+        setLastSpeechText("Hehe, tummy tickles! Wiggle wiggle.");
         setTimeout(() => {
           if (scene.cat.animState === "poke_belly") scene.cat.animState = "idle";
         }, 1400);
       } else {
         tomAudio.playMeow();
         scene.cat.animState = "wave";
-        setSpeechBubbleText("High-five with my soft pink toe beans! 🐾🎀");
-        triggerReaction("✨");
+        setLastSpeechText("High-five with soft pink kitten paws.");
         setTimeout(() => {
           if (scene.cat.animState === "wave") scene.cat.animState = "idle";
         }, 1200);
@@ -134,32 +128,27 @@ export const TalkingPandaApp: React.FC = () => {
     }
   }, [walkSpeed]);
 
-  const triggerReaction = (emoji: string) => {
-    setReactionOverlay(emoji);
-    setTimeout(() => setReactionOverlay(null), 1000);
-  };
-
   // Talking Tom's Listen & Voice Interaction (AI Brain vs Repeat)
   const handleTalkButton = () => {
     if (isListening) return;
     setIsListening(true);
-    setSpeechBubbleText("Listening to you... Speak to Kitty! 🎤🐾");
+    setLastSpeechText("Listening to you... Speak to Kitty");
 
     tomAudio.listen(async (transcript) => {
       setIsListening(false);
       if (!transcript || transcript.trim().length === 0) {
-        setSpeechBubbleText("Meow? I couldn't hear you clearly! Speak again! 🐾");
+        setLastSpeechText("Meow, I could not hear you clearly. Please try again.");
         return;
       }
 
-      setSpeechBubbleText(`"${transcript}"`);
+      setLastSpeechText(`"${transcript}"`);
 
       if (aiChatMode) {
         // AI Brain Mode (Free LLM)
-        setSpeechBubbleText(`Thinking... 🐾💭`);
+        setLastSpeechText("Thinking...");
         try {
           const reply = await freeLlm.askCat(transcript);
-          setSpeechBubbleText(reply);
+          setLastSpeechText(reply);
           tomAudio.repeatInTomVoice(reply);
         } catch {
           tomAudio.repeatInTomVoice(transcript);
@@ -180,8 +169,7 @@ export const TalkingPandaApp: React.FC = () => {
       case "purr":
         cat.animState = "purr";
         tomAudio.playPurr();
-        setSpeechBubbleText("Purrrrr~ Feeling so cozy and loved! 😽💖");
-        triggerReaction("💖");
+        setLastSpeechText("Purr, feeling so cozy and happy.");
         setTimeout(() => {
           if (cat.animState === "purr") cat.animState = "idle";
         }, 2500);
@@ -189,10 +177,9 @@ export const TalkingPandaApp: React.FC = () => {
 
       case "dance":
         cat.animState = "dance";
-        confetti({ particleCount: 85, spread: 85, origin: { y: 0.6 } });
         tomAudio.playTone(880, 0.3);
-        setSpeechBubbleText("Meow! Watch my happy kitten dance moves! 💃🎵");
-        tomAudio.repeatInTomVoice("Yay! Watch my playful kitten dance moves!");
+        setLastSpeechText("Watch my happy kitten dance moves!");
+        tomAudio.repeatInTomVoice("Watch my playful kitten dance moves!");
         setTimeout(() => {
           if (cat.animState === "dance") cat.animState = "idle";
         }, 3200);
@@ -200,21 +187,21 @@ export const TalkingPandaApp: React.FC = () => {
 
       case "sit":
         cat.animState = "sit";
-        setSpeechBubbleText("Tucked in my little paws! Perfect cat loaf pose! 🐾");
-        tomAudio.playTone(660, 0.15);
+        tomAudio.playMeow();
+        setLastSpeechText("Sitting quietly in a sweet kitten loaf pose.");
         break;
 
       case "sleep":
         cat.animState = "sleep";
         tomAudio.playYawn();
-        setSpeechBubbleText("Curling up in the warm sunbeam for a cat nap... Zzz... 😴");
+        setLastSpeechText("Curling up for a warm cat nap.");
         break;
 
       case "wave":
         cat.animState = "wave";
         tomAudio.playMeow();
-        setSpeechBubbleText("Meow friend! High-five with my soft pink toe beans! 👋🐾");
-        tomAudio.repeatInTomVoice("Meow! Welcome to my cozy sunlit room!");
+        setLastSpeechText("Hello dear friend! Welcome to my cozy room.");
+        tomAudio.repeatInTomVoice("Hello friend! Welcome to my cozy room!");
         setTimeout(() => {
           if (cat.animState === "wave") cat.animState = "idle";
         }, 1800);
@@ -222,14 +209,13 @@ export const TalkingPandaApp: React.FC = () => {
 
       case "walk":
         cat.animState = "walk";
-        setSpeechBubbleText("Kitten trot! Click anywhere on the floor to walk! 🐾");
+        setLastSpeechText("Click anywhere on the room floor to walk.");
         break;
 
       case "pout":
         cat.animState = "pout";
         tomAudio.playBoing();
-        setSpeechBubbleText("Startled jump! Swishing my tail! 😸💨");
-        triggerReaction("💨");
+        setLastSpeechText("Playful little jump!");
         setTimeout(() => {
           if (cat.animState === "pout") cat.animState = "idle";
         }, 1200);
@@ -246,28 +232,25 @@ export const TalkingPandaApp: React.FC = () => {
     if (food === "milk") {
       cat.animState = "sit";
       tomAudio.playMilkSlurp();
-      setSpeechBubbleText("Slurp slurp! Warm sweet milk! So yummy! 🥛😻");
-      triggerReaction("🥛");
+      setLastSpeechText("Warm sweet milk! Delicious!");
       setTimeout(() => {
         tomAudio.playPurr();
-        tomAudio.repeatInTomVoice("Purrr~ Delicious warm milk! Thank you!");
+        tomAudio.repeatInTomVoice("Delicious warm milk, thank you!");
       }, 900);
     } else if (food === "fish") {
       cat.animState = "sit";
       tomAudio.playMunch();
-      setSpeechBubbleText("Crunch crunch! Fresh crispy tuna fish! My favorite! 🐟😋");
-      triggerReaction("🐟");
+      setLastSpeechText("Crispy tuna fish, my absolute favorite!");
       setTimeout(() => {
-        tomAudio.repeatInTomVoice("Meow! That tuna fish was purr-fect!");
+        tomAudio.repeatInTomVoice("That crispy tuna fish was purr-fect!");
         if (cat.animState === "sit") cat.animState = "idle";
       }, 1400);
     } else if (food === "berry") {
       cat.animState = "dance";
       tomAudio.playTone(950, 0.2);
-      setSpeechBubbleText("Sweet strawberry cream! Brain freeze but so good! 🍓😍");
-      triggerReaction("🍓");
+      setLastSpeechText("Sweet strawberry cream!");
       setTimeout(() => {
-        tomAudio.repeatInTomVoice("Sweet sweet strawberry! Meow!");
+        tomAudio.repeatInTomVoice("Sweet strawberry cream, yummy!");
         if (cat.animState === "dance") cat.animState = "idle";
       }, 1500);
     }
@@ -279,7 +262,7 @@ export const TalkingPandaApp: React.FC = () => {
     if (sceneRef.current) {
       sceneRef.current.cat.toggleBow();
       setHasBow(!hasBow);
-      setSpeechBubbleText(hasBow ? "Bow off!" : "Look at my pretty pink bow! 🎀✨");
+      setLastSpeechText(hasBow ? "Pink ribbon bow removed." : "Wearing the pink ribbon bow.");
       tomAudio.playTone(850, 0.15);
     }
   };
@@ -288,7 +271,7 @@ export const TalkingPandaApp: React.FC = () => {
     if (sceneRef.current) {
       sceneRef.current.cat.toggleSunglasses();
       setHasSunglasses(!hasSunglasses);
-      setSpeechBubbleText(hasSunglasses ? "Back to natural look!" : "Look at my cool cat shades! 😎");
+      setLastSpeechText(hasSunglasses ? "Glasses removed." : "Wearing cool sunglasses.");
       tomAudio.playTone(700, 0.15);
     }
   };
@@ -297,7 +280,7 @@ export const TalkingPandaApp: React.FC = () => {
     if (sceneRef.current) {
       sceneRef.current.cat.toggleHat();
       setHasHat(!hasHat);
-      setSpeechBubbleText(hasHat ? "Hat off!" : "Princess party hat on! Ready to celebrate! 🎉");
+      setLastSpeechText(hasHat ? "Party hat removed." : "Wearing princess party hat.");
       tomAudio.playTone(850, 0.15);
     }
   };
@@ -309,31 +292,35 @@ export const TalkingPandaApp: React.FC = () => {
     if (!query) return;
 
     if (!customQuery) setChatInput("");
-    setSpeechBubbleText(`Thinking... 🐾💭`);
+    setLastSpeechText("Thinking...");
 
-    // Intelligent answers & voice repeat
     const lower = query.toLowerCase();
     if (lower.includes("purr") || lower.includes("love")) {
       handleAction("purr");
       return;
-    } else if (lower.includes("dance") || lower.includes("nacho")) {
+    } else if (lower.includes("dance")) {
       handleAction("dance");
       return;
-    } else if (lower.includes("milk") || lower.includes("doodh")) {
+    } else if (lower.includes("milk")) {
       handleFeed("milk");
       return;
-    } else if (lower.includes("fish") || lower.includes("machli") || lower.includes("tuna")) {
+    } else if (lower.includes("fish") || lower.includes("tuna")) {
       handleFeed("fish");
       return;
-    } else if (lower.includes("sleep") || lower.includes("so jao")) {
+    } else if (lower.includes("sleep")) {
       handleAction("sleep");
+      return;
+    } else if (lower.includes("meow")) {
+      tomAudio.playMeow();
+      setLastSpeechText("Meow! Sending lots of love.");
+      tomAudio.repeatInTomVoice("Meow! I love spending time with you.");
       return;
     }
 
     // Ask Free LLM API
     try {
       const reply = await freeLlm.askCat(query);
-      setSpeechBubbleText(reply);
+      setLastSpeechText(reply);
       tomAudio.repeatInTomVoice(reply);
     } catch {
       tomAudio.repeatInTomVoice(query);
@@ -373,7 +360,9 @@ export const TalkingPandaApp: React.FC = () => {
       <header className="fixed top-3 left-4 right-4 z-50 flex items-center justify-between pointer-events-none">
         {/* Left: 3D Talking Cat Brand Badge */}
         <div className="pointer-events-auto flex items-center gap-2.5 px-3.5 py-1.5 rounded-2xl bg-[#141624]/90 backdrop-blur-xl border border-white/10 shadow-xl">
-          <span className="text-xl">🐱</span>
+          <div className="w-6 h-6 rounded-lg bg-pink-500/20 flex items-center justify-center border border-pink-500/30">
+            <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+          </div>
           <div>
             <div className="text-xs font-bold text-white flex items-center gap-1.5">
               <span>Talking Kitty 3D</span>
@@ -396,7 +385,7 @@ export const TalkingPandaApp: React.FC = () => {
                 ? "bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-md shadow-pink-500/20"
                 : "text-white/70 hover:text-white hover:bg-white/10"
             }`}
-            title="Toggle between AI Conversational Brain (Free LLM) and Talking Tom Repeater"
+            title="Toggle between AI Conversational Brain and Talking Tom Repeater"
           >
             <Bot className="w-3.5 h-3.5" />
             <span>{aiChatMode ? "AI Brain: ON" : "Mimic Mode"}</span>
@@ -491,21 +480,7 @@ export const TalkingPandaApp: React.FC = () => {
         {/* 1. Real-Time Three.js 3D WebGL Canvas Mount */}
         <div ref={mountRef} className="absolute inset-0 w-full h-full cursor-pointer" />
 
-        {/* Reaction Overlay (e.g. hearts, milk, fish, stars) */}
-        {reactionOverlay && (
-          <div className="absolute inset-0 z-40 pointer-events-none flex items-center justify-center animate-ping">
-            <span className="text-7xl drop-shadow-2xl">{reactionOverlay}</span>
-          </div>
-        )}
-
-        {/* 2. Floating Dynamic Speech Bubble */}
-        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-40 pointer-events-none max-w-sm w-[90%] text-center">
-          <div className="relative inline-block px-5 py-2.5 rounded-2xl bg-white/95 backdrop-blur-md text-gray-900 shadow-[0_12px_35px_rgba(0,0,0,0.35)] text-xs sm:text-sm font-semibold border border-pink-200 animate-bounce">
-            {speechBubbleText}
-            {/* Bubble pointer tail */}
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 rotate-45 border-r border-b border-pink-200" />
-          </div>
-        </div>
+        {/* NOTE: No speech bubble above cat head, as requested by user. Everything is clear and unobstructed! */}
 
         {/* 3. Left Talking Cat Arcade Action Buttons */}
         <div className="absolute top-28 left-4 z-40 flex flex-col gap-2.5">
@@ -534,7 +509,7 @@ export const TalkingPandaApp: React.FC = () => {
             type="button"
             onClick={() => setActiveMenu(activeMenu === "wardrobe" ? "none" : "wardrobe")}
             className="w-12 h-12 rounded-full bg-rose-500/90 hover:bg-rose-400 text-white shadow-[0_8px_20px_rgba(244,63,94,0.5)] border-2 border-white/30 flex items-center justify-center transition-transform hover:scale-110 active:scale-90 cursor-pointer"
-            title="Pink Bow & Accessories"
+            title="Accessories"
           >
             <Glasses className="w-5 h-5" />
           </button>
@@ -559,15 +534,15 @@ export const TalkingPandaApp: React.FC = () => {
               onClick={() => handleFeed("milk")}
               className="px-4 py-2 rounded-xl bg-white/5 hover:bg-pink-500/30 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
             >
-              <span>🥛</span>
-              <span>Warm Sweet Milk</span>
+              <Coffee className="w-3.5 h-3.5 text-pink-300" />
+              <span>Warm Milk</span>
             </button>
             <button
               type="button"
               onClick={() => handleFeed("fish")}
               className="px-4 py-2 rounded-xl bg-white/5 hover:bg-cyan-500/30 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
             >
-              <span>🐟</span>
+              <Utensils className="w-3.5 h-3.5 text-cyan-300" />
               <span>Crispy Tuna Fish</span>
             </button>
             <button
@@ -575,7 +550,7 @@ export const TalkingPandaApp: React.FC = () => {
               onClick={() => handleFeed("berry")}
               className="px-4 py-2 rounded-xl bg-white/5 hover:bg-rose-500/30 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
             >
-              <span>🍓</span>
+              <Heart className="w-3.5 h-3.5 text-rose-300" />
               <span>Strawberry Cream</span>
             </button>
           </div>
@@ -583,13 +558,13 @@ export const TalkingPandaApp: React.FC = () => {
 
         {activeMenu === "actions" && (
           <div className="absolute top-28 left-20 z-40 p-3 rounded-2xl bg-[#141624]/95 backdrop-blur-2xl border border-white/15 shadow-2xl flex flex-col gap-2 animate-fadeIn">
-            <div className="text-[10px] font-mono text-white/60 uppercase font-bold px-1">Kitten Actions</div>
+            <div className="text-[10px] font-mono text-white/60 uppercase font-bold px-1">Kitty Actions</div>
             <button
               type="button"
               onClick={() => handleAction("purr")}
               className="px-4 py-2 rounded-xl bg-white/5 hover:bg-pink-500/30 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
             >
-              <span>😻</span>
+              <Heart className="w-3.5 h-3.5 text-pink-300" />
               <span>Purr & Knead</span>
             </button>
             <button
@@ -597,7 +572,7 @@ export const TalkingPandaApp: React.FC = () => {
               onClick={() => handleAction("dance")}
               className="px-4 py-2 rounded-xl bg-white/5 hover:bg-purple-500/30 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
             >
-              <span>💃</span>
+              <Sparkles className="w-3.5 h-3.5 text-purple-300" />
               <span>Playful Dance</span>
             </button>
             <button
@@ -605,7 +580,7 @@ export const TalkingPandaApp: React.FC = () => {
               onClick={() => handleAction("sit")}
               className="px-4 py-2 rounded-xl bg-white/5 hover:bg-amber-500/30 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
             >
-              <span>🧘</span>
+              <Disc className="w-3.5 h-3.5 text-amber-300" />
               <span>Cat Loaf / Sit</span>
             </button>
             <button
@@ -613,7 +588,7 @@ export const TalkingPandaApp: React.FC = () => {
               onClick={() => handleAction("sleep")}
               className="px-4 py-2 rounded-xl bg-white/5 hover:bg-indigo-500/30 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
             >
-              <span>🛏️</span>
+              <Wind className="w-3.5 h-3.5 text-indigo-300" />
               <span>Sunbeam Cat Nap</span>
             </button>
             <button
@@ -621,15 +596,15 @@ export const TalkingPandaApp: React.FC = () => {
               onClick={() => handleAction("wave")}
               className="px-4 py-2 rounded-xl bg-white/5 hover:bg-pink-500/30 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
             >
-              <span>👋</span>
-              <span>Sweet Friendly Wave</span>
+              <Smile className="w-3.5 h-3.5 text-pink-300" />
+              <span>Friendly Wave</span>
             </button>
             <button
               type="button"
               onClick={() => handleAction("walk")}
               className="px-4 py-2 rounded-xl bg-white/5 hover:bg-emerald-500/30 text-white text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
             >
-              <span>🐾</span>
+              <Play className="w-3.5 h-3.5 text-emerald-300" />
               <span>Floor Trot</span>
             </button>
           </div>
@@ -645,7 +620,7 @@ export const TalkingPandaApp: React.FC = () => {
                 hasBow ? "bg-pink-600 text-white" : "bg-white/5 hover:bg-pink-500/20 text-white"
               }`}
             >
-              <span>🎀</span>
+              <Heart className="w-3.5 h-3.5" />
               <span>Pink Ribbon Bow</span>
             </button>
             <button
@@ -655,8 +630,8 @@ export const TalkingPandaApp: React.FC = () => {
                 hasSunglasses ? "bg-cyan-600 text-white" : "bg-white/5 hover:bg-cyan-500/20 text-white"
               }`}
             >
-              <span>🕶️</span>
-              <span>Cool Cat Shades</span>
+              <Glasses className="w-3.5 h-3.5" />
+              <span>Cool Shades</span>
             </button>
             <button
               type="button"
@@ -665,13 +640,13 @@ export const TalkingPandaApp: React.FC = () => {
                 hasHat ? "bg-amber-600 text-white" : "bg-white/5 hover:bg-amber-500/20 text-white"
               }`}
             >
-              <span>🎉</span>
+              <Crown className="w-3.5 h-3.5" />
               <span>Princess Party Hat</span>
             </button>
           </div>
         )}
 
-        {/* 5. Center Bottom: The Iconic Glowing Microphone Repeat Button */}
+        {/* 5. Center Bottom: The Microphone Repeat Button */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-2">
           <button
             type="button"
@@ -688,18 +663,23 @@ export const TalkingPandaApp: React.FC = () => {
               <Mic className={`w-4 h-4 ${isListening ? "animate-spin" : ""}`} />
             </div>
             <span>
-              {isListening ? "Listening... Speak to Kitty!" : isSpeaking ? "Kitty Speaking! 🎀🐾" : "Tap to Talk & Repeat"}
+              {isListening ? "Listening... Speak to Kitty" : isSpeaking ? "Kitty Speaking..." : "Tap to Talk & Repeat"}
             </span>
           </button>
 
-          <span className="text-[10px] font-mono text-white/70 bg-black/40 px-2.5 py-0.5 rounded-full backdrop-blur-md">
-            Tap Kitty head to scratch, belly to tickle, or drag to walk!
+          <span className="text-[10px] font-mono text-white/70 bg-black/40 px-3 py-1 rounded-full backdrop-blur-md">
+            Tap kitten head to pet, belly to tickle, or click floor to walk
           </span>
         </div>
 
         {/* 6. Bottom-Right: Interactive Chat & Quick Chips */}
         <div className="absolute bottom-6 right-4 z-40 w-72 sm:w-80 hidden md:block">
           <div className="p-3 rounded-2xl bg-[#141624]/90 backdrop-blur-xl border border-white/10 shadow-2xl space-y-2">
+            {lastSpeechText && (
+              <div className="text-[11px] text-pink-200/90 bg-white/5 border border-pink-500/20 px-2.5 py-1.5 rounded-xl line-clamp-2">
+                {lastSpeechText}
+              </div>
+            )}
             <form onSubmit={handleSendChat} className="flex items-center gap-2">
               <input
                 type="text"
@@ -720,10 +700,10 @@ export const TalkingPandaApp: React.FC = () => {
               {[
                 "Tell me a joke",
                 "Who are you?",
-                "Purr for me!",
+                "Purr for me",
                 "Drink warm milk",
                 "Eat crispy tuna",
-                "Dance kitty!",
+                "Playful dance",
               ].map((chip) => (
                 <button
                   key={chip}
@@ -743,7 +723,7 @@ export const TalkingPandaApp: React.FC = () => {
           <div className="p-2.5 rounded-2xl bg-[#141624]/85 backdrop-blur-xl border border-white/10 shadow-lg space-y-1">
             <div className="text-[10px] font-semibold text-white/70">3D Trot Speed</div>
             <div className="flex items-center gap-1.5 text-xs">
-              <span>🐢</span>
+              <span className="text-[10px] text-white/50">Slow</span>
               <input
                 type="range"
                 min="1"
@@ -753,7 +733,7 @@ export const TalkingPandaApp: React.FC = () => {
                 onChange={(e) => setWalkSpeed(parseFloat(e.target.value))}
                 className="w-full accent-pink-500 cursor-pointer h-1.5 bg-white/20 rounded-lg"
               />
-              <span>🐇</span>
+              <span className="text-[10px] text-white/50">Fast</span>
             </div>
           </div>
         </div>
@@ -778,7 +758,7 @@ export const TalkingPandaApp: React.FC = () => {
                 onClick={() => setShowLlmModal(false)}
                 className="text-white/50 hover:text-white p-1 text-sm cursor-pointer"
               >
-                ✕
+                Close
               </button>
             </div>
 
@@ -792,7 +772,7 @@ export const TalkingPandaApp: React.FC = () => {
               >
                 awesome-freellm-apis
               </a>
-              . By default, Pollinations AI runs with 0 API keys needed!
+              . By default, Pollinations AI runs with zero API keys needed.
             </p>
 
             {/* Provider selection */}
@@ -812,7 +792,7 @@ export const TalkingPandaApp: React.FC = () => {
                     <span>Pollinations AI</span>
                     {llmProvider === "pollinations" && <Check className="w-3.5 h-3.5 text-emerald-400" />}
                   </div>
-                  <div className="text-[10px] text-emerald-400 mt-0.5">100% Free · No Key Needed</div>
+                  <div className="text-[10px] text-emerald-400 mt-0.5">Free - Zero Key Needed</div>
                 </button>
 
                 <button
@@ -828,7 +808,7 @@ export const TalkingPandaApp: React.FC = () => {
                     <span>Groq Cloud</span>
                     {llmProvider === "groq" && <Check className="w-3.5 h-3.5 text-amber-400" />}
                   </div>
-                  <div className="text-[10px] text-amber-400 mt-0.5">Free Key · Llama 3.3 70B</div>
+                  <div className="text-[10px] text-amber-400 mt-0.5">Free Key - Llama 3.3 70B</div>
                 </button>
               </div>
             </div>
@@ -843,7 +823,7 @@ export const TalkingPandaApp: React.FC = () => {
                     rel="noreferrer"
                     className="text-[10px] text-pink-400 underline hover:text-pink-300"
                   >
-                    Get free Groq key ↗
+                    Get free Groq key
                   </a>
                 </div>
                 <input

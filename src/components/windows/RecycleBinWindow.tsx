@@ -129,7 +129,7 @@ export const RecycleBinWindow: React.FC = () => {
       </div>
 
       <div className="text-xs font-mono text-[#555c6d] bg-white/[0.02] p-3 rounded-xl border border-white/10">
-        💡 Hint: Tap <span className="text-[#00ff66] underline">lost-lullaby.mid</span> to hear the forgotten song or <span className="text-[#00ff66] underline">secret_backroom_portal.key</span> to access the 404 Backroom!
+        Hint: Tap <span className="text-[#00ff66] underline">lost-lullaby.mid</span> to hear the forgotten song or <span className="text-[#00ff66] underline">secret_backroom_portal.key</span> to access the 404 Backroom!
       </div>
     </div>
   );

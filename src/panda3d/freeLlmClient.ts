@@ -6,12 +6,10 @@ export interface LlmConfig {
   model?: string;
 }
 
-const SYSTEM_PROMPT = `You are a super cute, adorable 3D Talking Baby Kitten living in a cozy sunlit room.
-You have soft silver-grey tabby fur, big sparkling amber eyes, and a pretty pink ribbon bow on your left ear.
-Your personality is sweet, affectionate, playful, cheerful, and full of soft purrs and meows (like Talking Angela meets a kawaii anime kitten).
-You love warm milk, crispy tuna fish, playing with yarn, afternoon sunbeam cat naps, and cuddling.
-Reply in 1 or 2 concise, charming sentences in a mix of friendly Hindi and English (Hinglish) with cute emojis.
-Occasionally say "Meow~" or "*purrs*". Never give long essays; stay punchy, sweet, and adorable!`;
+const SYSTEM_PROMPT = `You are an adorable, sweet, kawaii 3D baby kitten.
+You have big sparkling eyes, a delicate pink ribbon bow near your ear, soft tabby fur, and cute paws.
+You speak in a gentle, warm, and playful manner with cat sounds like "meow", "purr", and happy giggles.
+Always reply in 1 or 2 concise, sweet sentences. Never include emojis or stickers in your output. Never use Hindi font.`;
 
 export class FreeLlmClient {
   private config: LlmConfig = {
@@ -45,7 +43,7 @@ export class FreeLlmClient {
   // Ask AI with automatic fallback
   public async askPanda(userMessage: string): Promise<string> {
     const cleanMsg = userMessage.trim();
-    if (!cleanMsg) return "Meow~ Kuch bolo na dost! 🐾🎀";
+    if (!cleanMsg) return "Meow, speak to me sweet friend.";
 
     // 1. If Groq API key is configured (from console.groq.com/keys as in awesome-free-llm-apis)
     if (this.config.provider === "groq" && this.config.apiKey) {
@@ -69,7 +67,7 @@ export class FreeLlmClient {
         if (res.ok) {
           const data = await res.json();
           const reply = data.choices?.[0]?.message?.content;
-          if (reply) return reply.trim();
+          if (reply) return this.stripEmojis(reply.trim());
         }
       } catch (e) {
         console.warn("Groq request failed, trying zero-key fallback", e);
@@ -91,11 +89,11 @@ export class FreeLlmClient {
       if (res.ok) {
         const text = await res.text();
         if (text && text.trim().length > 0 && !text.includes("error")) {
-          return text.replace(/^"|"$/g, "").trim();
+          return this.stripEmojis(text.replace(/^"|"$/g, "").trim());
         }
       }
     } catch (e) {
-      console.warn("Pollinations zero-key request failed, using local witty fallback", e);
+      console.warn("Pollinations zero-key request failed, using local fallback", e);
     }
 
     // 3. Instant Smart Local Fallback (Always responsive!)
@@ -107,30 +105,36 @@ export class FreeLlmClient {
     return this.askPanda(userMessage);
   }
 
+  private stripEmojis(str: string): string {
+    return str
+      .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1FA00}-\u{1FAFF}]/gu, "")
+      .trim();
+  }
+
   private getLocalWittyReply(msg: string): string {
     const lower = msg.toLowerCase();
 
-    if (lower.includes("joke") || lower.includes("chutkula")) {
+    if (lower.includes("joke")) {
       const jokes = [
-        "Ek billi ne keyboard pe walk kiya aur website crash ho gayi! Developer bola: 'Ye bug nahi, purr-fect feature hai!' 😹🐾",
-        "Kittens ko homework pasand kyun nahi hota? Kyunki unhe lagta hai pencil sirf catch karne ke liye hoti hai! 🧶😸",
+        "A kitten walked across the keyboard and the app worked faster. The engineer said it was a purr-fect feature.",
+        "Why do kittens like laptops so much? Because they are made of warm mouse pads.",
       ];
       return jokes[Math.floor(Math.random() * jokes.length)];
     }
 
-    if (lower.includes("dance") || lower.includes("nacho")) {
-      return "Yay! Meow meow! Chalo playful kitten dance karte hain! Watch my paws in the air! 💃✨🐾";
+    if (lower.includes("dance")) {
+      return "Meow, watch my happy little kitten steps and playful swishing tail.";
     }
 
-    if (lower.includes("milk") || lower.includes("doodh") || lower.includes("tuna") || lower.includes("eat") || lower.includes("khana")) {
-      return "Purrr~ Mmm! Warm milk aur crispy fish! *slurp slurp* Mera favorite treat! 🥛🐟💖";
+    if (lower.includes("milk") || lower.includes("fish") || lower.includes("tuna")) {
+      return "Purr, delicious warm milk and crispy tuna are my favorite treats.";
     }
 
     if (lower.includes("hello") || lower.includes("hi") || lower.includes("hey")) {
-      return "Meow~ Hello mere pyare dost! Main aapki cute 3D Talking Kitty hoon! Look at my pink bow! 🎀🐱✨";
+      return "Hello dear friend. I am your cute 3D kawaii kitten. It is so nice to meet you.";
     }
 
-    return `Meow~ "${msg}" sunkar meri fluffy tail khushi se swish karne lagi! Aao saath me khelte hain! 🐾💖`;
+    return `Meow, I heard you say "${msg}". I am so happy to spend time with you.`;
   }
 }
 

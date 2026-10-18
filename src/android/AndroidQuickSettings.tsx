@@ -266,8 +266,8 @@ export const AndroidQuickSettings: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-black/40 border border-white/10 flex items-center justify-center text-xl flex-shrink-0">
-              📻
+            <div className="w-12 h-12 rounded-xl bg-black/40 border border-white/10 flex items-center justify-center flex-shrink-0">
+              <Radio className="w-5 h-5 text-[#00ff66]" />
             </div>
 
             <div className="flex-1 overflow-hidden">

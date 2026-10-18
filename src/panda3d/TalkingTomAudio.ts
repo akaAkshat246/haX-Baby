@@ -1,4 +1,4 @@
-// Iconic Talking Tom Voice Engine & Cartoon Sound Effects
+// Iconic Talking Kitty Voice Engine & Sound Effects with Natural Hindi Support
 
 export class TalkingTomAudio {
   private ctx: AudioContext | null = null;
@@ -9,9 +9,20 @@ export class TalkingTomAudio {
   public onSpeechStart?: () => void;
   public onSpeechEnd?: () => void;
 
+  // Real Audio Audio Elements
+  private meowAudio: HTMLAudioElement | null = null;
+
   constructor() {
     if (typeof window !== "undefined") {
       this.synth = window.speechSynthesis || null;
+
+      // Preload real cat meow recording
+      try {
+        this.meowAudio = new Audio("/assets/cat/meow2.mp3");
+        this.meowAudio.volume = 0.85;
+      } catch (e) {
+        console.warn("Could not preload real meow audio", e);
+      }
 
       const SpeechRec =
         (window as any).SpeechRecognition ||
@@ -21,7 +32,8 @@ export class TalkingTomAudio {
         this.recognition = new SpeechRec();
         this.recognition.continuous = false;
         this.recognition.interimResults = false;
-        this.recognition.lang = "en-US";
+        // Support Hindi and Indian bilingual voice recognition!
+        this.recognition.lang = "hi-IN";
       }
     }
   }
@@ -61,89 +73,20 @@ export class TalkingTomAudio {
     osc.stop(t + dur + 0.05);
   }
 
-  // Cute cartoon giggle (poke belly)
-  public playGiggle() {
-    this.playTone(660, 0.08, "sine", 0.3);
-    setTimeout(() => this.playTone(880, 0.08, "sine", 0.32), 60);
-    setTimeout(() => this.playTone(1320, 0.12, "sine", 0.35), 130);
-    setTimeout(() => this.playTone(990, 0.1, "sine", 0.25), 220);
-    setTimeout(() => this.playTone(1480, 0.15, "sine", 0.35), 300);
-  }
-
-  // Cartoon boing (poke head)
-  public playBoing() {
-    if (!this.initCtx()) return;
-    const c = this.ctx!;
-    const t = c.currentTime;
-
-    const osc = c.createOscillator();
-    const g = c.createGain();
-
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(320, t);
-    osc.frequency.exponentialRampToValueAtTime(880, t + 0.25);
-
-    g.gain.setValueAtTime(0.3, t);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
-
-    osc.connect(g);
-    g.connect(c.destination);
-
-    osc.start(t);
-    osc.stop(t + 0.32);
-  }
-
-  // Bamboo munch / crunch
-  public playMunch() {
-    for (let i = 0; i < 4; i++) {
-      setTimeout(() => {
-        this.playTone(450 + Math.random() * 200, 0.06, "triangle", 0.2);
-      }, i * 90);
+  // Play Real Authentic Cat Meow Audio!
+  public playMeow() {
+    if (this.meowAudio) {
+      this.meowAudio.currentTime = 0;
+      this.meowAudio.play().catch(() => {
+        this.playSyntheticMeow();
+      });
+    } else {
+      this.playSyntheticMeow();
     }
   }
 
-  // Spicy gasp & sneeze (chili)
-  public playSpicyGasp() {
-    this.playTone(800, 0.15, "sawtooth", 0.2);
-    setTimeout(() => {
-      this.playTone(1200, 0.25, "square", 0.25);
-    }, 180);
-  }
-
-  // Goofy Talking Tom fart sound
-  public playFart() {
-    if (!this.initCtx()) return;
-    const c = this.ctx!;
-    const t = c.currentTime;
-
-    const osc = c.createOscillator();
-    const g = c.createGain();
-
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(140, t);
-    osc.frequency.linearRampToValueAtTime(55, t + 0.35);
-
-    g.gain.setValueAtTime(0.35, t);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.38);
-
-    osc.connect(g);
-    g.connect(c.destination);
-
-    osc.start(t);
-    osc.stop(t + 0.4);
-
-    // Followed by giggle
-    setTimeout(() => this.playGiggle(), 450);
-  }
-
-  // Sleepy yawn
-  public playYawn() {
-    this.playTone(440, 0.4, "sine", 0.18);
-    setTimeout(() => this.playTone(330, 0.6, "sine", 0.15), 350);
-  }
-
-  // Sweet Kawaii Kitten Meow
-  public playMeow() {
+  // Sweet Kawaii Kitten Meow synthesizer fallback
+  public playSyntheticMeow() {
     if (!this.initCtx()) return;
     const c = this.ctx!;
     const t = c.currentTime;
@@ -152,7 +95,7 @@ export class TalkingTomAudio {
     const g = c.createGain();
 
     osc.type = "sine";
-    // Pitch envelope: starts medium (440Hz), peaks playfully (680Hz), then gently glides down (520Hz)
+    // Pitch envelope: starts 460Hz, peaks gently at 740Hz, then glides to 510Hz
     osc.frequency.setValueAtTime(460, t);
     osc.frequency.exponentialRampToValueAtTime(740, t + 0.12);
     osc.frequency.exponentialRampToValueAtTime(510, t + 0.42);
@@ -174,7 +117,6 @@ export class TalkingTomAudio {
     const c = this.ctx!;
     const t = c.currentTime;
 
-    // Modulated low-frequency rumble
     const osc = c.createOscillator();
     const lfo = c.createOscillator();
     const lfoGain = c.createGain();
@@ -203,6 +145,47 @@ export class TalkingTomAudio {
     osc.stop(t + 1.25);
   }
 
+  // Cute cartoon giggle (poke belly)
+  public playGiggle() {
+    this.playTone(660, 0.08, "sine", 0.3);
+    setTimeout(() => this.playTone(880, 0.08, "sine", 0.32), 60);
+    setTimeout(() => this.playTone(1320, 0.12, "sine", 0.35), 130);
+    setTimeout(() => this.playTone(990, 0.1, "sine", 0.25), 220);
+    setTimeout(() => this.playTone(1480, 0.15, "sine", 0.35), 300);
+  }
+
+  // Cartoon boing (poke head / obstacle bump)
+  public playBoing() {
+    if (!this.initCtx()) return;
+    const c = this.ctx!;
+    const t = c.currentTime;
+
+    const osc = c.createOscillator();
+    const g = c.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(320, t);
+    osc.frequency.exponentialRampToValueAtTime(880, t + 0.25);
+
+    g.gain.setValueAtTime(0.3, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+
+    osc.connect(g);
+    g.connect(c.destination);
+
+    osc.start(t);
+    osc.stop(t + 0.32);
+  }
+
+  // Tuna fish / food crunch
+  public playMunch() {
+    for (let i = 0; i < 4; i++) {
+      setTimeout(() => {
+        this.playTone(450 + Math.random() * 200, 0.06, "triangle", 0.2);
+      }, i * 90);
+    }
+  }
+
   // Cute Milk Slurp
   public playMilkSlurp() {
     for (let i = 0; i < 5; i++) {
@@ -212,25 +195,68 @@ export class TalkingTomAudio {
     }
   }
 
-  // Talking Tom's Iconic Voice Repeat with cartoon helium pitch
+  // Sleepy yawn
+  public playYawn() {
+    this.playTone(440, 0.4, "sine", 0.18);
+    setTimeout(() => this.playTone(330, 0.6, "sine", 0.15), 350);
+  }
+
+  // Smooth, Sweet, Natural Voice Repeater with Native Hindi Support!
   public repeatInTomVoice(text: string) {
     if (!this.synth) return;
     this.synth.cancel();
 
-    const utt = new SpeechSynthesisUtterance(text);
-    // Talking Tom Helium Pitch & Speed!
-    utt.pitch = 1.72;
-    utt.rate = 1.12;
+    // Clean text: strip out asterisks, multiple emojis that cause robotic pauses
+    const cleanSpeech = text
+      .replace(/\*[^*]+\*/g, "") // remove *purrs*
+      .replace(/[\u{1F300}-\u{1F9FF}]/gu, "") // remove emojis for natural speech
+      .trim();
+
+    const spokenText = cleanSpeech || text;
+    const utt = new SpeechSynthesisUtterance(spokenText);
+
+    // Detect if text contains Hindi or Hinglish
+    const isHindi =
+      /[\u0900-\u097F]/.test(spokenText) ||
+      /\b(namaste|kya|hai|hoon|billi|dost|karo|batao|kaise|achha|pyari|meow|miau|haan|nahi|khelte|khalo|sunao)\b/i.test(
+        spokenText
+      );
 
     const voices = this.synth.getVoices();
-    const cartoonVoice = voices.find(
-      (v) =>
-        v.name.toLowerCase().includes("samantha") ||
-        v.name.toLowerCase().includes("victoria") ||
-        v.name.toLowerCase().includes("karen") ||
-        v.lang.startsWith("en")
-    );
-    if (cartoonVoice) utt.voice = cartoonVoice;
+
+    if (isHindi) {
+      // Find native Hindi voice (Google Hindi, Microsoft Swara / Madhur / Kalpana / Hemant)
+      const hindiVoice = voices.find(
+        (v) =>
+          v.lang === "hi-IN" ||
+          v.lang.startsWith("hi") ||
+          v.name.toLowerCase().includes("hindi") ||
+          v.name.toLowerCase().includes("swara") ||
+          v.name.toLowerCase().includes("madhur") ||
+          v.name.toLowerCase().includes("kalpana") ||
+          v.name.toLowerCase().includes("hemant")
+      );
+
+      if (hindiVoice) {
+        utt.voice = hindiVoice;
+      }
+      utt.lang = "hi-IN";
+      // Sweet, melodious, cheerful kitten pitch (smooth natural Hindi)
+      utt.pitch = 1.35;
+      utt.rate = 1.02;
+    } else {
+      // English cute cartoon voice
+      const cartoonVoice = voices.find(
+        (v) =>
+          v.name.toLowerCase().includes("samantha") ||
+          v.name.toLowerCase().includes("victoria") ||
+          v.name.toLowerCase().includes("karen") ||
+          v.lang.startsWith("en")
+      );
+      if (cartoonVoice) utt.voice = cartoonVoice;
+      utt.pitch = 1.45;
+      utt.rate = 1.05;
+    }
 
     utt.onstart = () => {
       this.isSpeaking = true;
@@ -250,15 +276,21 @@ export class TalkingTomAudio {
     this.synth.speak(utt);
   }
 
-  // Listen to microphone
+  // Alias
+  public repeatInCatVoice(text: string) {
+    this.repeatInTomVoice(text);
+  }
+
+  // Listen to microphone in speech recognition
   public listen(onResult: (text: string) => void) {
     if (!this.recognition) {
-      this.repeatInTomVoice("Hello! Tap me or type in the chat!");
+      this.repeatInTomVoice("Tap me to talk or type in the chat box.");
       return;
     }
 
     try {
       this.isListening = true;
+      this.recognition.lang = navigator.language || "en-US";
       this.recognition.onresult = (e: any) => {
         this.isListening = false;
         const transcript = e.results[0][0].transcript;

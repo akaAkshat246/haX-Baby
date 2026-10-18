@@ -75,7 +75,7 @@ export const AndroidStatusBar: React.FC = () => {
           className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#ec4899]/25 border border-pink-400/40 text-pink-300 hover:bg-[#ec4899]/40 text-[11px] font-mono transition-colors cursor-pointer"
           title="Open 3D AI Kitty Room"
         >
-          <span>🐱</span>
+          <Sparkles className="w-3 h-3 text-pink-400" />
           <span>3D Kitty Room</span>
         </button>
 

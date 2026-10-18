@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { audio } from "../../core/audio";
 import { bus } from "../../core/bus";
-import { Globe } from "lucide-react";
+import { Globe, Star, Heart, Moon, Sun, Cloud } from "lucide-react";
 
 interface Sticker {
   id: number;
@@ -43,23 +43,23 @@ export const GeoCitiesWindow: React.FC = () => {
       </div>
 
       {/* Marquee Banner */}
-      <div className="w-full bg-[#090b10] border border-white/10 py-1.5 rounded-lg overflow-hidden text-xs font-mono text-[#00ff66]">
+      <div className="w-full bg-[#090b10] border border-white/10 rounded-lg py-1.5 overflow-hidden text-[11px] font-mono text-[#00ff66]">
         <div className="animate-marquee whitespace-nowrap flex gap-8">
-          <span>✦ WELCOME TO BABY FOURIE'S SHRINE</span>
-          <span className="text-white/60">✦ 88x31 BADGES PRESERVED</span>
-          <span>✦ TAP ANYWHERE TO STAMP BABY MEMORIES</span>
+          <span>WELCOME TO BABY FOURIE'S SHRINE</span>
+          <span className="text-white/60">88x31 BADGES PRESERVED</span>
+          <span>TAP ANYWHERE TO PLACE MEMORY MARKERS</span>
         </div>
       </div>
 
       {/* Stamp Selector */}
       <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
-        <span className="text-[#555c6d] uppercase text-[10px]">Stamp:</span>
+        <span className="text-[#555c6d] uppercase text-[10px]">Marker:</span>
         {[
-          { id: "star", label: "⭐ Star" },
-          { id: "heart", label: "💖 Heart" },
-          { id: "moon", label: "🌙 Moon" },
-          { id: "teddy", label: "🧸 Baby" },
-          { id: "cloud", label: "☁️ Cloud" },
+          { id: "star", label: "Star", icon: <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" /> },
+          { id: "heart", label: "Heart", icon: <Heart className="w-3.5 h-3.5 text-pink-400 fill-pink-400" /> },
+          { id: "moon", label: "Moon", icon: <Moon className="w-3.5 h-3.5 text-cyan-400 fill-cyan-400" /> },
+          { id: "sun", label: "Sun", icon: <Sun className="w-3.5 h-3.5 text-amber-400 fill-amber-400" /> },
+          { id: "cloud", label: "Cloud", icon: <Cloud className="w-3.5 h-3.5 text-purple-400 fill-purple-400" /> },
         ].map((item) => (
           <button
             key={item.id}
@@ -68,13 +68,14 @@ export const GeoCitiesWindow: React.FC = () => {
               audio.click();
               setSelectedSticker(item.id);
             }}
-            className={`px-3 py-1 rounded-full border text-xs transition-colors ${
+            className={`px-3 py-1 rounded-full border text-xs flex items-center gap-1.5 transition-colors ${
               selectedSticker === item.id
                 ? "bg-[#00ff66] text-black border-[#00ff66] font-semibold"
                 : "bg-white/[0.04] text-[#9da3b4] border-white/10 hover:border-white/20"
             }`}
           >
-            {item.label}
+            {item.icon}
+            <span>{item.label}</span>
           </button>
         ))}
       </div>
@@ -83,24 +84,24 @@ export const GeoCitiesWindow: React.FC = () => {
       <div
         onClick={handleBoardClick}
         className="w-full h-[220px] bg-[#090b10] border border-white/10 rounded-xl relative overflow-hidden cursor-crosshair group shadow-inner"
-        title="Tap to stamp sticker"
+        title="Tap to place marker"
       >
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#00ff66_1px,transparent_1px)] [background-size:20px_20px]" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none text-center font-mono text-[#555c6d] text-xs">
-          [ TAP TO STAMP MEMORIES ]
+          [ TAP TO PLACE MEMORIES ]
         </div>
 
         {stickers.map((s) => (
           <div
             key={s.id}
             style={{ left: `${s.x}%`, top: `${s.y}%` }}
-            className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none text-2xl animate-bounce"
+            className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none"
           >
-            {s.type === "star" && "⭐"}
-            {s.type === "heart" && "💖"}
-            {s.type === "moon" && "🌙"}
-            {s.type === "teddy" && "🧸"}
-            {s.type === "cloud" && "☁️"}
+            {s.type === "star" && <Star className="w-5 h-5 text-yellow-400 fill-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,0.8)]" />}
+            {s.type === "heart" && <Heart className="w-5 h-5 text-pink-400 fill-pink-400 drop-shadow-[0_0_6px_rgba(244,114,182,0.8)]" />}
+            {s.type === "moon" && <Moon className="w-5 h-5 text-cyan-400 fill-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.8)]" />}
+            {s.type === "sun" && <Sun className="w-5 h-5 text-amber-400 fill-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.8)]" />}
+            {s.type === "cloud" && <Cloud className="w-5 h-5 text-purple-400 fill-purple-400 drop-shadow-[0_0_6px_rgba(192,132,252,0.8)]" />}
           </div>
         ))}
       </div>
@@ -118,6 +119,10 @@ export const GeoCitiesWindow: React.FC = () => {
         <div className="w-[88px] h-[31px] bg-[#0e1117] border border-[#00ff66]/40 rounded flex flex-col items-center justify-center text-[7px] text-[#00ff66] font-mono">
           <span>BABY SPIRIT</span>
           <span className="text-white">TRACK 2</span>
+        </div>
+        <div className="w-[88px] h-[31px] bg-[#0e1117] border border-white/10 rounded flex flex-col items-center justify-center text-[7px] text-white font-mono">
+          <span>WEBRING</span>
+          <span className="text-[#00e5ff]">#404 BABY</span>
         </div>
       </div>
     </div>

@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useStore, WindowId } from "../core/store";
 import { audio } from "../core/audio";
-import { Minus, Square, Maximize2, Minimize2, X } from "lucide-react";
+import { Minus, Square, Maximize2, Minimize2, X, Folder } from "lucide-react";
 
 interface AndroidWindowProps {
   id: WindowId;
   title: string;
-  icon?: string;
+  icon?: React.ReactNode;
   defaultX?: number;
   defaultY?: number;
   width?: number;
@@ -17,7 +17,7 @@ interface AndroidWindowProps {
 export const AndroidWindow: React.FC<AndroidWindowProps> = ({
   id,
   title,
-  icon = "📁",
+  icon,
   defaultX = 0,
   defaultY = 0,
   width = 540,

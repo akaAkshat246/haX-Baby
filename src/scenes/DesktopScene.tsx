@@ -123,31 +123,31 @@ export const DesktopScene: React.FC = () => {
       </div>
 
       {/* Render Active Windows Modal System */}
-      <RetroWindow id="about" title="About Baby Fourie.txt" icon="🧸" defaultXOffset={-40}>
+      <RetroWindow id="about" title="About Baby Fourie.txt" icon={<Heart className="w-3.5 h-3.5 text-pink-400" />} defaultXOffset={-40}>
         <AboutWindow />
       </RetroWindow>
 
-      <RetroWindow id="rescued" title="Rescued Parcels" icon="📦" defaultXOffset={30}>
+      <RetroWindow id="rescued" title="Rescued Parcels" icon={<FolderArchive className="w-3.5 h-3.5 text-cyan-400" />} defaultXOffset={30}>
         <ProjectsWindow />
       </RetroWindow>
 
-      <RetroWindow id="lullaby" title="Dial-Up Lullaby Lab v1.0" icon="🎵" defaultXOffset={0}>
+      <RetroWindow id="lullaby" title="Dial-Up Lullaby Lab v1.0" icon={<Music className="w-3.5 h-3.5 text-purple-400" />} defaultXOffset={0}>
         <LullabyLabWindow />
       </RetroWindow>
 
-      <RetroWindow id="notes" title="Lost Wish Guestbook" icon="📝" defaultXOffset={-20}>
+      <RetroWindow id="notes" title="Lost Wish Guestbook" icon={<Sparkles className="w-3.5 h-3.5 text-amber-400" />} defaultXOffset={-20}>
         <NotesWindow />
       </RetroWindow>
 
-      <RetroWindow id="bin" title="Recycle Basket (Relics)" icon="🧺" defaultXOffset={50}>
+      <RetroWindow id="bin" title="Recycle Basket (Relics)" icon={<Trash2 className="w-3.5 h-3.5 text-rose-400" />} defaultXOffset={50}>
         <RecycleBinWindow />
       </RetroWindow>
 
-      <RetroWindow id="chat" title="Chat with Baby Fourie" icon="💬" defaultXOffset={-10}>
+      <RetroWindow id="chat" title="Chat with Baby Fourie" icon={<MessageSquare className="w-3.5 h-3.5 text-emerald-400" />} defaultXOffset={-10}>
         <ChatWindow />
       </RetroWindow>
 
-      <RetroWindow id="nowhere" title="Secret Backroom: /nowhere" icon="⭐" defaultXOffset={0}>
+      <RetroWindow id="nowhere" title="Secret Backroom: /nowhere" icon={<Sparkles className="w-3.5 h-3.5 text-yellow-400" />} defaultXOffset={0}>
         <SecretRoomWindow />
       </RetroWindow>
     </section>

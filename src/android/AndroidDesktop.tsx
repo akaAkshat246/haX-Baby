@@ -37,6 +37,8 @@ import {
   Key,
   Sparkles,
   BookOpen,
+  Compass,
+  Star,
 } from "lucide-react";
 
 interface DesktopAppIcon {
@@ -58,7 +60,7 @@ export const AndroidDesktop: React.FC = () => {
     {
       id: "panda" as any,
       label: "Talking Kitty",
-      icon: <span className="text-2xl">🐱</span>,
+      icon: <Sparkles className="w-6 h-6 text-white" />,
       bg: "bg-gradient-to-tr from-[#ec4899] via-[#f472b6] to-[#a855f7]",
     },
     {
@@ -143,7 +145,7 @@ export const AndroidDesktop: React.FC = () => {
     audio.squeak();
     sendMood("POKE");
     bus.emit("poke", { x: e.clientX, y: e.clientY });
-    showToast(mood === "sleepy" ? "Woke Baby Fourie! ✦" : "Tickled star charm! ✨");
+    showToast(mood === "sleepy" ? "Woke Baby Fourie!" : "Tickled star charm!");
   };
 
   return (
@@ -210,43 +212,43 @@ export const AndroidDesktop: React.FC = () => {
       </main>
 
       {/* Freeform Android Windows System */}
-      <AndroidWindow id="about" title="About Baby Fourie.txt" icon="🧸" defaultX={-30} width={500}>
+      <AndroidWindow id="about" title="About Baby Fourie.txt" icon={<Heart className="w-4 h-4 text-pink-400" />} defaultX={-30} width={500}>
         <AboutWindow />
       </AndroidWindow>
 
-      <AndroidWindow id="rescued" title="Rescued Parcels (3 Artifacts)" icon="📦" defaultX={30} width={520}>
+      <AndroidWindow id="rescued" title="Rescued Parcels (3 Artifacts)" icon={<FolderArchive className="w-4 h-4 text-cyan-400" />} defaultX={30} width={520}>
         <ProjectsWindow />
       </AndroidWindow>
 
-      <AndroidWindow id="lullaby" title="Dial-Up Lullaby Lab v1.0" icon="🎵" defaultX={0} width={540}>
+      <AndroidWindow id="lullaby" title="Dial-Up Lullaby Lab v1.0" icon={<Music className="w-4 h-4 text-purple-400" />} defaultX={0} width={540}>
         <LullabyLabWindow />
       </AndroidWindow>
 
-      <AndroidWindow id="chat" title="Messages with Fourie" icon="💬" defaultX={-20} width={480}>
+      <AndroidWindow id="chat" title="Messages with Fourie" icon={<MessageSquare className="w-4 h-4 text-emerald-400" />} defaultX={-20} width={480}>
         <ChatWindow />
       </AndroidWindow>
 
-      <AndroidWindow id="notes" title="Lost Wish Wall" icon="📝" defaultX={20} width={500}>
+      <AndroidWindow id="notes" title="Lost Wish Wall" icon={<Sparkles className="w-4 h-4 text-amber-400" />} defaultX={20} width={500}>
         <NotesWindow />
       </AndroidWindow>
 
-      <AndroidWindow id="router" title="Star Router (Dijkstra Map)" icon="🗺️" defaultX={0} width={580}>
+      <AndroidWindow id="router" title="Star Router (Dijkstra Map)" icon={<Compass className="w-4 h-4 text-blue-400" />} defaultX={0} width={580}>
         <RouterWindow />
       </AndroidWindow>
 
-      <AndroidWindow id="geocities" title="Web Archive (1999 Shrine)" icon="🌐" defaultX={-25} width={520}>
+      <AndroidWindow id="geocities" title="Web Archive (1999 Shrine)" icon={<Globe className="w-4 h-4 text-green-400" />} defaultX={-25} width={520}>
         <GeoCitiesWindow />
       </AndroidWindow>
 
-      <AndroidWindow id="bin" title="Recycle Basket (Relics)" icon="🧺" defaultX={25} width={500}>
+      <AndroidWindow id="bin" title="Recycle Basket (Relics)" icon={<Trash2 className="w-4 h-4 text-rose-400" />} defaultX={25} width={500}>
         <RecycleBinWindow />
       </AndroidWindow>
 
-      <AndroidWindow id="webring" title="Webring Hub & Odometer" icon="🎖️" defaultX={0} width={480}>
+      <AndroidWindow id="webring" title="Webring Hub & Odometer" icon={<Award className="w-4 h-4 text-amber-300" />} defaultX={0} width={480}>
         <WebringWindow />
       </AndroidWindow>
 
-      <AndroidWindow id="nowhere" title="Secret Backroom /nowhere" icon="⭐" defaultX={0} width={480}>
+      <AndroidWindow id="nowhere" title="Secret Backroom /nowhere" icon={<Star className="w-4 h-4 text-yellow-400" />} defaultX={0} width={480}>
         <SecretRoomWindow />
       </AndroidWindow>
 

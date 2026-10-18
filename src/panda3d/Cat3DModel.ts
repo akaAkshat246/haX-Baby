@@ -18,13 +18,14 @@ export type CatAnimState =
 export class Cat3DModel {
   public group: THREE.Group;
 
-  // Major feline body parts
+  // Major body parts
   public bodyMesh: THREE.Mesh;
-  public chestRuffMesh: THREE.Mesh;
+  public chestRuffGroup: THREE.Group;
   public bellyMesh: THREE.Mesh;
   public headGroup: THREE.Group;
   public muzzleGroup: THREE.Group;
   public jawMesh: THREE.Mesh;
+  public tongueMesh: THREE.Mesh;
   public leftEarGroup: THREE.Group;
   public rightEarGroup: THREE.Group;
   public leftEyeGroup: THREE.Group;
@@ -38,9 +39,8 @@ export class Cat3DModel {
   public leftLegGroup: THREE.Group;
   public rightLegGroup: THREE.Group;
   public tailGroup: THREE.Group;
-  public tailTipMesh: THREE.Mesh;
 
-  // Iconic Accessories matching reference image
+  // Accessories matching reference image
   public pinkBowGroup: THREE.Group;
   public sunglassesGroup: THREE.Group;
   public partyHatGroup: THREE.Group;
@@ -66,104 +66,100 @@ export class Cat3DModel {
   constructor() {
     this.group = new THREE.Group();
 
-    // 1. Premium PBR Materials matching reference cute cat image
+    // 1. Refined PBR Kawaii Materials matching reference image
     // Soft silver-grey tabby coat
     const silverFurMat = new THREE.MeshStandardMaterial({
-      color: 0xd6d9de,
-      roughness: 0.82,
-      metalness: 0.05,
-    });
-
-    // Fluffy cream-white chest, muzzle, belly & paws
-    const whiteFurMat = new THREE.MeshStandardMaterial({
-      color: 0xfbfaf8,
+      color: 0xd8dbe0,
       roughness: 0.85,
-      metalness: 0.04,
+      metalness: 0.02,
     });
 
-    // Charcoal-grey tabby stripes
-    const stripeMat = new THREE.MeshStandardMaterial({
-      color: 0x6e737c,
+    // Fluffy cream-white for chest bib, muzzle, cheeks & paws
+    const fluffyWhiteMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
       roughness: 0.8,
-      metalness: 0.05,
+      metalness: 0.02,
     });
 
-    // Soft baby-pink inner ear & paw toe beans
-    const pinkInnerEarMat = new THREE.MeshStandardMaterial({
-      color: 0xffafc4,
-      roughness: 0.65,
+    // Soft warm grey for gentle tabby markings
+    const tabbyStripeMat = new THREE.MeshStandardMaterial({
+      color: 0x8a9099,
+      roughness: 0.85,
+      metalness: 0.02,
+    });
+
+    // Delicate baby-pink for inner ears & paw toe beans
+    const pinkEarMat = new THREE.MeshStandardMaterial({
+      color: 0xffb3c6,
+      roughness: 0.6,
       metalness: 0.0,
     });
 
-    // Sweet baby-pink nose
+    // Adorable tiny baby-pink button nose
     const pinkNoseMat = new THREE.MeshStandardMaterial({
-      color: 0xff7b9d,
+      color: 0xff7096,
       roughness: 0.35,
       metalness: 0.1,
     });
 
-    // Mouth / Tongue
-    const mouthMat = new THREE.MeshStandardMaterial({
-      color: 0xff6b8d,
-      roughness: 0.5,
+    // Cute pink tongue
+    const tongueMat = new THREE.MeshStandardMaterial({
+      color: 0xff5c8a,
+      roughness: 0.45,
     });
 
-    // Rosy pink blush on chubby cheeks
-    const blushMat = new THREE.MeshStandardMaterial({
-      color: 0xff8ca5,
+    // Airbrushed Rosy Pink Blush on chubby cheeks
+    const blushPinkMat = new THREE.MeshStandardMaterial({
+      color: 0xff85a1,
       roughness: 0.7,
+      transparent: true,
+      opacity: 0.65,
+    });
+
+    // Gorgeous Glossy Hazel-Amber Anime Kitten Eyes (Matching reference photo!)
+    const hazelIrisMat = new THREE.MeshStandardMaterial({
+      color: 0xa66326, // rich warm amber/hazel
+      roughness: 0.08,
+      metalness: 0.4,
+    });
+    const pupilMat = new THREE.MeshStandardMaterial({
+      color: 0x0c0712, // deep obsidian black
+      roughness: 0.04,
+      metalness: 0.9,
+    });
+    const sparkleHighlightMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+    });
+
+    // Ultra-fine translucent white whiskers
+    const whiskerMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.2,
       transparent: true,
       opacity: 0.75,
     });
 
-    // Iconic Pink Bow Material with polka/heart accent
-    const bowPinkMat = new THREE.MeshStandardMaterial({
+    // Iconic Pink Silk Ribbon Bow with Heart Decals
+    const bowSilkMat = new THREE.MeshStandardMaterial({
       color: 0xff668c,
-      roughness: 0.45,
+      roughness: 0.42,
       metalness: 0.08,
     });
-    const bowCenterMat = new THREE.MeshStandardMaterial({
-      color: 0xff4873,
-      roughness: 0.4,
+    const bowKnotMat = new THREE.MeshStandardMaterial({
+      color: 0xff4f7a,
+      roughness: 0.38,
       metalness: 0.1,
     });
-    const whiteDecalMat = new THREE.MeshStandardMaterial({
+    const whiteHeartMat = new THREE.MeshStandardMaterial({
       color: 0xffffff,
-      roughness: 0.3,
-    });
-
-    // Glistening Hazel-Amber Anime Eyes (Matching reference image!)
-    const amberIrisMat = new THREE.MeshStandardMaterial({
-      color: 0xa85e26, // rich honey amber
-      roughness: 0.12,
-      metalness: 0.65,
-    });
-    const pupilMat = new THREE.MeshStandardMaterial({
-      color: 0x0a070e,
-      roughness: 0.05,
-      metalness: 0.9,
-    });
-    const highlightMat = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-    });
-    const eyelashMat = new THREE.MeshBasicMaterial({
-      color: 0x221820,
-    });
-
-    // Whisker material
-    const whiskerMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      roughness: 0.2,
-      metalness: 0.3,
-      transparent: true,
-      opacity: 0.88,
+      roughness: 0.25,
     });
 
     // ==========================================
-    // 2. Torso / Chubby Kitten Body
+    // 2. Torso / Chubby Sitting Kitten Body
     // ==========================================
     const bodyGeo = new THREE.SphereGeometry(1.05, 32, 24);
-    bodyGeo.scale(1.02, 1.25, 0.98);
+    bodyGeo.scale(1.04, 1.25, 0.96);
     this.bodyMesh = new THREE.Mesh(bodyGeo, silverFurMat);
     this.bodyMesh.position.y = 1.28;
     this.bodyMesh.castShadow = true;
@@ -171,239 +167,273 @@ export class Cat3DModel {
     this.bodyMesh.userData = { part: "belly" };
     this.group.add(this.bodyMesh);
 
-    // Fluffy White Chest Ruff / Bib (Like reference photo!)
-    const ruffGeo = new THREE.SphereGeometry(0.78, 24, 18);
-    ruffGeo.scale(0.92, 1.15, 0.65);
-    this.chestRuffMesh = new THREE.Mesh(ruffGeo, whiteFurMat);
-    this.chestRuffMesh.position.set(0, 1.45, 0.46);
-    this.chestRuffMesh.userData = { part: "belly" };
-    this.group.add(this.chestRuffMesh);
+    // Fluffy White Chest Ruff / Bib (Layered soft puffs like reference image!)
+    this.chestRuffGroup = new THREE.Group();
+    this.chestRuffGroup.position.set(0, 1.48, 0.48);
 
-    // Cream-White Kitten Belly
-    const bellyGeo = new THREE.SphereGeometry(0.85, 24, 18);
-    bellyGeo.scale(0.88, 1.05, 0.62);
-    this.bellyMesh = new THREE.Mesh(bellyGeo, whiteFurMat);
-    this.bellyMesh.position.set(0, 1.05, 0.44);
+    const ruffCenterGeo = new THREE.SphereGeometry(0.72, 24, 18);
+    ruffCenterGeo.scale(0.95, 1.15, 0.62);
+    const ruffCenter = new THREE.Mesh(ruffCenterGeo, fluffyWhiteMat);
+    this.chestRuffGroup.add(ruffCenter);
+
+    // Side fluffy tufts on chest
+    const tuftGeo = new THREE.SphereGeometry(0.38, 16, 12);
+    tuftGeo.scale(1.1, 0.9, 0.7);
+
+    const leftTuft = new THREE.Mesh(tuftGeo, fluffyWhiteMat);
+    leftTuft.position.set(-0.42, -0.15, 0.12);
+    this.chestRuffGroup.add(leftTuft);
+
+    const rightTuft = new THREE.Mesh(tuftGeo, fluffyWhiteMat);
+    rightTuft.position.set(0.42, -0.15, 0.12);
+    this.chestRuffGroup.add(rightTuft);
+
+    this.group.add(this.chestRuffGroup);
+
+    // Soft White Kitten Belly
+    const bellyGeo = new THREE.SphereGeometry(0.82, 24, 18);
+    bellyGeo.scale(0.88, 1.05, 0.58);
+    this.bellyMesh = new THREE.Mesh(bellyGeo, fluffyWhiteMat);
+    this.bellyMesh.position.set(0, 1.02, 0.45);
     this.bellyMesh.userData = { part: "belly" };
     this.group.add(this.bellyMesh);
 
-    // Subtle Tabby Stripes on Back / Sides
-    [-0.3, 0.0, 0.3].forEach((yOff, idx) => {
-      const stripeGeo = new THREE.TorusGeometry(0.98 - idx * 0.04, 0.045, 8, 24, Math.PI * 0.8);
-      const stripeMesh = new THREE.Mesh(stripeGeo, stripeMat);
-      stripeMesh.position.set(0, 1.35 + yOff, -0.1);
+    // Subtle Tabby Stripes on Back
+    [-0.25, 0.05, 0.35].forEach((yOff, idx) => {
+      const stripeGeo = new THREE.TorusGeometry(0.96 - idx * 0.05, 0.04, 8, 24, Math.PI * 0.7);
+      const stripeMesh = new THREE.Mesh(stripeGeo, tabbyStripeMat);
+      stripeMesh.position.set(0, 1.35 + yOff, -0.12);
       stripeMesh.rotation.x = Math.PI / 2;
-      stripeMesh.rotation.z = Math.PI * 0.1;
+      stripeMesh.rotation.z = Math.PI * 0.15;
       this.group.add(stripeMesh);
     });
 
     // ==========================================
-    // 3. Head & Cute Kawaii Kitten Face
+    // 3. Head & Kawaii Kitten Face (Ultra Cute Proportions!)
     // ==========================================
     this.headGroup = new THREE.Group();
-    this.headGroup.position.set(0, 2.58, 0.1);
+    this.headGroup.position.set(0, 2.58, 0.12);
 
-    // Round, fluffy kitten head with wide cheeks
+    // Round, plush baby kitten head
     const headGeo = new THREE.SphereGeometry(1.18, 32, 24);
-    headGeo.scale(1.24, 1.08, 1.04);
+    headGeo.scale(1.26, 1.12, 1.05);
     const headMesh = new THREE.Mesh(headGeo, silverFurMat);
     headMesh.castShadow = true;
     headMesh.receiveShadow = true;
     headMesh.userData = { part: "head" };
     this.headGroup.add(headMesh);
 
-    // Puffy White Cheeks
-    const cheekGeo = new THREE.SphereGeometry(0.62, 20, 16);
-    cheekGeo.scale(1.12, 0.88, 0.75);
+    // Puffy Fluffy White Cheeks (Kawaii chubbiness!)
+    const cheekGeo = new THREE.SphereGeometry(0.65, 22, 18);
+    cheekGeo.scale(1.15, 0.92, 0.75);
 
-    const leftCheek = new THREE.Mesh(cheekGeo, whiteFurMat);
-    leftCheek.position.set(-0.64, -0.22, 0.52);
+    const leftCheek = new THREE.Mesh(cheekGeo, fluffyWhiteMat);
+    leftCheek.position.set(-0.62, -0.22, 0.52);
     this.headGroup.add(leftCheek);
 
-    const rightCheek = new THREE.Mesh(cheekGeo, whiteFurMat);
-    rightCheek.position.set(0.64, -0.22, 0.52);
+    const rightCheek = new THREE.Mesh(cheekGeo, fluffyWhiteMat);
+    rightCheek.position.set(0.62, -0.22, 0.52);
     this.headGroup.add(rightCheek);
 
-    // Rosy Pink Blush on Cheeks
-    const blushGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.04, 20);
+    // Soft Airbrushed Rosy Pink Blush Spots
+    const blushGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.03, 20);
     blushGeo.rotateX(Math.PI / 2);
 
-    const leftBlush = new THREE.Mesh(blushGeo, blushMat);
-    leftBlush.position.set(-0.72, -0.16, 0.94);
+    const leftBlush = new THREE.Mesh(blushGeo, blushPinkMat);
+    leftBlush.position.set(-0.7, -0.16, 0.94);
     leftBlush.rotation.y = -0.22;
     this.headGroup.add(leftBlush);
 
-    const rightBlush = new THREE.Mesh(blushGeo, blushMat);
-    rightBlush.position.set(0.72, -0.16, 0.94);
+    const rightBlush = new THREE.Mesh(blushGeo, blushPinkMat);
+    rightBlush.position.set(0.7, -0.16, 0.94);
     rightBlush.rotation.y = 0.22;
     this.headGroup.add(rightBlush);
 
-    // Forehead Tabby Stripe Trio (Classic kitten "M" mark!)
-    const stripeGeoM = new THREE.CylinderGeometry(0.025, 0.035, 0.42, 8);
-    const centerStripe = new THREE.Mesh(stripeGeoM, stripeMat);
-    centerStripe.position.set(0, 0.72, 0.95);
-    centerStripe.rotation.x = -0.25;
+    // Soft Forehead Tabby Markings (Gentle, cute stripes - NOT harsh wrinkles!)
+    const foreGeo = new THREE.CylinderGeometry(0.02, 0.03, 0.38, 8);
+    const centerStripe = new THREE.Mesh(foreGeo, tabbyStripeMat);
+    centerStripe.position.set(0, 0.75, 0.96);
+    centerStripe.rotation.x = -0.28;
     this.headGroup.add(centerStripe);
 
-    const leftStripe = new THREE.Mesh(stripeGeoM, stripeMat);
-    leftStripe.position.set(-0.24, 0.68, 0.92);
-    leftStripe.rotation.x = -0.25;
-    leftStripe.rotation.z = -0.2;
-    this.headGroup.add(leftStripe);
+    const lForeStripe = new THREE.Mesh(foreGeo, tabbyStripeMat);
+    lForeStripe.position.set(-0.24, 0.72, 0.93);
+    lForeStripe.rotation.x = -0.28;
+    lForeStripe.rotation.z = -0.2;
+    this.headGroup.add(lForeStripe);
 
-    const rightStripe = new THREE.Mesh(stripeGeoM, stripeMat);
-    rightStripe.position.set(0.24, 0.68, 0.92);
-    rightStripe.rotation.x = -0.25;
-    rightStripe.rotation.z = 0.2;
-    this.headGroup.add(rightStripe);
+    const rForeStripe = new THREE.Mesh(foreGeo, tabbyStripeMat);
+    rForeStripe.position.set(0.24, 0.72, 0.93);
+    rForeStripe.rotation.x = -0.28;
+    rForeStripe.rotation.z = 0.2;
+    this.headGroup.add(rForeStripe);
 
     // ==========================================
-    // 4. Pointed Feline Ears with Pink Fluff
+    // 4. Pointed Kitten Ears with Pink Inner Fluff & White Tufts
     // ==========================================
-    const earGeo = new THREE.ConeGeometry(0.55, 1.05, 18);
-    earGeo.scale(1.15, 1.0, 0.45);
+    const earGeo = new THREE.ConeGeometry(0.52, 1.05, 18);
+    earGeo.scale(1.15, 1.0, 0.42);
 
     // Left Ear
     this.leftEarGroup = new THREE.Group();
-    this.leftEarGroup.position.set(-0.82, 1.05, 0.05);
+    this.leftEarGroup.position.set(-0.84, 1.05, 0.05);
     this.leftEarGroup.rotation.z = 0.32;
-    this.leftEarGroup.rotation.y = 0.15;
+    this.leftEarGroup.rotation.y = 0.14;
     this.leftEarGroup.rotation.x = -0.12;
 
     const leftEarMesh = new THREE.Mesh(earGeo, silverFurMat);
     leftEarMesh.castShadow = true;
     this.leftEarGroup.add(leftEarMesh);
 
-    // Soft Pink Inner Ear
-    const innerEarGeo = new THREE.ConeGeometry(0.42, 0.88, 16);
-    innerEarGeo.scale(1.05, 1.0, 0.32);
-    const leftInnerEar = new THREE.Mesh(innerEarGeo, pinkInnerEarMat);
-    leftInnerEar.position.set(0, -0.04, 0.1);
+    // Soft Pink Inner Ear Cavity
+    const innerEarGeo = new THREE.ConeGeometry(0.4, 0.88, 16);
+    innerEarGeo.scale(1.05, 1.0, 0.3);
+    const leftInnerEar = new THREE.Mesh(innerEarGeo, pinkEarMat);
+    leftInnerEar.position.set(0, -0.04, 0.09);
     this.leftEarGroup.add(leftInnerEar);
+
+    // Cute White Fluff Tuft at Base of Ear
+    const earTuftGeo = new THREE.SphereGeometry(0.22, 12, 10);
+    const leftEarTuft = new THREE.Mesh(earTuftGeo, fluffyWhiteMat);
+    leftEarTuft.position.set(0.12, -0.38, 0.16);
+    this.leftEarGroup.add(leftEarTuft);
+
     this.headGroup.add(this.leftEarGroup);
 
     // Right Ear
     this.rightEarGroup = new THREE.Group();
-    this.rightEarGroup.position.set(0.82, 1.05, 0.05);
+    this.rightEarGroup.position.set(0.84, 1.05, 0.05);
     this.rightEarGroup.rotation.z = -0.32;
-    this.rightEarGroup.rotation.y = -0.15;
+    this.rightEarGroup.rotation.y = -0.14;
     this.rightEarGroup.rotation.x = -0.12;
 
     const rightEarMesh = new THREE.Mesh(earGeo, silverFurMat);
     rightEarMesh.castShadow = true;
     this.rightEarGroup.add(rightEarMesh);
 
-    const rightInnerEar = new THREE.Mesh(innerEarGeo, pinkInnerEarMat);
-    rightInnerEar.position.set(0, -0.04, 0.1);
+    const rightInnerEar = new THREE.Mesh(innerEarGeo, pinkEarMat);
+    rightInnerEar.position.set(0, -0.04, 0.09);
     this.rightEarGroup.add(rightInnerEar);
+
+    const rightEarTuft = new THREE.Mesh(earTuftGeo, fluffyWhiteMat);
+    rightEarTuft.position.set(-0.12, -0.38, 0.16);
+    this.rightEarGroup.add(rightEarTuft);
+
     this.headGroup.add(this.rightEarGroup);
 
     // ==========================================
-    // 5. Cute Pink Ribbon Bow with White Hearts (Reference Image Hero Element!)
+    // 5. Pretty Pink Ribbon Bow (Matching reference image hero element!)
     // ==========================================
     this.pinkBowGroup = new THREE.Group();
-    // Positioned delicately right at the base of the left ear
-    this.pinkBowGroup.position.set(-0.76, 0.98, 0.35);
-    this.pinkBowGroup.rotation.z = -0.35;
-    this.pinkBowGroup.rotation.y = 0.25;
-    this.pinkBowGroup.rotation.x = 0.15;
+    // Scaled & placed delicately right at the base of the left ear
+    this.pinkBowGroup.position.set(-0.75, 0.95, 0.42);
+    this.pinkBowGroup.rotation.z = -0.32;
+    this.pinkBowGroup.rotation.y = 0.22;
+    this.pinkBowGroup.rotation.x = 0.12;
 
-    // Bow Center Knot
-    const knotGeo = new THREE.SphereGeometry(0.18, 16, 14);
-    knotGeo.scale(1.0, 0.85, 0.7);
-    const knotMesh = new THREE.Mesh(knotGeo, bowCenterMat);
+    // Center Ribbon Knot
+    const knotGeo = new THREE.SphereGeometry(0.17, 16, 14);
+    knotGeo.scale(1.0, 0.85, 0.65);
+    const knotMesh = new THREE.Mesh(knotGeo, bowKnotMat);
     this.pinkBowGroup.add(knotMesh);
 
-    // Left Loop of Ribbon Bow
-    const loopGeo = new THREE.TorusGeometry(0.38, 0.14, 12, 24);
-    loopGeo.scale(1.3, 0.8, 0.4);
-    const leftLoop = new THREE.Mesh(loopGeo, bowPinkMat);
-    leftLoop.position.set(-0.38, 0.06, 0);
-    leftLoop.rotation.z = 0.2;
+    // Left Ribbon Loop (Plush, soft curvature)
+    const loopGeo = new THREE.TorusGeometry(0.32, 0.13, 14, 24);
+    loopGeo.scale(1.3, 0.85, 0.4);
+    const leftLoop = new THREE.Mesh(loopGeo, bowSilkMat);
+    leftLoop.position.set(-0.34, 0.06, 0);
+    leftLoop.rotation.z = 0.22;
     this.pinkBowGroup.add(leftLoop);
 
-    // Right Loop of Ribbon Bow
-    const rightLoop = new THREE.Mesh(loopGeo, bowPinkMat);
-    rightLoop.position.set(0.38, 0.06, 0);
-    rightLoop.rotation.z = -0.2;
+    // Right Ribbon Loop
+    const rightLoop = new THREE.Mesh(loopGeo, bowSilkMat);
+    rightLoop.position.set(0.34, 0.06, 0);
+    rightLoop.rotation.z = -0.22;
     this.pinkBowGroup.add(rightLoop);
 
-    // Ribbon Tails hanging down
-    const ribbonTailGeo = new THREE.BoxGeometry(0.18, 0.45, 0.05);
-    const leftTail = new THREE.Mesh(ribbonTailGeo, bowPinkMat);
-    leftTail.position.set(-0.16, -0.32, 0.02);
-    leftTail.rotation.z = 0.4;
+    // Cute Ribbon Tails
+    const tailGeo = new THREE.BoxGeometry(0.16, 0.4, 0.04);
+    const leftTail = new THREE.Mesh(tailGeo, bowSilkMat);
+    leftTail.position.set(-0.14, -0.28, 0.02);
+    leftTail.rotation.z = 0.35;
     this.pinkBowGroup.add(leftTail);
 
-    const rightTail = new THREE.Mesh(ribbonTailGeo, bowPinkMat);
-    rightTail.position.set(0.16, -0.32, 0.02);
-    rightTail.rotation.z = -0.4;
+    const rightTail = new THREE.Mesh(tailGeo, bowSilkMat);
+    rightTail.position.set(0.14, -0.28, 0.02);
+    rightTail.rotation.z = -0.35;
     this.pinkBowGroup.add(rightTail);
 
-    // Tiny White Heart Accents on Bow Loops
-    const heartGeo = new THREE.SphereGeometry(0.06, 8, 8);
-    [-0.32, -0.48, 0.32, 0.48].forEach((xVal) => {
-      const heartDot = new THREE.Mesh(heartGeo, whiteDecalMat);
-      heartDot.position.set(xVal, 0.08, 0.09);
+    // Tiny White Heart/Polka Accents
+    const heartGeo = new THREE.SphereGeometry(0.05, 8, 8);
+    [-0.28, -0.42, 0.28, 0.42].forEach((xVal) => {
+      const heartDot = new THREE.Mesh(heartGeo, whiteHeartMat);
+      heartDot.position.set(xVal, 0.08, 0.08);
       this.pinkBowGroup.add(heartDot);
     });
 
     this.headGroup.add(this.pinkBowGroup);
 
     // ==========================================
-    // 6. Cute Kitten Muzzle, Nose, Mouth & Whiskers (:3 cat face)
+    // 6. Cute Kitten Muzzle, Nose, Mouth & Delicate Whiskers (:3 smile)
     // ==========================================
     this.muzzleGroup = new THREE.Group();
-    this.muzzleGroup.position.set(0, -0.22, 0.95);
+    this.muzzleGroup.position.set(0, -0.22, 0.98);
 
-    // Whisker Pads (Two white puffy rounded pillows forming the classic ":3" cat mouth)
-    const padGeo = new THREE.SphereGeometry(0.28, 18, 14);
-    padGeo.scale(1.15, 0.9, 0.65);
+    // Cute compact Whisker Pads (forming the classic soft ":3" cat smile)
+    const padGeo = new THREE.SphereGeometry(0.24, 18, 14);
+    padGeo.scale(1.15, 0.85, 0.6);
 
-    const leftPad = new THREE.Mesh(padGeo, whiteFurMat);
-    leftPad.position.set(-0.2, 0.04, 0.12);
+    const leftPad = new THREE.Mesh(padGeo, fluffyWhiteMat);
+    leftPad.position.set(-0.18, 0.04, 0.12);
     this.muzzleGroup.add(leftPad);
 
-    const rightPad = new THREE.Mesh(padGeo, whiteFurMat);
-    rightPad.position.set(0.2, 0.04, 0.12);
+    const rightPad = new THREE.Mesh(padGeo, fluffyWhiteMat);
+    rightPad.position.set(0.18, 0.04, 0.12);
     this.muzzleGroup.add(rightPad);
 
-    // Small Triangular Baby Pink Kitten Button Nose
-    const noseGeo = new THREE.ConeGeometry(0.11, 0.14, 3);
+    // Tiny Baby Pink Triangular Kitten Button Nose
+    const noseGeo = new THREE.ConeGeometry(0.1, 0.13, 3);
     noseGeo.rotateX(Math.PI);
-    noseGeo.scale(1.25, 0.9, 0.5);
+    noseGeo.scale(1.2, 0.85, 0.5);
     const noseMesh = new THREE.Mesh(noseGeo, pinkNoseMat);
-    noseMesh.position.set(0, 0.16, 0.28);
+    noseMesh.position.set(0, 0.15, 0.26);
     this.muzzleGroup.add(noseMesh);
 
-    // Smiling Lower Jaw / Mouth with pink kitten tongue
-    const jawGeo = new THREE.CylinderGeometry(0.18, 0.12, 0.12, 16);
+    // Smiling Lower Jaw & Cute Pink Tongue
+    const jawGeo = new THREE.CylinderGeometry(0.16, 0.11, 0.1, 16);
     jawGeo.rotateX(Math.PI / 2);
-    this.jawMesh = new THREE.Mesh(jawGeo, mouthMat);
-    this.jawMesh.position.set(0, -0.12, 0.18);
+    this.jawMesh = new THREE.Mesh(jawGeo, tongueMat);
+    this.jawMesh.position.set(0, -0.11, 0.16);
     this.muzzleGroup.add(this.jawMesh);
 
-    // Fine Delicate Kitten Whiskers (3 on Left, 3 on Right)
-    this.leftWhiskers = new THREE.Group();
-    this.leftWhiskers.position.set(-0.28, 0.04, 0.2);
+    // Tiny pink tongue tip peeking out
+    const tongueTipGeo = new THREE.SphereGeometry(0.07, 10, 8);
+    tongueTipGeo.scale(1.2, 0.5, 1.0);
+    this.tongueMesh = new THREE.Mesh(tongueTipGeo, tongueMat);
+    this.tongueMesh.position.set(0, -0.1, 0.22);
+    this.muzzleGroup.add(this.tongueMesh);
 
-    [-0.15, 0.0, 0.15].forEach((angle, idx) => {
-      const whiskerGeo = new THREE.CylinderGeometry(0.008, 0.005, 0.75, 6);
+    // Ultra-Fine, Delicate Whiskers (Thin, curved naturally downward-outward)
+    this.leftWhiskers = new THREE.Group();
+    this.leftWhiskers.position.set(-0.25, 0.04, 0.18);
+
+    [-0.12, 0.0, 0.12].forEach((angle, idx) => {
+      const whiskerGeo = new THREE.CylinderGeometry(0.003, 0.001, 0.7, 4);
       whiskerGeo.rotateZ(Math.PI / 2 + angle);
       const whisker = new THREE.Mesh(whiskerGeo, whiskerMat);
-      whisker.position.set(-0.35, angle * 0.4, idx * 0.02);
+      whisker.position.set(-0.35, angle * 0.35, idx * 0.02);
       this.leftWhiskers.add(whisker);
     });
     this.muzzleGroup.add(this.leftWhiskers);
 
     this.rightWhiskers = new THREE.Group();
-    this.rightWhiskers.position.set(0.28, 0.04, 0.2);
+    this.rightWhiskers.position.set(0.25, 0.04, 0.18);
 
-    [-0.15, 0.0, 0.15].forEach((angle, idx) => {
-      const whiskerGeo = new THREE.CylinderGeometry(0.008, 0.005, 0.75, 6);
+    [-0.12, 0.0, 0.12].forEach((angle, idx) => {
+      const whiskerGeo = new THREE.CylinderGeometry(0.003, 0.001, 0.7, 4);
       whiskerGeo.rotateZ(-Math.PI / 2 - angle);
       const whisker = new THREE.Mesh(whiskerGeo, whiskerMat);
-      whisker.position.set(0.35, angle * 0.4, idx * 0.02);
+      whisker.position.set(0.35, angle * 0.35, idx * 0.02);
       this.rightWhiskers.add(whisker);
     });
     this.muzzleGroup.add(this.rightWhiskers);
@@ -411,48 +441,41 @@ export class Cat3DModel {
     this.headGroup.add(this.muzzleGroup);
 
     // ==========================================
-    // 7. Giant Glistening Hazel-Amber Anime Kitten Eyes (With Eyelashes & Highlights!)
+    // 7. Giant Glistening Hazel-Amber Anime Eyes (With Double Sparkles!)
     // ==========================================
-    const eyeBaseGeo = new THREE.SphereGeometry(0.28, 24, 20);
-    eyeBaseGeo.scale(0.98, 1.15, 0.55);
+    const eyeBaseGeo = new THREE.SphereGeometry(0.34, 24, 20);
+    eyeBaseGeo.scale(1.0, 1.15, 0.55);
 
     // Left Eye
     this.leftEyeGroup = new THREE.Group();
-    this.leftEyeGroup.position.set(-0.46, 0.16, 0.98);
-    this.leftEyeGroup.rotation.y = -0.16;
-    this.leftEyeGroup.rotation.z = 0.04;
+    this.leftEyeGroup.position.set(-0.46, 0.18, 0.98);
+    this.leftEyeGroup.rotation.y = -0.15;
+    this.leftEyeGroup.rotation.z = 0.03;
 
-    const leftIris = new THREE.Mesh(eyeBaseGeo, amberIrisMat);
+    const leftIris = new THREE.Mesh(eyeBaseGeo, hazelIrisMat);
     this.leftEyeGroup.add(leftIris);
 
-    // Deep Dark Pupil
-    const pupilGeo = new THREE.SphereGeometry(0.18, 18, 16);
-    pupilGeo.scale(0.85, 1.15, 0.3);
+    // Deep Obsidian Pupil
+    const pupilGeo = new THREE.SphereGeometry(0.22, 18, 16);
+    pupilGeo.scale(0.88, 1.12, 0.3);
     const leftPupil = new THREE.Mesh(pupilGeo, pupilMat);
     leftPupil.position.set(0, 0, 0.14);
     this.leftEyeGroup.add(leftPupil);
 
-    // Specular Highlight Sparkle 1 (Large Top Sparkle)
-    const hlBigGeo = new THREE.SphereGeometry(0.08, 12, 10);
-    const leftHl1 = new THREE.Mesh(hlBigGeo, highlightMat);
-    leftHl1.position.set(-0.06, 0.09, 0.22);
+    // Specular Sparkle Highlight 1 (Large Top Sparkle)
+    const hlBigGeo = new THREE.SphereGeometry(0.09, 12, 10);
+    const leftHl1 = new THREE.Mesh(hlBigGeo, sparkleHighlightMat);
+    leftHl1.position.set(-0.07, 0.1, 0.24);
     this.leftEyeGroup.add(leftHl1);
 
-    // Specular Highlight Sparkle 2 (Mini Bottom-Right Sparkle)
-    const hlSmallGeo = new THREE.SphereGeometry(0.04, 8, 8);
-    const leftHl2 = new THREE.Mesh(hlSmallGeo, highlightMat);
-    leftHl2.position.set(0.08, -0.08, 0.22);
+    // Specular Sparkle Highlight 2 (Mini Bottom Sparkle)
+    const hlSmallGeo = new THREE.SphereGeometry(0.045, 8, 8);
+    const leftHl2 = new THREE.Mesh(hlSmallGeo, sparkleHighlightMat);
+    leftHl2.position.set(0.09, -0.09, 0.24);
     this.leftEyeGroup.add(leftHl2);
 
-    // Cute Curved Feline Eyelashes on Upper Rim (Matching reference image!)
-    const lashGeo = new THREE.TorusGeometry(0.29, 0.022, 8, 16, Math.PI * 0.65);
-    const leftLash = new THREE.Mesh(lashGeo, eyelashMat);
-    leftLash.position.set(-0.02, 0.08, 0.16);
-    leftLash.rotation.z = Math.PI * 0.2;
-    this.leftEyeGroup.add(leftLash);
-
-    // Animated Eyelid for Blinking
-    const eyelidGeo = new THREE.SphereGeometry(0.31, 20, 14, 0, Math.PI * 2, 0, Math.PI / 2);
+    // Natural Blinking Eyelid
+    const eyelidGeo = new THREE.SphereGeometry(0.36, 20, 14, 0, Math.PI * 2, 0, Math.PI / 2);
     this.leftEyelid = new THREE.Mesh(eyelidGeo, silverFurMat);
     this.leftEyelid.position.set(0, 0, 0.02);
     this.leftEyelid.rotation.x = -Math.PI / 2;
@@ -463,29 +486,24 @@ export class Cat3DModel {
 
     // Right Eye
     this.rightEyeGroup = new THREE.Group();
-    this.rightEyeGroup.position.set(0.46, 0.16, 0.98);
-    this.rightEyeGroup.rotation.y = 0.16;
-    this.rightEyeGroup.rotation.z = -0.04;
+    this.rightEyeGroup.position.set(0.46, 0.18, 0.98);
+    this.rightEyeGroup.rotation.y = 0.15;
+    this.rightEyeGroup.rotation.z = -0.03;
 
-    const rightIris = new THREE.Mesh(eyeBaseGeo, amberIrisMat);
+    const rightIris = new THREE.Mesh(eyeBaseGeo, hazelIrisMat);
     this.rightEyeGroup.add(rightIris);
 
     const rightPupil = new THREE.Mesh(pupilGeo, pupilMat);
     rightPupil.position.set(0, 0, 0.14);
     this.rightEyeGroup.add(rightPupil);
 
-    const rightHl1 = new THREE.Mesh(hlBigGeo, highlightMat);
-    rightHl1.position.set(-0.06, 0.09, 0.22);
+    const rightHl1 = new THREE.Mesh(hlBigGeo, sparkleHighlightMat);
+    rightHl1.position.set(-0.07, 0.1, 0.24);
     this.rightEyeGroup.add(rightHl1);
 
-    const rightHl2 = new THREE.Mesh(hlSmallGeo, highlightMat);
-    rightHl2.position.set(0.08, -0.08, 0.22);
+    const rightHl2 = new THREE.Mesh(hlSmallGeo, sparkleHighlightMat);
+    rightHl2.position.set(0.09, -0.09, 0.24);
     this.rightEyeGroup.add(rightHl2);
-
-    const rightLash = new THREE.Mesh(lashGeo, eyelashMat);
-    rightLash.position.set(0.02, 0.08, 0.16);
-    rightLash.rotation.z = Math.PI * 0.15;
-    this.rightEyeGroup.add(rightLash);
 
     this.rightEyelid = new THREE.Mesh(eyelidGeo, silverFurMat);
     this.rightEyelid.position.set(0, 0, 0.02);
@@ -497,86 +515,84 @@ export class Cat3DModel {
     this.group.add(this.headGroup);
 
     // ==========================================
-    // 8. Chubby Kitten Paws with Pink Toe Beans
+    // 8. Chubby Sitting Kitten Paws with Pink Toe Beans
     // ==========================================
-    // Paw geometry with toe grooves
-    const pawGeo = new THREE.SphereGeometry(0.35, 18, 14);
+    const pawGeo = new THREE.SphereGeometry(0.34, 18, 14);
     pawGeo.scale(1.05, 0.75, 1.25);
 
-    // Front Left Arm & Paw
+    // Front Left Arm & Paw (Placed neatly side-by-side like sitting kitten in reference!)
     this.leftArmGroup = new THREE.Group();
-    this.leftArmGroup.position.set(-0.62, 1.35, 0.2);
+    this.leftArmGroup.position.set(-0.38, 1.28, 0.38);
 
-    const armGeo = new THREE.CylinderGeometry(0.24, 0.28, 0.85, 16);
+    const armGeo = new THREE.CylinderGeometry(0.22, 0.26, 0.82, 16);
     const leftArmMesh = new THREE.Mesh(armGeo, silverFurMat);
-    leftArmMesh.position.y = -0.42;
+    leftArmMesh.position.y = -0.4;
     this.leftArmGroup.add(leftArmMesh);
 
-    // White Mittens / Paws
-    const leftPawMesh = new THREE.Mesh(pawGeo, whiteFurMat);
-    leftPawMesh.position.set(0, -0.85, 0.18);
+    // Snowy White Front Paws
+    const leftPawMesh = new THREE.Mesh(pawGeo, fluffyWhiteMat);
+    leftPawMesh.position.set(0, -0.82, 0.2);
     leftPawMesh.castShadow = true;
     this.leftArmGroup.add(leftPawMesh);
 
-    // Pink Toe Beans Under Paw
+    // Baby Pink Paw Cushion / Toe Beans
     const beanCenterGeo = new THREE.SphereGeometry(0.1, 10, 8);
     beanCenterGeo.scale(1.2, 0.4, 1.0);
-    const leftCenterBean = new THREE.Mesh(beanCenterGeo, pinkInnerEarMat);
-    leftCenterBean.position.set(0, -0.92, 0.16);
+    const leftCenterBean = new THREE.Mesh(beanCenterGeo, pinkEarMat);
+    leftCenterBean.position.set(0, -0.9, 0.18);
     this.leftArmGroup.add(leftCenterBean);
 
     this.group.add(this.leftArmGroup);
 
     // Front Right Arm & Paw
     this.rightArmGroup = new THREE.Group();
-    this.rightArmGroup.position.set(0.62, 1.35, 0.2);
+    this.rightArmGroup.position.set(0.38, 1.28, 0.38);
 
     const rightArmMesh = new THREE.Mesh(armGeo, silverFurMat);
-    rightArmMesh.position.y = -0.42;
+    rightArmMesh.position.y = -0.4;
     this.rightArmGroup.add(rightArmMesh);
 
-    const rightPawMesh = new THREE.Mesh(pawGeo, whiteFurMat);
-    rightPawMesh.position.set(0, -0.85, 0.18);
+    const rightPawMesh = new THREE.Mesh(pawGeo, fluffyWhiteMat);
+    rightPawMesh.position.set(0, -0.82, 0.2);
     rightPawMesh.castShadow = true;
     this.rightArmGroup.add(rightPawMesh);
 
-    const rightCenterBean = new THREE.Mesh(beanCenterGeo, pinkInnerEarMat);
-    rightCenterBean.position.set(0, -0.92, 0.16);
+    const rightCenterBean = new THREE.Mesh(beanCenterGeo, pinkEarMat);
+    rightCenterBean.position.set(0, -0.9, 0.18);
     this.rightArmGroup.add(rightCenterBean);
 
     this.group.add(this.rightArmGroup);
 
-    // Hind Sitting Legs & Paws
-    const hindLegGeo = new THREE.SphereGeometry(0.48, 16, 14);
-    hindLegGeo.scale(0.85, 1.1, 1.0);
+    // Hind Sitting Thighs & Paws
+    const hindThighGeo = new THREE.SphereGeometry(0.48, 16, 14);
+    hindThighGeo.scale(0.85, 1.1, 1.0);
 
     this.leftLegGroup = new THREE.Group();
     this.leftLegGroup.position.set(-0.68, 0.45, 0.0);
-    const leftHindThigh = new THREE.Mesh(hindLegGeo, silverFurMat);
+    const leftHindThigh = new THREE.Mesh(hindThighGeo, silverFurMat);
     this.leftLegGroup.add(leftHindThigh);
 
-    const leftHindPaw = new THREE.Mesh(pawGeo, whiteFurMat);
-    leftHindPaw.position.set(0.05, -0.32, 0.38);
+    const leftHindPaw = new THREE.Mesh(pawGeo, fluffyWhiteMat);
+    leftHindPaw.position.set(0.08, -0.32, 0.38);
     this.leftLegGroup.add(leftHindPaw);
     this.group.add(this.leftLegGroup);
 
     this.rightLegGroup = new THREE.Group();
     this.rightLegGroup.position.set(0.68, 0.45, 0.0);
-    const rightHindThigh = new THREE.Mesh(hindLegGeo, silverFurMat);
+    const rightHindThigh = new THREE.Mesh(hindThighGeo, silverFurMat);
     this.rightLegGroup.add(rightHindThigh);
 
-    const rightHindPaw = new THREE.Mesh(pawGeo, whiteFurMat);
-    rightHindPaw.position.set(-0.05, -0.32, 0.38);
+    const rightHindPaw = new THREE.Mesh(pawGeo, fluffyWhiteMat);
+    rightHindPaw.position.set(-0.08, -0.32, 0.38);
     this.rightLegGroup.add(rightHindPaw);
     this.group.add(this.rightLegGroup);
 
     // ==========================================
-    // 9. Fluffy Curved Kitten Tail with White Tip!
+    // 9. Fluffy Curved Kitten Tail with White Tip
     // ==========================================
     this.tailGroup = new THREE.Group();
     this.tailGroup.position.set(0, 0.55, -0.85);
 
-    // Curved S-shape tail built from tapering segments
     const tailSegCount = 7;
     let prevSeg = this.tailGroup;
 
@@ -585,7 +601,7 @@ export class Cat3DModel {
       const length = 0.28;
       const segGeo = new THREE.CylinderGeometry(radius * 0.9, radius, length, 12);
       const isTip = i >= tailSegCount - 2;
-      const mat = isTip ? whiteFurMat : silverFurMat;
+      const mat = isTip ? fluffyWhiteMat : silverFurMat;
       const segMesh = new THREE.Mesh(segGeo, mat);
       segMesh.position.y = length * 0.5;
       segMesh.castShadow = true;
@@ -599,18 +615,16 @@ export class Cat3DModel {
       prevSeg = segGroup;
     }
 
-    // Fluffy White Tail Tip Sphere
-    const tipGeo = new THREE.SphereGeometry(0.16, 12, 10);
-    this.tailTipMesh = new THREE.Mesh(tipGeo, whiteFurMat);
-    this.tailTipMesh.position.y = 0.28;
-    prevSeg.add(this.tailTipMesh);
+    const tipGeo = new THREE.SphereGeometry(0.17, 12, 10);
+    const tailTip = new THREE.Mesh(tipGeo, fluffyWhiteMat);
+    tailTip.position.y = 0.28;
+    prevSeg.add(tailTip);
 
     this.group.add(this.tailGroup);
 
     // ==========================================
-    // 10. Optional Accessories (Glasses, Party Hat, Milk Saucer)
+    // 10. Accessories (Sunglasses, Party Hat, Milk Saucer, Fish)
     // ==========================================
-    // Cool Cat Sunglasses
     this.sunglassesGroup = new THREE.Group();
     this.sunglassesGroup.position.set(0, 0.18, 1.2);
     const glassMat = new THREE.MeshStandardMaterial({ color: 0x111116, metalness: 0.95, roughness: 0.1 });
@@ -633,7 +647,7 @@ export class Cat3DModel {
     this.sunglassesGroup.visible = false;
     this.headGroup.add(this.sunglassesGroup);
 
-    // Party Crown / Hat
+    // Party Crown
     this.partyHatGroup = new THREE.Group();
     this.partyHatGroup.position.set(0, 1.25, 0.1);
     const coneGeo = new THREE.ConeGeometry(0.38, 0.75, 18);
@@ -649,7 +663,7 @@ export class Cat3DModel {
     this.partyHatGroup.visible = false;
     this.headGroup.add(this.partyHatGroup);
 
-    // Warm Milk Saucer
+    // Milk Saucer
     this.milkSaucerGroup = new THREE.Group();
     this.milkSaucerGroup.position.set(0, 0.1, 0.95);
     const saucerGeo = new THREE.CylinderGeometry(0.48, 0.35, 0.12, 24);
@@ -686,24 +700,24 @@ export class Cat3DModel {
     this.group.add(this.fishGroup);
   }
 
-  // Look at 3D target coordinates (Smooth head & eye tracking!)
+  // Smooth Head & Eyes Tracking towards 3D target coordinates
   public lookAtTarget(worldPoint: THREE.Vector3) {
     if (this.animState === "sleep") return;
 
     const localPoint = this.group.worldToLocal(worldPoint.clone());
-    const targetRotY = Math.max(-0.6, Math.min(0.6, localPoint.x * 0.18));
-    const targetRotX = Math.max(-0.4, Math.min(0.4, -localPoint.y * 0.12 + 0.1));
+    const targetRotY = Math.max(-0.55, Math.min(0.55, localPoint.x * 0.16));
+    const targetRotX = Math.max(-0.35, Math.min(0.35, -localPoint.y * 0.1 + 0.08));
 
     this.headGroup.rotation.y = THREE.MathUtils.lerp(this.headGroup.rotation.y, targetRotY, 0.08);
     this.headGroup.rotation.x = THREE.MathUtils.lerp(this.headGroup.rotation.x, targetRotX, 0.08);
 
-    // Eyes tracking
-    const eyeOffsetX = targetRotY * 0.06;
-    const eyeOffsetY = targetRotX * 0.06;
+    // Eye pupils tracking
+    const eyeOffsetX = targetRotY * 0.05;
+    const eyeOffsetY = targetRotX * 0.05;
     this.leftEyeGroup.position.x = -0.46 + eyeOffsetX;
-    this.leftEyeGroup.position.y = 0.16 + eyeOffsetY;
+    this.leftEyeGroup.position.y = 0.18 + eyeOffsetY;
     this.rightEyeGroup.position.x = 0.46 + eyeOffsetX;
-    this.rightEyeGroup.position.y = 0.16 + eyeOffsetY;
+    this.rightEyeGroup.position.y = 0.18 + eyeOffsetY;
   }
 
   // 60FPS Animation Update
@@ -725,15 +739,15 @@ export class Cat3DModel {
     }
 
     // 2. Whisker and Ear Micro-Twitching
-    const earTwitch = Math.sin(time * 3.5) * 0.06;
+    const earTwitch = Math.sin(time * 3.5) * 0.05;
     this.leftEarGroup.rotation.z = 0.32 + earTwitch;
     this.rightEarGroup.rotation.z = -0.32 - earTwitch;
 
-    const whiskerWiggle = Math.sin(time * 5.0) * 0.04;
+    const whiskerWiggle = Math.sin(time * 5.0) * 0.03;
     this.leftWhiskers.rotation.z = whiskerWiggle;
     this.rightWhiskers.rotation.z = -whiskerWiggle;
 
-    // 3. Tail Swish (Gentle organic feline tail motion!)
+    // 3. Tail Swish (Gentle organic feline tail motion)
     this.tailTime += delta * 2.8;
     this.tailGroup.rotation.y = Math.sin(this.tailTime) * 0.45;
     this.tailGroup.rotation.z = Math.cos(this.tailTime * 0.7) * 0.15;
@@ -741,11 +755,13 @@ export class Cat3DModel {
     // 4. Talking & Meowing Mouth Animation
     if (this.isSpeaking) {
       this.talkTime += delta * 18;
-      const mouthOpen = (Math.sin(this.talkTime) * 0.5 + 0.5) * 0.14;
-      this.jawMesh.position.y = -0.12 - mouthOpen;
-      this.headGroup.position.y = 2.58 + Math.sin(this.talkTime * 0.5) * 0.04;
+      const mouthOpen = (Math.sin(this.talkTime) * 0.5 + 0.5) * 0.12;
+      this.jawMesh.position.y = -0.11 - mouthOpen;
+      this.tongueMesh.position.y = -0.1 - mouthOpen * 0.5;
+      this.headGroup.position.y = 2.58 + Math.sin(this.talkTime * 0.5) * 0.03;
     } else {
-      this.jawMesh.position.y = -0.12;
+      this.jawMesh.position.y = -0.11;
+      this.tongueMesh.position.y = -0.1;
     }
 
     // 5. State Machine Animations
@@ -754,11 +770,11 @@ export class Cat3DModel {
         this.milkSaucerGroup.visible = false;
         this.fishGroup.visible = false;
 
-        // Breathing & gentle kitten bobbing
-        const breathe = Math.sin(time * 2.2) * 0.025;
+        // Gentle breathing bob
+        const breathe = Math.sin(time * 2.2) * 0.02;
         this.bodyMesh.position.y = 1.28 + breathe;
-        this.chestRuffMesh.position.y = 1.45 + breathe;
-        this.bellyMesh.position.y = 1.05 + breathe;
+        this.chestRuffGroup.position.y = 1.48 + breathe;
+        this.bellyMesh.position.y = 1.02 + breathe;
 
         this.leftArmGroup.rotation.set(0, 0, 0);
         this.rightArmGroup.rotation.set(0, 0, 0);
@@ -776,25 +792,21 @@ export class Cat3DModel {
         // Bouncy kitten trot!
         this.group.position.y = 0 + Math.abs(Math.sin(this.walkTime)) * 0.12;
 
-        // Arm / Front Paw swing
         this.leftArmGroup.rotation.x = Math.sin(this.walkTime) * 0.55;
         this.rightArmGroup.rotation.x = -Math.sin(this.walkTime) * 0.55;
 
-        // Hind Leg swing
         this.leftLegGroup.rotation.x = -Math.sin(this.walkTime) * 0.45;
         this.rightLegGroup.rotation.x = Math.sin(this.walkTime) * 0.45;
 
-        // Fast playful tail wag
         this.tailGroup.rotation.y = Math.sin(this.walkTime * 1.8) * 0.7;
         break;
       }
 
       case "purr": {
         this.purrTime += delta * 24;
-        // Contented kitten purr vibration & half-closed eyes
         const purrVibe = Math.sin(this.purrTime) * 0.015;
         this.group.position.x += purrVibe;
-        this.bodyMesh.scale.set(1.02 + purrVibe * 2, 1.25, 0.98 + purrVibe * 2);
+        this.bodyMesh.scale.set(1.04 + purrVibe * 2, 1.25, 0.96 + purrVibe * 2);
 
         this.headGroup.rotation.x = 0.12;
         this.leftEyelid.visible = true;
@@ -804,12 +816,11 @@ export class Cat3DModel {
 
       case "bump": {
         // Obstacle Bump Reaction!
-        // Cat reels back with wide surprised eyes, ears flattened, paws flailing!
         this.bumpTime += delta * 15;
         this.headGroup.rotation.z = Math.sin(this.bumpTime) * 0.28;
         this.headGroup.rotation.x = -0.35 + Math.cos(this.bumpTime * 0.8) * 0.18;
 
-        this.leftEarGroup.rotation.z = 0.55; // flattened ears
+        this.leftEarGroup.rotation.z = 0.55;
         this.rightEarGroup.rotation.z = -0.55;
 
         this.leftArmGroup.rotation.z = -1.1 + Math.sin(this.bumpTime) * 0.35;
@@ -834,22 +845,19 @@ export class Cat3DModel {
       }
 
       case "sit": {
-        // Cute cat loaf / seated pose
-        this.group.position.y = THREE.MathUtils.lerp(this.group.position.y, -0.38, 0.1);
+        this.group.position.y = THREE.MathUtils.lerp(this.group.position.y, -0.35, 0.1);
         this.leftLegGroup.rotation.x = THREE.MathUtils.lerp(this.leftLegGroup.rotation.x, -1.2, 0.1);
         this.rightLegGroup.rotation.x = THREE.MathUtils.lerp(this.rightLegGroup.rotation.x, -1.2, 0.1);
 
         this.leftArmGroup.rotation.x = -0.9;
         this.rightArmGroup.rotation.x = -0.9;
 
-        // Tail curled around paws
         this.tailGroup.rotation.y = THREE.MathUtils.lerp(this.tailGroup.rotation.y, 1.35, 0.1);
         this.tailGroup.rotation.z = 0.25;
         break;
       }
 
       case "sleep": {
-        // Cozy kitten nap
         this.group.position.y = THREE.MathUtils.lerp(this.group.position.y, -0.75, 0.1);
         this.bodyMesh.rotation.x = THREE.MathUtils.lerp(this.bodyMesh.rotation.x, 1.25, 0.1);
         this.headGroup.position.set(0, 1.25, 1.05);
@@ -859,7 +867,7 @@ export class Cat3DModel {
         this.rightEyelid.visible = true;
 
         const napBreath = Math.sin(time * 1.5) * 0.04;
-        this.bodyMesh.scale.set(1.02 + napBreath, 1.25 + napBreath, 0.98);
+        this.bodyMesh.scale.set(1.04 + napBreath, 1.25 + napBreath, 0.96);
         break;
       }
 
@@ -893,7 +901,7 @@ export class Cat3DModel {
       case "pout": {
         const t = performance.now() * 0.012;
         this.group.position.y = Math.sin(t) * 0.15;
-        this.tailGroup.rotation.y = Math.sin(t * 3) * 0.8; // irritated swish
+        this.tailGroup.rotation.y = Math.sin(t * 3) * 0.8;
         break;
       }
     }

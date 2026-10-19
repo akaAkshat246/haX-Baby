@@ -214,19 +214,104 @@ export class TalkingTomAudio {
 
     const spokenText = cleanSpeech || text;
     const utt = new SpeechSynthesisUtterance(spokenText);
+    const voices = this.synth.getVoices();
 
-    // Detect if text contains Hindi or Hinglish
+    // Multilingual Voice Detection
+    // 1. Russian
+    const isRussian =
+      /[\u0400-\u04FF]/.test(spokenText) ||
+      /\b(привет|как|дела|мяу|спасибо|котёнок|друг|хорошо)\b/i.test(spokenText);
+
+    // 2. French
+    const isFrench =
+      /[éèêëàâîïôûùçœ]/.test(spokenText) ||
+      /\b(bonjour|salut|comment|chat|chaton|merci|miaou|oui|ami|bien)\b/i.test(spokenText);
+
+    // 3. Telugu
+    const isTelugu =
+      /[\u0C00-\u0C7F]/.test(spokenText) ||
+      /\b(namaskaram|ela|unnaru|nenu|pilli|bagunara|enti|cheppu|nestama)\b/i.test(spokenText);
+
+    // 4. Kannada
+    const isKannada =
+      /[\u0C80-\u0CFF]/.test(spokenText) ||
+      /\b(namaskara|hegiddeera|hegiddiya|beku|nanu|chennagiddira|oota|aytha|snehitha)\b/i.test(spokenText);
+
+    // 5. Marathi
+    const isMarathi =
+      /\b(namaskar|kashi|aahes|aahat|majha|naav|kuthe|kay|kartos|marathi|khelayla)\b/i.test(spokenText);
+
+    // 6. Hindi / Hinglish
     const isHindi =
       /[\u0900-\u097F]/.test(spokenText) ||
-      /\b(namaste|kya|hai|hoon|billi|dost|karo|batao|kaise|achha|pyari|meow|miau|haan|nahi|khelte|khalo|sunao)\b/i.test(
+      /\b(namaste|kya|hai|hoon|billi|dost|karo|batao|kaise|achha|pyari|haan|nahi|khelte|khalo|sunao|shukriya|bahut)\b/i.test(
         spokenText
       );
 
-    const voices = this.synth.getVoices();
-
-    if (isHindi) {
-      // Find native Hindi voice (Google Hindi, Microsoft Swara / Madhur / Kalpana / Hemant)
-      const hindiVoice = voices.find(
+    if (isRussian) {
+      const ruVoice = voices.find(
+        (v) =>
+          v.lang.startsWith("ru") ||
+          v.name.toLowerCase().includes("russian") ||
+          v.name.toLowerCase().includes("milena") ||
+          v.name.toLowerCase().includes("dmitry") ||
+          v.name.toLowerCase().includes("tatyana")
+      );
+      if (ruVoice) utt.voice = ruVoice;
+      utt.lang = "ru-RU";
+      utt.pitch = 1.35;
+      utt.rate = 1.0;
+    } else if (isFrench) {
+      const frVoice = voices.find(
+        (v) =>
+          v.lang.startsWith("fr") ||
+          v.name.toLowerCase().includes("french") ||
+          v.name.toLowerCase().includes("thomas") ||
+          v.name.toLowerCase().includes("audrey") ||
+          v.name.toLowerCase().includes("amelie")
+      );
+      if (frVoice) utt.voice = frVoice;
+      utt.lang = "fr-FR";
+      utt.pitch = 1.4;
+      utt.rate = 1.02;
+    } else if (isTelugu) {
+      const teVoice = voices.find(
+        (v) =>
+          v.lang.startsWith("te") ||
+          v.name.toLowerCase().includes("telugu") ||
+          v.name.toLowerCase().includes("mohan") ||
+          v.name.toLowerCase().includes("chitra")
+      ) || voices.find((v) => v.lang.startsWith("hi") || v.lang === "en-IN");
+      if (teVoice) utt.voice = teVoice;
+      utt.lang = "te-IN";
+      utt.pitch = 1.38;
+      utt.rate = 1.02;
+    } else if (isKannada) {
+      const knVoice = voices.find(
+        (v) =>
+          v.lang.startsWith("kn") ||
+          v.name.toLowerCase().includes("kannada") ||
+          v.name.toLowerCase().includes("sapna") ||
+          v.name.toLowerCase().includes("gagan")
+      ) || voices.find((v) => v.lang.startsWith("hi") || v.lang === "en-IN");
+      if (knVoice) utt.voice = knVoice;
+      utt.lang = "kn-IN";
+      utt.pitch = 1.38;
+      utt.rate = 1.02;
+    } else if (isMarathi) {
+      const mrVoice = voices.find(
+        (v) =>
+          v.lang.startsWith("mr") ||
+          v.name.toLowerCase().includes("marathi") ||
+          v.name.toLowerCase().includes("aarohi") ||
+          v.name.toLowerCase().includes("manohar")
+      ) || voices.find((v) => v.lang.startsWith("hi") || v.name.toLowerCase().includes("hindi"));
+      if (mrVoice) utt.voice = mrVoice;
+      utt.lang = "mr-IN";
+      utt.pitch = 1.36;
+      utt.rate = 1.02;
+    } else if (isHindi) {
+      const hiVoice = voices.find(
         (v) =>
           v.lang === "hi-IN" ||
           v.lang.startsWith("hi") ||
@@ -236,24 +321,22 @@ export class TalkingTomAudio {
           v.name.toLowerCase().includes("kalpana") ||
           v.name.toLowerCase().includes("hemant")
       );
-
-      if (hindiVoice) {
-        utt.voice = hindiVoice;
-      }
+      if (hiVoice) utt.voice = hiVoice;
       utt.lang = "hi-IN";
-      // Sweet, melodious, cheerful kitten pitch (smooth natural Hindi)
       utt.pitch = 1.35;
       utt.rate = 1.02;
     } else {
-      // English cute cartoon voice
-      const cartoonVoice = voices.find(
+      // English cute voice
+      const enVoice = voices.find(
         (v) =>
           v.name.toLowerCase().includes("samantha") ||
           v.name.toLowerCase().includes("victoria") ||
           v.name.toLowerCase().includes("karen") ||
+          v.name.toLowerCase().includes("zira") ||
           v.lang.startsWith("en")
       );
-      if (cartoonVoice) utt.voice = cartoonVoice;
+      if (enVoice) utt.voice = enVoice;
+      utt.lang = "en-US";
       utt.pitch = 1.45;
       utt.rate = 1.05;
     }

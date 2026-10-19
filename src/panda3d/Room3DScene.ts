@@ -16,21 +16,51 @@ export interface Obstacle3D {
 
 export type RoomStation = "kitty" | "panda" | "story" | "lullaby" | "relics" | "desktop";
 
+// Helper function to generate completely smooth rounded box geometry (no sharp edges)
+function createRoundedBox(
+  width: number,
+  height: number,
+  depth: number,
+  radius: number,
+  smoothness: number = 3
+): THREE.BufferGeometry {
+  const shape = new THREE.Shape();
+  const eps = 0.0001;
+  const r = Math.min(radius, Math.min(width, height) / 2 - eps);
+
+  shape.absarc(-width / 2 + r, -height / 2 + r, r, Math.PI, 1.5 * Math.PI, false);
+  shape.absarc(width / 2 - r, -height / 2 + r, r, 1.5 * Math.PI, 2 * Math.PI, false);
+  shape.absarc(width / 2 - r, height / 2 - r, r, 0, 0.5 * Math.PI, false);
+  shape.absarc(-width / 2 + r, height / 2 - r, r, 0.5 * Math.PI, Math.PI, false);
+
+  const geometry = new THREE.ExtrudeGeometry(shape, {
+    depth: Math.max(0.001, depth - r * 2),
+    bevelEnabled: true,
+    bevelSegments: smoothness * 2,
+    steps: 1,
+    bevelSize: r,
+    bevelThickness: r,
+    curveSegments: smoothness * 2,
+  });
+
+  geometry.center();
+  return geometry;
+}
+
 export class Room3DScene {
   public scene: THREE.Scene;
   public camera: THREE.PerspectiveCamera;
   public renderer: THREE.WebGLRenderer;
   public cat: Cat3DModel;
 
-  // Compatibility getter
   public get panda() {
     return this.cat;
   }
 
   // Camera Director System
-  public targetCamPos: THREE.Vector3 = new THREE.Vector3(0, 2.2, 5.0);
-  public targetCamLookAt: THREE.Vector3 = new THREE.Vector3(0, 1.2, 0.9);
-  public currentCamLookAt: THREE.Vector3 = new THREE.Vector3(0, 1.6, 0);
+  public targetCamPos: THREE.Vector3 = new THREE.Vector3(0, 2.6, 6.4);
+  public targetCamLookAt: THREE.Vector3 = new THREE.Vector3(0, 1.2, 1.0);
+  public currentCamLookAt: THREE.Vector3 = new THREE.Vector3(0, 1.5, 0);
   public currentStation: RoomStation = "kitty";
 
   private floorPlane: THREE.Mesh;
@@ -40,18 +70,21 @@ export class Room3DScene {
   private animId: number | null = null;
   private clock: THREE.Clock;
 
-  // Lighting elements for Day/Night toggle
+  // Lighting elements
   private ambientLight: THREE.AmbientLight;
   private hemiLight: THREE.HemisphereLight;
   private sunLight: THREE.DirectionalLight;
   private deskLampLight: THREE.PointLight;
   private synthPointLight: THREE.PointLight;
   private relicsPointLight: THREE.PointLight;
+  private fairyLightGroup: THREE.Group;
   private skyPlane: THREE.Mesh;
 
-  // Particle systems
+  // Particle systems & animated elements
   private dustPoints: THREE.Points;
   private relicDustPoints: THREE.Points;
+  private fairyLightMeshes: THREE.Mesh[] = [];
+  private danglingBallMesh?: THREE.Mesh;
 
   // 3D Station Meshes
   private storyHoloRings: THREE.Mesh[] = [];
@@ -60,51 +93,71 @@ export class Room3DScene {
   private relicMeshes: THREE.Object3D[] = [];
   private interactiveStations: THREE.Object3D[] = [];
 
-  // Walkable Floor 3D Boundaries
+  // Expanded, spacious walkable 3D boundaries for effortless roaming
   public bounds = {
-    minX: -4.8,
-    maxX: 4.8,
-    minZ: -2.3, // near the window
-    maxZ: 4.2,  // foreground near camera
+    minX: -10.0,
+    maxX: 10.0,
+    minZ: -5.0, // near the bay window seat
+    maxZ: 7.2,  // foreground near camera
   };
 
-  // 3D Furniture Obstacles for realistic bumping physics
+  // 3D Furniture Obstacles with smooth rounded collision bounds
   public obstacles: Obstacle3D[] = [
     {
       id: "sofa",
-      name: "Comfy Sofa",
-      minX: 2.2,
-      maxX: 6.2,
-      minZ: -1.8,
-      maxZ: 0.2,
+      name: "Cozy Curved Sofa",
+      minX: 5.2,
+      maxX: 10.4,
+      minZ: -3.2,
+      maxZ: 0.5,
     },
     {
       id: "coffee_table",
-      name: "Coffee Table",
-      minX: 2.4,
-      maxX: 5.2,
-      minZ: 0.65,
-      maxZ: 2.15,
+      name: "Organic Pebble Table",
+      minX: 5.4,
+      maxX: 9.0,
+      minZ: 1.2,
+      maxZ: 3.6,
     },
     {
       id: "study_desk",
-      name: "Study Desk",
-      minX: -6.0,
-      maxX: -3.2,
-      minZ: -2.1,
-      maxZ: -0.3,
+      name: "Rounded Study Desk",
+      minX: -10.5,
+      maxX: -6.0,
+      minZ: -4.5,
+      maxZ: -1.0,
     },
     {
       id: "beanbag",
-      name: "Cozy Beanbag",
+      name: "Plush Velvet Pouf",
       isCircle: true,
-      centerX: -1.8,
-      centerZ: -1.8,
-      radius: 1.25,
-      minX: -3.05,
-      maxX: -0.55,
-      minZ: -3.05,
-      maxZ: -0.55,
+      centerX: -4.5,
+      centerZ: -4.0,
+      radius: 1.5,
+      minX: -6.0,
+      maxX: -3.0,
+      minZ: -5.5,
+      maxZ: -2.5,
+    },
+    {
+      id: "cat_tree",
+      name: "Kitten Scratching Tower",
+      isCircle: true,
+      centerX: -8.8,
+      centerZ: 3.8,
+      radius: 1.4,
+      minX: -10.2,
+      maxX: -7.4,
+      minZ: 2.4,
+      maxZ: 5.2,
+    },
+    {
+      id: "window_seat",
+      name: "Sunlit Window Seat",
+      minX: -6.0,
+      maxX: 6.0,
+      minZ: -7.0,
+      maxZ: -5.4,
     },
   ];
 
@@ -113,7 +166,6 @@ export class Room3DScene {
   public onCatBump?: (obstacleName: string) => void;
   public onStationClick?: (station: RoomStation) => void;
 
-  // Compatibility aliases
   public get onPandaPoke() {
     return this.onCatPoke;
   }
@@ -134,66 +186,70 @@ export class Room3DScene {
     this.raycaster = new THREE.Raycaster();
     this.mouseVec = new THREE.Vector2();
 
-    // 1. Camera setup with cinematic lens
+    // 1. Camera setup: spacious wide field of view with cinematic depth
     const aspect = container.clientWidth / container.clientHeight;
-    this.camera = new THREE.PerspectiveCamera(42, aspect, 0.1, 100);
-    this.camera.position.set(0, 2.2, 5.0);
-    this.camera.lookAt(0, 1.2, 0.9);
-    this.currentCamLookAt.set(0, 1.2, 0.9);
+    this.camera = new THREE.PerspectiveCamera(44, aspect, 0.1, 100);
+    this.camera.position.set(0, 2.6, 6.4);
+    this.camera.lookAt(0, 1.2, 1.0);
+    this.currentCamLookAt.set(0, 1.2, 1.0);
 
-    // 2. WebGL Renderer with High-End Lighting & Soft Shadows
+    // 2. High-End WebGL Renderer with Soft PCF Shadows & ACES Tone Mapping
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
     this.renderer.setSize(container.clientWidth, container.clientHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.2;
+    this.renderer.toneMappingExposure = 1.25;
     container.appendChild(this.renderer.domElement);
 
-    // 3. Lighting: Warm Afternoon Sunlight + Cozy Indoor Glow
-    this.ambientLight = new THREE.AmbientLight(0xffeedd, 0.85);
+    // 3. Warm, lively ambient lighting
+    this.ambientLight = new THREE.AmbientLight(0xffeedd, 0.9);
     this.scene.add(this.ambientLight);
 
-    this.hemiLight = new THREE.HemisphereLight(0xffe4b5, 0x4a2e18, 0.75);
+    this.hemiLight = new THREE.HemisphereLight(0xffe8d6, 0x5a3e28, 0.85);
     this.scene.add(this.hemiLight);
 
-    // Main Directional Sunlight pouring in from window (top-left)
-    this.sunLight = new THREE.DirectionalLight(0xfff0d0, 2.4);
-    this.sunLight.position.set(-6, 9, -2);
+    // Directional Sunlight pouring in through the expanded bay window
+    this.sunLight = new THREE.DirectionalLight(0xfff4db, 2.6);
+    this.sunLight.position.set(-8, 12, -3);
     this.sunLight.castShadow = true;
     this.sunLight.shadow.mapSize.width = 2048;
     this.sunLight.shadow.mapSize.height = 2048;
     this.sunLight.shadow.camera.near = 0.5;
-    this.sunLight.shadow.camera.far = 25;
-    this.sunLight.shadow.camera.left = -8;
-    this.sunLight.shadow.camera.right = 8;
-    this.sunLight.shadow.camera.top = 8;
-    this.sunLight.shadow.camera.bottom = -8;
-    this.sunLight.shadow.bias = -0.0005;
+    this.sunLight.shadow.camera.far = 35;
+    this.sunLight.shadow.camera.left = -12;
+    this.sunLight.shadow.camera.right = 12;
+    this.sunLight.shadow.camera.top = 12;
+    this.sunLight.shadow.camera.bottom = -12;
+    this.sunLight.shadow.bias = -0.0004;
     this.scene.add(this.sunLight);
 
     // Cozy Desk Lamp Point Light
-    this.deskLampLight = new THREE.PointLight(0xffaa44, 2.2, 8);
-    this.deskLampLight.position.set(-4.2, 2.9, -1.8);
+    this.deskLampLight = new THREE.PointLight(0xffaa44, 2.4, 9);
+    this.deskLampLight.position.set(-7.5, 3.2, -2.8);
     this.scene.add(this.deskLampLight);
 
-    // Neon Synthesizer Accent Light
-    this.synthPointLight = new THREE.PointLight(0x00f0ff, 1.4, 5);
-    this.synthPointLight.position.set(3.8, 1.5, 1.4);
+    // Synthesizer Neon Glow Light
+    this.synthPointLight = new THREE.PointLight(0x00f0ff, 1.6, 6);
+    this.synthPointLight.position.set(7.2, 1.8, 2.4);
     this.scene.add(this.synthPointLight);
 
     // Celestial Relics Point Light
-    this.relicsPointLight = new THREE.PointLight(0xff85b8, 2.0, 7);
-    this.relicsPointLight.position.set(0, 3.2, -2.0);
+    this.relicsPointLight = new THREE.PointLight(0xff85b8, 2.2, 8);
+    this.relicsPointLight.position.set(0, 3.8, -4.8);
     this.scene.add(this.relicsPointLight);
 
-    // 4. Build 3D Room Environment
+    // Warm Fairy String Lights Group
+    this.fairyLightGroup = new THREE.Group();
+    this.scene.add(this.fairyLightGroup);
+
+    // 4. Build the Spacious Rounded Room Environment
     const room = this.buildRoom();
     this.floorPlane = room.floor;
     this.skyPlane = room.sky;
 
-    // 5. Add 3D Interactive Stations
+    // 5. Add 3D Interactive Stations with 100% Rounded Corners
     this.buildStoryTerminalStation();
     this.buildLullabySynthesizerStation();
     this.buildFloatingRelicsStation();
@@ -203,11 +259,11 @@ export class Room3DScene {
     this.cat.group.position.set(0, 0, 1.2);
     this.scene.add(this.cat.group);
 
-    // 7. Floating Sunbeam Dust Particles
+    // 7. Sunbeam Floating Particles
     this.dustPoints = this.buildSunbeamDust();
     this.scene.add(this.dustPoints);
 
-    // 8. Celestial Relic Stardust Particles
+    // 8. Relic Stardust Particles
     this.relicDustPoints = this.buildRelicStardust();
     this.scene.add(this.relicDustPoints);
 
@@ -224,34 +280,34 @@ export class Room3DScene {
     this.animate();
   }
 
-  // Camera Glide Transition Director
+  // Camera Glide Transition Director for the Spacious Sanctuary
   public setStation(station: RoomStation) {
     this.currentStation = station;
     switch (station) {
       case "kitty":
       case "panda":
-        this.targetCamPos.set(0, 2.2, 5.0);
-        this.targetCamLookAt.set(0, 1.2, 0.9);
+        this.targetCamPos.set(0, 2.6, 6.4);
+        this.targetCamLookAt.set(0, 1.2, 1.0);
         break;
       case "story":
-        // Cinematic Glide to Study Desk & Glowing 3D Story Terminal
-        this.targetCamPos.set(-2.8, 2.4, 1.4);
-        this.targetCamLookAt.set(-4.6, 1.85, -1.2);
+        // Glide smoothly to the rounded study desk & bubble terminal
+        this.targetCamPos.set(-5.2, 2.8, 0.0);
+        this.targetCamLookAt.set(-8.0, 1.85, -2.8);
         break;
       case "lullaby":
-        // Cinematic Glide to Coffee Table Synthesizer & WebGL Equalizer
-        this.targetCamPos.set(2.4, 2.4, 3.2);
-        this.targetCamLookAt.set(3.8, 1.2, 1.4);
+        // Glide smoothly to the organic pebble table & rounded synthesizer
+        this.targetCamPos.set(4.8, 2.8, 4.4);
+        this.targetCamLookAt.set(7.2, 1.25, 2.5);
         break;
       case "relics":
-        // Cinematic Glide to Floating Relics in front of Bay Window
-        this.targetCamPos.set(0, 3.0, 5.2);
-        this.targetCamLookAt.set(0, 2.4, -2.4);
+        // Glide smoothly to the floating zero-gravity relics
+        this.targetCamPos.set(0, 3.4, 3.2);
+        this.targetCamLookAt.set(0, 2.8, -4.8);
         break;
       case "desktop":
-        // Panoramic Wide-Angle Vantage Point of the full sanctuary
-        this.targetCamPos.set(0, 3.8, 8.5);
-        this.targetCamLookAt.set(0, 1.6, 0);
+        // Grand panoramic wide-angle perspective framing the entire sanctuary
+        this.targetCamPos.set(0, 5.5, 12.5);
+        this.targetCamLookAt.set(0, 1.8, 0.5);
         break;
     }
   }
@@ -260,150 +316,196 @@ export class Room3DScene {
   public setLightingTheme(theme: "day" | "night") {
     if (theme === "night") {
       this.ambientLight.color.setHex(0x1a162b);
-      this.ambientLight.intensity = 0.55;
+      this.ambientLight.intensity = 0.6;
       this.hemiLight.color.setHex(0x2d1b4e);
       this.hemiLight.groundColor.setHex(0x0f0b18);
       this.sunLight.color.setHex(0x5078ff);
-      this.sunLight.intensity = 0.8;
+      this.sunLight.intensity = 0.85;
       (this.skyPlane.material as THREE.MeshBasicMaterial).color.setHex(0x090514);
-      this.deskLampLight.intensity = 3.2;
-      this.synthPointLight.intensity = 2.6;
-      this.relicsPointLight.intensity = 3.0;
+      this.deskLampLight.intensity = 3.4;
+      this.synthPointLight.intensity = 2.8;
+      this.relicsPointLight.intensity = 3.2;
     } else {
       this.ambientLight.color.setHex(0xffeedd);
-      this.ambientLight.intensity = 0.85;
-      this.hemiLight.color.setHex(0xffe4b5);
-      this.hemiLight.groundColor.setHex(0x4a2e18);
-      this.sunLight.color.setHex(0xfff0d0);
-      this.sunLight.intensity = 2.4;
+      this.ambientLight.intensity = 0.9;
+      this.hemiLight.color.setHex(0xffe8d6);
+      this.hemiLight.groundColor.setHex(0x5a3e28);
+      this.sunLight.color.setHex(0xfff4db);
+      this.sunLight.intensity = 2.6;
       (this.skyPlane.material as THREE.MeshBasicMaterial).color.setHex(0xffe8d6);
-      this.deskLampLight.intensity = 2.2;
-      this.synthPointLight.intensity = 1.4;
-      this.relicsPointLight.intensity = 2.0;
+      this.deskLampLight.intensity = 2.4;
+      this.synthPointLight.intensity = 1.6;
+      this.relicsPointLight.intensity = 2.2;
     }
   }
 
-  // Build the Cozy Modern Sunlit Bedroom
+  // Build the Spacious, Lively Bedroom with 100% Rounded Furniture
   private buildRoom(): { floor: THREE.Mesh; sky: THREE.Mesh } {
-    // 1. Natural Hardwood Floor (Golden Oak)
-    const floorGeo = new THREE.PlaneGeometry(16, 14);
+    // 1. Natural Hardwood Floor (Expanded: 28m x 24m)
+    const floorGeo = new THREE.PlaneGeometry(28, 24);
     const floorMat = new THREE.MeshStandardMaterial({
       color: 0xdf9b54,
-      roughness: 0.45,
-      metalness: 0.1,
+      roughness: 0.42,
+      metalness: 0.08,
     });
     const floor = new THREE.Mesh(floorGeo, floorMat);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     this.scene.add(floor);
 
-    // 2. Cozy Pastel Walls
+    // 2. Warm Creamy Pastel Walls
     const wallMat = new THREE.MeshStandardMaterial({
-      color: 0xfdfbf7,
-      roughness: 0.9,
+      color: 0xfbf8f3,
+      roughness: 0.92,
     });
 
-    // Back Wall with Grand Window
-    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(16, 8), wallMat);
-    backWall.position.set(0, 4, -4);
+    // Back Wall (28m x 10m)
+    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(28, 10), wallMat);
+    backWall.position.set(0, 5, -7);
     backWall.receiveShadow = true;
     this.scene.add(backWall);
 
-    // Left Wall
-    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(14, 8), wallMat);
-    leftWall.position.set(-8, 4, 3);
+    // Left Wall (24m x 10m)
+    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(24, 10), wallMat);
+    leftWall.position.set(-14, 5, 5);
     leftWall.rotation.y = Math.PI / 2;
     leftWall.receiveShadow = true;
     this.scene.add(leftWall);
 
-    // 3. Grand Sunlit Bay Window overlooking city skyline
-    const windowFrameGeo = new THREE.BoxGeometry(6.4, 4.4, 0.18);
-    const frameMat = new THREE.MeshStandardMaterial({ color: 0x2d3748, roughness: 0.5 });
-    const windowFrame = new THREE.Mesh(windowFrameGeo, frameMat);
-    windowFrame.position.set(0, 4.2, -3.92);
-    this.scene.add(windowFrame);
+    // Right Accent Wall
+    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(24, 10), wallMat);
+    rightWall.position.set(14, 5, 5);
+    rightWall.rotation.y = -Math.PI / 2;
+    rightWall.receiveShadow = true;
+    this.scene.add(rightWall);
 
-    // Sky Backdrop Plane behind window
-    const skyMat = new THREE.MeshBasicMaterial({
-      color: 0xffe8d6,
-    });
-    const sky = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 4.8), skyMat);
-    sky.position.set(0, 4.2, -4.05);
+    // 3. Huge Sunlit Bay Window with Rounded Frame (11m x 5.2m)
+    const windowFrameMat = new THREE.MeshStandardMaterial({ color: 0x242834, roughness: 0.4 });
+    const windowOuter = new THREE.Mesh(
+      createRoundedBox(11.2, 5.4, 0.2, 0.35, 4),
+      windowFrameMat
+    );
+    windowOuter.position.set(0, 5.2, -6.9);
+    this.scene.add(windowOuter);
+
+    // Golden Morning Skyline Backdrop
+    const skyMat = new THREE.MeshBasicMaterial({ color: 0xffe8d6 });
+    const sky = new THREE.Mesh(new THREE.PlaneGeometry(12.5, 6.0), skyMat);
+    sky.position.set(0, 5.2, -7.05);
     this.scene.add(sky);
 
-    // Window Divider Bars
-    const barMat = new THREE.MeshStandardMaterial({ color: 0x1a202c });
-    const vertBar = new THREE.Mesh(new THREE.BoxGeometry(0.08, 4.2, 0.2), barMat);
-    vertBar.position.set(0, 4.2, -3.9);
-    this.scene.add(vertBar);
+    // Rounded Window Mullions
+    const mullionMat = new THREE.MeshStandardMaterial({ color: 0x1f232d });
+    [-2.75, 2.75].forEach((x) => {
+      const vBar = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 5.2, 12), mullionMat);
+      vBar.position.set(x, 5.2, -6.88);
+      this.scene.add(vBar);
+    });
 
-    const horizBar = new THREE.Mesh(new THREE.BoxGeometry(6.2, 0.08, 0.2), barMat);
-    horizBar.position.set(0, 4.2, -3.9);
-    this.scene.add(horizBar);
+    // Padded Window Seat with Rounded Cushion
+    const seatMat = new THREE.MeshStandardMaterial({ color: 0xf0ece6, roughness: 0.85 });
+    const windowSeat = new THREE.Mesh(
+      createRoundedBox(10.8, 0.45, 1.4, 0.18, 3),
+      seatMat
+    );
+    windowSeat.position.set(0, 0.22, -6.2);
+    windowSeat.receiveShadow = true;
+    this.scene.add(windowSeat);
 
-    // 4. Cozy Scandinavian Sofa (Right Side)
+    // 4. Large Circular Plush Rug in Center (Radius: 4.8m)
+    const rugMat = new THREE.MeshStandardMaterial({
+      color: 0xfbeae8,
+      roughness: 0.95,
+      metalness: 0.0,
+    });
+    const centerRug = new THREE.Mesh(new THREE.CylinderGeometry(4.8, 4.8, 0.025, 48), rugMat);
+    centerRug.position.set(0, 0.015, 1.2);
+    centerRug.receiveShadow = true;
+    this.scene.add(centerRug);
+
+    // Inner concentric ring on the rug for lively styling
+    const innerRingMat = new THREE.MeshStandardMaterial({ color: 0xf7d9db, roughness: 0.9 });
+    const innerRing = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 3.6, 0.028, 48), innerRingMat);
+    innerRing.position.set(0, 0.016, 1.2);
+    innerRing.receiveShadow = true;
+    this.scene.add(innerRing);
+
+    // 5. Cozy Scandinavian Sofa with Pillowy Rounded Cushions (Right Side)
     const sofaGroup = new THREE.Group();
-    sofaGroup.position.set(4.2, 0, -0.8);
-    const sofaMat = new THREE.MeshStandardMaterial({ color: 0xeeece8, roughness: 0.85 });
+    sofaGroup.position.set(7.6, 0, -1.2);
+    const sofaFabricMat = new THREE.MeshStandardMaterial({ color: 0xeeece8, roughness: 0.85 });
 
-    const sofaBase = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.75, 1.8), sofaMat);
-    sofaBase.position.set(0, 0.38, 0);
+    // Rounded Sofa Base Mattress
+    const sofaBase = new THREE.Mesh(
+      createRoundedBox(4.6, 0.8, 2.2, 0.28, 3),
+      sofaFabricMat
+    );
+    sofaBase.position.set(0, 0.4, 0);
     sofaBase.castShadow = true;
     sofaBase.receiveShadow = true;
     sofaGroup.add(sofaBase);
 
-    const sofaBack = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.3, 0.45), sofaMat);
-    sofaBack.position.set(0, 1.02, -0.68);
+    // Rounded Pillowy Backrest
+    const sofaBack = new THREE.Mesh(
+      createRoundedBox(4.6, 1.4, 0.65, 0.24, 3),
+      sofaFabricMat
+    );
+    sofaBack.position.set(0, 1.1, -0.78);
     sofaBack.castShadow = true;
     sofaGroup.add(sofaBack);
 
-    const armGeo = new THREE.BoxGeometry(0.38, 0.95, 1.8);
-    const leftArm = new THREE.Mesh(armGeo, sofaMat);
-    leftArm.position.set(-1.62, 0.58, 0);
-    leftArm.castShadow = true;
-    sofaGroup.add(leftArm);
+    // Curved Rounded Armrests
+    [-2.1, 2.1].forEach((x) => {
+      const arm = new THREE.Mesh(
+        createRoundedBox(0.6, 1.05, 2.2, 0.28, 3),
+        sofaFabricMat
+      );
+      arm.position.set(x, 0.62, 0);
+      arm.castShadow = true;
+      sofaGroup.add(arm);
+    });
 
-    const rightArm = new THREE.Mesh(armGeo, sofaMat);
-    rightArm.position.set(1.62, 0.58, 0);
-    rightArm.castShadow = true;
-    sofaGroup.add(rightArm);
-
-    // Throw Pillows
+    // Puffy Rounded Throw Pillows (Teal & Peach)
     const tealPillow = new THREE.Mesh(
-      new THREE.BoxGeometry(0.65, 0.65, 0.22),
+      createRoundedBox(0.7, 0.7, 0.25, 0.18, 3),
       new THREE.MeshStandardMaterial({ color: 0x38b2ac, roughness: 0.7 })
     );
-    tealPillow.position.set(-1.1, 0.85, -0.35);
-    tealPillow.rotation.y = 0.25;
+    tealPillow.position.set(-1.4, 0.95, -0.35);
+    tealPillow.rotation.y = 0.28;
     sofaGroup.add(tealPillow);
 
-    const ochrePillow = new THREE.Mesh(
-      new THREE.BoxGeometry(0.6, 0.6, 0.22),
+    const peachPillow = new THREE.Mesh(
+      createRoundedBox(0.65, 0.65, 0.25, 0.18, 3),
       new THREE.MeshStandardMaterial({ color: 0xdd6b20, roughness: 0.7 })
     );
-    ochrePillow.position.set(1.1, 0.82, -0.35);
-    ochrePillow.rotation.y = -0.25;
-    sofaGroup.add(ochrePillow);
+    peachPillow.position.set(1.4, 0.92, -0.35);
+    peachPillow.rotation.y = -0.28;
+    sofaGroup.add(peachPillow);
 
     this.scene.add(sofaGroup);
 
-    // 5. Wooden Coffee Table
+    // 6. Organic Pebble Coffee Table with Rounded Edge (Right-Front)
     const tableGroup = new THREE.Group();
-    tableGroup.position.set(3.8, 0, 1.4);
-    const woodMat = new THREE.MeshStandardMaterial({ color: 0xba793a, roughness: 0.6 });
+    tableGroup.position.set(7.2, 0, 2.4);
+    const woodMat = new THREE.MeshStandardMaterial({ color: 0xba793a, roughness: 0.55 });
 
-    const tableTop = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.12, 1.3), woodMat);
-    tableTop.position.set(0, 0.65, 0);
+    // Completely rounded organic tabletop
+    const tableTop = new THREE.Mesh(
+      createRoundedBox(3.2, 0.14, 1.9, 0.45, 4),
+      woodMat
+    );
+    tableTop.position.set(0, 0.68, 0);
     tableTop.castShadow = true;
     tableTop.receiveShadow = true;
     tableGroup.add(tableTop);
 
-    const legGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.65, 12);
+    // Smooth cylindrical tapered table legs
+    const legGeo = new THREE.CylinderGeometry(0.045, 0.035, 0.68, 16);
     [
-      [-1.05, 0.32, -0.5],
-      [1.05, 0.32, -0.5],
-      [-1.05, 0.32, 0.5],
-      [1.05, 0.32, 0.5],
+      [-1.25, 0.34, -0.65],
+      [1.25, 0.34, -0.65],
+      [-1.25, 0.34, 0.65],
+      [1.25, 0.34, 0.65],
     ].forEach(([x, y, z]) => {
       const leg = new THREE.Mesh(legGeo, woodMat);
       leg.position.set(x, y, z);
@@ -413,60 +515,115 @@ export class Room3DScene {
 
     this.scene.add(tableGroup);
 
-    // 6. Cozy Beanbag Cushion
-    const beanbagGeo = new THREE.SphereGeometry(1.25, 24, 18);
+    // 7. Cozy Rounded Beanbag Pouf (Left Rear)
+    const beanbagMat = new THREE.MeshStandardMaterial({ color: 0xffb5a7, roughness: 0.88 });
+    const beanbagGeo = new THREE.SphereGeometry(1.45, 28, 20);
     beanbagGeo.scale(1.2, 0.65, 1.2);
-    const beanbagMat = new THREE.MeshStandardMaterial({ color: 0xffb5a7, roughness: 0.9 });
     const beanbag = new THREE.Mesh(beanbagGeo, beanbagMat);
-    beanbag.position.set(-1.8, 0.38, -1.8);
+    beanbag.position.set(-4.5, 0.45, -4.0);
     beanbag.castShadow = true;
     beanbag.receiveShadow = true;
     this.scene.add(beanbag);
 
-    // 7. Potted Plant
-    const plantGroup = new THREE.Group();
-    plantGroup.position.set(0.6, 0, -3.2);
+    // 8. Rounded Kitten Scratching Tower / Cat Tree (Left-Front)
+    const catTreeGroup = new THREE.Group();
+    catTreeGroup.position.set(-8.8, 0, 3.8);
 
-    const pot = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.42, 0.3, 0.85, 18),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 })
+    const sisalMat = new THREE.MeshStandardMaterial({ color: 0xd4b886, roughness: 0.9 });
+    const plushPlatformMat = new THREE.MeshStandardMaterial({ color: 0xffd1dc, roughness: 0.85 });
+
+    // Round Base Platform
+    const treeBase = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 0.08, 28), plushPlatformMat);
+    treeBase.position.y = 0.04;
+    treeBase.castShadow = true;
+    catTreeGroup.add(treeBase);
+
+    // Sisal Scratching Post
+    const sisalPost = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 2.4, 24), sisalMat);
+    sisalPost.position.y = 1.24;
+    sisalPost.castShadow = true;
+    catTreeGroup.add(sisalPost);
+
+    // Middle Rounded Lounging Platform
+    const midPlatform = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 0.08, 28), plushPlatformMat);
+    midPlatform.position.y = 1.35;
+    midPlatform.castShadow = true;
+    catTreeGroup.add(midPlatform);
+
+    // Top Platform with Doughnut Cushion
+    const topPlatform = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.08, 28), plushPlatformMat);
+    topPlatform.position.y = 2.44;
+    topPlatform.castShadow = true;
+    catTreeGroup.add(topPlatform);
+
+    const donutCushion = new THREE.Mesh(
+      new THREE.TorusGeometry(0.62, 0.14, 16, 28),
+      plushPlatformMat
     );
-    pot.position.y = 0.42;
-    pot.castShadow = true;
-    plantGroup.add(pot);
+    donutCushion.rotation.x = Math.PI / 2;
+    donutCushion.position.y = 2.52;
+    catTreeGroup.add(donutCushion);
 
-    const leafMat = new THREE.MeshStandardMaterial({ color: 0x276749, roughness: 0.45, side: THREE.DoubleSide });
-    for (let i = 0; i < 6; i++) {
-      const angle = (i / 6) * Math.PI * 2;
-      const leafStem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 1.4, 8), leafMat);
-      leafStem.position.set(Math.cos(angle) * 0.15, 0.9, Math.sin(angle) * 0.15);
-      leafStem.rotation.z = Math.cos(angle) * 0.5;
-      leafStem.rotation.x = Math.sin(angle) * 0.5;
+    // Dangling Play Ball on Elastic String
+    const stringLine = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.005, 0.005, 0.65, 8),
+      new THREE.MeshBasicMaterial({ color: 0xffffff })
+    );
+    stringLine.position.set(0.45, 1.05, 0);
+    catTreeGroup.add(stringLine);
 
-      const leafBlade = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.85, 5), leafMat);
-      leafBlade.position.set(0, 0.7, 0);
-      leafBlade.rotation.y = angle;
-      leafStem.add(leafBlade);
-      plantGroup.add(leafStem);
-    }
-    this.scene.add(plantGroup);
+    this.danglingBallMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.12, 16, 14),
+      new THREE.MeshStandardMaterial({ color: 0xff4081, roughness: 0.5 })
+    );
+    this.danglingBallMesh.position.set(0.45, 0.72, 0);
+    catTreeGroup.add(this.danglingBallMesh);
 
-    // 8. Minimalist Study Desk
+    this.scene.add(catTreeGroup);
+
+    // 9. Playful Wool Yarn Ball on the Floor
+    const yarnGroup = new THREE.Group();
+    yarnGroup.position.set(-2.2, 0.22, 2.8);
+    const yarnMat = new THREE.MeshStandardMaterial({ color: 0xf472b6, roughness: 0.9 });
+    const yarnSphere = new THREE.Mesh(new THREE.SphereGeometry(0.24, 20, 16), yarnMat);
+    yarnSphere.castShadow = true;
+    yarnGroup.add(yarnSphere);
+
+    // Trailing curved yarn strand
+    const yarnCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0, -0.15, 0),
+      new THREE.Vector3(0.3, -0.2, 0.2),
+      new THREE.Vector3(0.65, -0.21, 0.05),
+      new THREE.Vector3(0.95, -0.21, 0.35),
+    ]);
+    const yarnStrand = new THREE.Mesh(
+      new THREE.TubeGeometry(yarnCurve, 20, 0.015, 8, false),
+      yarnMat
+    );
+    yarnGroup.add(yarnStrand);
+    this.scene.add(yarnGroup);
+
+    // 10. Study Workstation Desk with Rounded Corners (Left Corner)
     const deskGroup = new THREE.Group();
-    deskGroup.position.set(-4.6, 0, -1.2);
+    deskGroup.position.set(-8.0, 0, -2.8);
 
-    const deskTop = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.1, 1.4), woodMat);
+    // Fully rounded curved desktop
+    const deskTop = new THREE.Mesh(
+      createRoundedBox(3.4, 0.12, 1.8, 0.35, 4),
+      woodMat
+    );
     deskTop.position.set(0, 1.6, 0);
     deskTop.castShadow = true;
     deskTop.receiveShadow = true;
     deskGroup.add(deskTop);
 
-    const deskLegGeo = new THREE.BoxGeometry(0.1, 1.6, 0.1);
+    // Smooth cylindrical legs
+    const deskLegGeo = new THREE.CylinderGeometry(0.06, 0.05, 1.6, 16);
     [
-      [-1.1, 0.8, -0.6],
-      [1.1, 0.8, -0.6],
-      [-1.1, 0.8, 0.6],
-      [1.1, 0.8, 0.6],
+      [-1.45, 0.8, -0.7],
+      [1.45, 0.8, -0.7],
+      [-1.45, 0.8, 0.7],
+      [1.45, 0.8, 0.7],
     ].forEach(([x, y, z]) => {
       const leg = new THREE.Mesh(deskLegGeo, woodMat);
       leg.position.set(x, y, z);
@@ -474,50 +631,131 @@ export class Room3DScene {
       deskGroup.add(leg);
     });
 
-    // Desk Lamp
-    const lampStem = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.9, 12), new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.7 }));
-    lampStem.position.set(0.8, 2.1, -0.4);
+    // Rounded Study Chair
+    const chairGroup = new THREE.Group();
+    chairGroup.position.set(0, 0, 0.95);
+    const chairSeat = new THREE.Mesh(
+      createRoundedBox(1.1, 0.1, 1.0, 0.2, 3),
+      new THREE.MeshStandardMaterial({ color: 0xf472b6, roughness: 0.7 })
+    );
+    chairSeat.position.y = 0.95;
+    chairGroup.add(chairSeat);
+
+    const chairBack = new THREE.Mesh(
+      createRoundedBox(1.0, 0.9, 0.12, 0.2, 3),
+      new THREE.MeshStandardMaterial({ color: 0xf472b6, roughness: 0.7 })
+    );
+    chairBack.position.set(0, 1.45, 0.45);
+    chairGroup.add(chairBack);
+
+    const chairLeg = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.05, 0.05, 0.95, 12),
+      new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.8 })
+    );
+    chairLeg.position.y = 0.47;
+    chairGroup.add(chairLeg);
+    deskGroup.add(chairGroup);
+
+    // Cute Rounded Desk Lamp
+    const lampStem = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.03, 0.03, 0.85, 12),
+      new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.8, roughness: 0.2 })
+    );
+    lampStem.position.set(1.2, 2.05, -0.5);
     deskGroup.add(lampStem);
 
-    const lampShade = new THREE.Mesh(new THREE.ConeGeometry(0.24, 0.32, 16), new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.6 }));
-    lampShade.position.set(0.65, 2.5, -0.3);
-    lampShade.rotation.z = 0.5;
+    // Smooth Dome Lampshade
+    const lampShade = new THREE.Mesh(
+      new THREE.SphereGeometry(0.24, 20, 16, 0, Math.PI * 2, 0, Math.PI / 2),
+      new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.7, roughness: 0.3, side: THREE.DoubleSide })
+    );
+    lampShade.position.set(1.05, 2.45, -0.4);
+    lampShade.rotation.z = 0.4;
     deskGroup.add(lampShade);
 
     this.scene.add(deskGroup);
 
+    // 11. Potted Rounded Ceramic Planter
+    const plantGroup = new THREE.Group();
+    plantGroup.position.set(1.2, 0, -5.2);
+
+    const potMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 });
+    const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.42, 0.95, 24), potMat);
+    pot.position.y = 0.48;
+    pot.castShadow = true;
+    plantGroup.add(pot);
+
+    const leafMat = new THREE.MeshStandardMaterial({ color: 0x276749, roughness: 0.45, side: THREE.DoubleSide });
+    for (let i = 0; i < 7; i++) {
+      const angle = (i / 7) * Math.PI * 2;
+      const leafStem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 1.6, 8), leafMat);
+      leafStem.position.set(Math.cos(angle) * 0.18, 1.0, Math.sin(angle) * 0.18);
+      leafStem.rotation.z = Math.cos(angle) * 0.55;
+      leafStem.rotation.x = Math.sin(angle) * 0.55;
+
+      const leafBlade = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.95, 6), leafMat);
+      leafBlade.position.set(0, 0.8, 0);
+      leafBlade.rotation.y = angle;
+      leafStem.add(leafBlade);
+      plantGroup.add(leafStem);
+    }
+    this.scene.add(plantGroup);
+
+    // 12. Draped Warm Fairy String Lights
+    const numFairyLights = 14;
+    for (let i = 0; i < numFairyLights; i++) {
+      const ratio = i / (numFairyLights - 1);
+      const x = -5.0 + ratio * 10.0;
+      const sag = Math.sin(ratio * Math.PI) * 0.35;
+      const y = 8.1 - sag;
+      const z = -6.85;
+
+      const bulbGeo = new THREE.SphereGeometry(0.065, 12, 10);
+      const bulbColor = i % 2 === 0 ? 0xffea79 : 0xffa8d8;
+      const bulbMat = new THREE.MeshBasicMaterial({ color: bulbColor });
+      const bulb = new THREE.Mesh(bulbGeo, bulbMat);
+      bulb.position.set(x, y, z);
+      this.fairyLightGroup.add(bulb);
+      this.fairyLightMeshes.push(bulb);
+    }
+
     return { floor, sky };
   }
 
-  // 3D Station 1: 404 Cyber Story Terminal on Study Desk
+  // 3D Station 1: 404 Cyber Story Terminal with Cute Rounded Bubble Silhouette
   private buildStoryTerminalStation() {
     const stationGroup = new THREE.Group();
-    stationGroup.position.set(-4.6, 1.65, -1.2);
+    stationGroup.position.set(-8.0, 1.66, -2.8);
     stationGroup.userData = { station: "story", name: "404 Story Terminal" };
 
-    // Terminal Base & Keyboard
-    const baseMat = new THREE.MeshStandardMaterial({ color: 0x1f2430, metalness: 0.7, roughness: 0.3 });
-    const kbMesh = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.04, 0.4), baseMat);
-    kbMesh.position.set(0, 0.02, 0.18);
-    stationGroup.add(kbMesh);
-
-    // Retro-Futuristic Terminal Display Housing
-    const monitorHousing = new THREE.Mesh(
-      new THREE.BoxGeometry(0.9, 0.65, 0.18),
-      new THREE.MeshStandardMaterial({ color: 0x161922, metalness: 0.8, roughness: 0.25 })
+    // Rounded Terminal Keyboard Base
+    const kbBase = new THREE.Mesh(
+      createRoundedBox(0.85, 0.05, 0.45, 0.08, 2),
+      new THREE.MeshStandardMaterial({ color: 0x1f2430, metalness: 0.6, roughness: 0.3 })
     );
-    monitorHousing.position.set(0, 0.42, -0.15);
-    stationGroup.add(monitorHousing);
+    kbBase.position.set(0, 0.03, 0.3);
+    stationGroup.add(kbBase);
 
-    // Glowing Holographic Screen
+    // Retro-Futuristic Bubble Monitor Housing (100% Rounded corners!)
+    const bubbleHousing = new THREE.Mesh(
+      createRoundedBox(1.15, 0.88, 0.65, 0.24, 4),
+      new THREE.MeshStandardMaterial({ color: 0x181c28, metalness: 0.75, roughness: 0.2 })
+    );
+    bubbleHousing.position.set(0, 0.52, -0.15);
+    stationGroup.add(bubbleHousing);
+
+    // Glowing Holographic Display Face
     const screenMat = new THREE.MeshStandardMaterial({
       color: 0x00f0ff,
-      emissive: 0x00c4e6,
-      emissiveIntensity: 0.9,
-      roughness: 0.15,
+      emissive: 0x00d4ff,
+      emissiveIntensity: 0.95,
+      roughness: 0.1,
     });
-    this.storyScreenMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.78, 0.52), screenMat);
-    this.storyScreenMesh.position.set(0, 0.42, -0.05);
+    this.storyScreenMesh = new THREE.Mesh(
+      createRoundedBox(0.92, 0.68, 0.02, 0.12, 3),
+      screenMat
+    );
+    this.storyScreenMesh.position.set(0, 0.52, 0.19);
     stationGroup.add(this.storyScreenMesh);
 
     // Rotating 3D Holographic Data Rings hovering above screen
@@ -525,10 +763,10 @@ export class Room3DScene {
       color: 0x00ffff,
       wireframe: true,
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.7,
     });
-    const holoRing1 = new THREE.Mesh(new THREE.TorusGeometry(0.48, 0.015, 12, 32), ringMat1);
-    holoRing1.position.set(0, 0.95, -0.1);
+    const holoRing1 = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.016, 12, 32), ringMat1);
+    holoRing1.position.set(0, 1.25, -0.1);
     stationGroup.add(holoRing1);
     this.storyHoloRings.push(holoRing1);
 
@@ -536,24 +774,26 @@ export class Room3DScene {
       color: 0xff00cc,
       wireframe: true,
       transparent: true,
-      opacity: 0.55,
+      opacity: 0.6,
     });
-    const holoRing2 = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.012, 12, 28), ringMat2);
-    holoRing2.position.set(0, 0.95, -0.1);
+    const holoRing2 = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.014, 12, 28), ringMat2);
+    holoRing2.position.set(0, 1.25, -0.1);
     stationGroup.add(holoRing2);
     this.storyHoloRings.push(holoRing2);
 
-    // Floating Stardust Core inside Hologram
+    // Floating Stardust Core
     const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const coreMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.12), coreMat);
-    coreMesh.position.set(0, 0.95, -0.1);
+    const coreMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.14), coreMat);
+    coreMesh.position.set(0, 1.25, -0.1);
     stationGroup.add(coreMesh);
     this.storyHoloRings.push(coreMesh);
 
-    // Click hitbox
-    const hitboxMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 });
-    const hitbox = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.8, 1.2), hitboxMat);
-    hitbox.position.set(0, 0.8, 0);
+    // Interactive hitbox
+    const hitbox = new THREE.Mesh(
+      createRoundedBox(1.8, 2.2, 1.4, 0.2, 2),
+      new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 })
+    );
+    hitbox.position.set(0, 0.9, 0);
     hitbox.userData = { station: "story" };
     stationGroup.add(hitbox);
 
@@ -561,77 +801,83 @@ export class Room3DScene {
     this.interactiveStations.push(hitbox);
   }
 
-  // 3D Station 2: Dial-Up Lullaby Synthesizer on Coffee Table
+  // 3D Station 2: Dial-Up Lullaby Synthesizer with Rounded Console & Cylindrical Equalizer
   private buildLullabySynthesizerStation() {
     const synthGroup = new THREE.Group();
-    synthGroup.position.set(3.8, 0.72, 1.4);
+    synthGroup.position.set(7.2, 0.76, 2.4);
     synthGroup.userData = { station: "lullaby", name: "Dial-Up Synthesizer" };
 
-    // Synthesizer Console Chassis
+    // Rounded Console Chassis (Zero sharp edges)
     const synthBodyMat = new THREE.MeshStandardMaterial({
       color: 0x181a24,
       metalness: 0.85,
       roughness: 0.2,
     });
-    const synthBody = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.12, 0.85), synthBodyMat);
-    synthBody.position.set(0, 0.06, 0);
+    const synthBody = new THREE.Mesh(
+      createRoundedBox(2.2, 0.16, 1.2, 0.16, 3),
+      synthBodyMat
+    );
+    synthBody.position.set(0, 0.08, 0);
     synthBody.castShadow = true;
     synthGroup.add(synthBody);
 
-    // Angled Front Face
-    const synthFace = new THREE.Mesh(
-      new THREE.BoxGeometry(1.5, 0.08, 0.35),
-      new THREE.MeshStandardMaterial({ color: 0x242838, roughness: 0.4 })
+    // Angled Rounded Control Panel Face
+    const panel = new THREE.Mesh(
+      createRoundedBox(2.0, 0.1, 0.42, 0.08, 2),
+      new THREE.MeshStandardMaterial({ color: 0x242838, roughness: 0.35 })
     );
-    synthFace.position.set(0, 0.14, 0.2);
-    synthFace.rotation.x = 0.2;
-    synthGroup.add(synthFace);
+    panel.position.set(0, 0.18, 0.3);
+    panel.rotation.x = 0.22;
+    synthGroup.add(panel);
 
-    // Interactive 3D WebGL Equalizer Frequency Bars (10 Bars)
-    const barWidth = 0.08;
-    const barDepth = 0.08;
+    // 10 Interactive Cylindrical Neon Equalizer Bars (Smooth Round Cylinders, NOT sharp boxes!)
     const numBars = 10;
-    const spacing = 0.13;
+    const spacing = 0.17;
     const startX = -((numBars - 1) * spacing) / 2;
 
     for (let i = 0; i < numBars; i++) {
-      const hue = 0.5 + (i / numBars) * 0.35; // Teal -> Purple gradient
+      const hue = 0.48 + (i / numBars) * 0.36; // Teal to Purple
       const barColor = new THREE.Color().setHSL(hue, 1.0, 0.55);
       const barMat = new THREE.MeshStandardMaterial({
         color: barColor,
         emissive: barColor,
-        emissiveIntensity: 0.85,
-        roughness: 0.2,
+        emissiveIntensity: 0.9,
+        roughness: 0.15,
       });
 
-      const barGeo = new THREE.BoxGeometry(barWidth, 0.5, barDepth);
+      // Smooth rounded cylinder bars
+      const barGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.5, 16);
       barGeo.translate(0, 0.25, 0); // Origin at base so it scales upward
 
       const barMesh = new THREE.Mesh(barGeo, barMat);
-      barMesh.position.set(startX + i * spacing, 0.12, -0.12);
+      barMesh.position.set(startX + i * spacing, 0.16, -0.15);
       synthGroup.add(barMesh);
       this.equalizerBars.push(barMesh);
     }
 
-    // Rotary Tuning Knobs
+    // Rounded Bevelled Rotary Tuning Knobs
     const knobMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.9, roughness: 0.2 });
-    const knobGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.06, 16);
-    [-0.55, -0.35, 0.35, 0.55].forEach((x) => {
+    const knobGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.07, 16);
+    [-0.75, -0.45, 0.45, 0.75].forEach((x) => {
       const knob = new THREE.Mesh(knobGeo, knobMat);
-      knob.position.set(x, 0.22, 0.22);
+      knob.position.set(x, 0.26, 0.32);
       synthGroup.add(knob);
     });
 
-    // Glowing VU Level Display Glass
-    const vuMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.8 });
-    const vuMesh = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.02, 0.06), vuMat);
-    vuMesh.position.set(0, 0.22, 0.22);
+    // Glowing Rounded VU Display Bar
+    const vuMesh = new THREE.Mesh(
+      createRoundedBox(0.4, 0.03, 0.08, 0.02, 2),
+      new THREE.MeshBasicMaterial({ color: 0x00ff88 })
+    );
+    vuMesh.position.set(0, 0.26, 0.32);
     synthGroup.add(vuMesh);
 
     // Hitbox for raycaster
-    const hitboxMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 });
-    const hitbox = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.2, 1.2), hitboxMat);
-    hitbox.position.set(0, 0.5, 0);
+    const hitbox = new THREE.Mesh(
+      createRoundedBox(2.4, 1.4, 1.4, 0.2, 2),
+      new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 })
+    );
+    hitbox.position.set(0, 0.6, 0);
     hitbox.userData = { station: "lullaby" };
     synthGroup.add(hitbox);
 
@@ -639,93 +885,95 @@ export class Room3DScene {
     this.interactiveStations.push(hitbox);
   }
 
-  // 3D Station 3: Floating Rescued Relics Orbit in front of Bay Window
+  // 3D Station 3: Floating Rescued Relics Orbit in Front of Grand Bay Window
   private buildFloatingRelicsStation() {
     const relicsGroup = new THREE.Group();
-    relicsGroup.position.set(0, 2.5, -2.4);
+    relicsGroup.position.set(0, 2.8, -4.8);
     relicsGroup.userData = { station: "relics", name: "Rescued Relics" };
 
-    // 1. Relic: Golden Floppy Disk (3.5")
+    // 1. Relic: 3.5" Stardust Floppy Disk with Rounded Corners
     const floppyGroup = new THREE.Group();
-    floppyGroup.position.set(-1.6, 0.1, 0);
-    floppyGroup.userData = { initialY: 2.6, relicId: "floppy", name: "3.5\" Stardust Floppy" };
+    floppyGroup.position.set(-2.0, 0.1, 0);
+    floppyGroup.userData = { initialY: 2.9, relicId: "floppy", name: "3.5\" Stardust Floppy" };
 
     const goldMat = new THREE.MeshStandardMaterial({
       color: 0xffd700,
       metalness: 0.95,
-      roughness: 0.2,
+      roughness: 0.18,
     });
-    const floppyBase = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.75, 0.06), goldMat);
+    const floppyBase = new THREE.Mesh(
+      createRoundedBox(0.85, 0.88, 0.06, 0.05, 2),
+      goldMat
+    );
     floppyGroup.add(floppyBase);
 
-    // Floppy metal slider
     const shutter = new THREE.Mesh(
-      new THREE.BoxGeometry(0.42, 0.32, 0.07),
+      createRoundedBox(0.5, 0.36, 0.07, 0.03, 2),
       new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.95, roughness: 0.1 })
     );
-    shutter.position.set(0, 0.22, 0);
+    shutter.position.set(0, 0.25, 0);
     floppyGroup.add(shutter);
     this.relicMeshes.push(floppyGroup);
     this.scene.add(floppyGroup);
 
-    // 2. Relic: GeoCities 1999 Crystal Prism (Octahedron)
+    // 2. Relic: GeoCities 1999 Crystal Prism
     const prismGroup = new THREE.Group();
-    prismGroup.position.set(-0.55, 0.6, 0.2);
-    prismGroup.userData = { initialY: 3.1, relicId: "geocities", name: "GeoCities 1999 Crystal" };
+    prismGroup.position.set(-0.7, 0.7, 0.2);
+    prismGroup.userData = { initialY: 3.5, relicId: "geocities", name: "GeoCities 1999 Crystal" };
 
     const crystalMat = new THREE.MeshStandardMaterial({
       color: 0x66ffff,
       emissive: 0x0088cc,
-      emissiveIntensity: 0.5,
+      emissiveIntensity: 0.55,
       metalness: 0.2,
       roughness: 0.1,
       transparent: true,
       opacity: 0.85,
     });
-    const prismMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.48), crystalMat);
+    const prismMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.55), crystalMat);
     prismGroup.add(prismMesh);
     this.relicMeshes.push(prismGroup);
     this.scene.add(prismGroup);
 
     // 3. Relic: 56K Modem Baud Ring (Torus Knot)
     const ringGroup = new THREE.Group();
-    ringGroup.position.set(0.55, 0.2, 0.1);
-    ringGroup.userData = { initialY: 2.7, relicId: "modem", name: "56K Modem Carrier Ring" };
+    ringGroup.position.set(0.7, 0.2, 0.1);
+    ringGroup.userData = { initialY: 3.0, relicId: "modem", name: "56K Modem Carrier Ring" };
 
     const ringMat = new THREE.MeshStandardMaterial({
       color: 0xff85b8,
       emissive: 0xff3388,
-      emissiveIntensity: 0.6,
-      metalness: 0.6,
-      roughness: 0.25,
+      emissiveIntensity: 0.65,
+      metalness: 0.65,
+      roughness: 0.2,
     });
-    const ringMesh = new THREE.Mesh(new THREE.TorusKnotGeometry(0.32, 0.08, 64, 16), ringMat);
+    const ringMesh = new THREE.Mesh(new THREE.TorusKnotGeometry(0.36, 0.09, 64, 16), ringMat);
     ringGroup.add(ringMesh);
     this.relicMeshes.push(ringGroup);
     this.scene.add(ringGroup);
 
-    // 4. Relic: Lost Stardust Sphere (Icosahedron)
+    // 4. Relic: Stardust Archive Sphere
     const stardustGroup = new THREE.Group();
-    stardustGroup.position.set(1.6, 0.0, 0);
-    stardustGroup.userData = { initialY: 2.5, relicId: "stardust", name: "Stardust Archive Sphere" };
+    stardustGroup.position.set(2.0, 0.0, 0);
+    stardustGroup.userData = { initialY: 2.8, relicId: "stardust", name: "Stardust Archive Sphere" };
 
     const starMat = new THREE.MeshStandardMaterial({
       color: 0xa855f7,
       emissive: 0x7c3aed,
-      emissiveIntensity: 0.65,
+      emissiveIntensity: 0.7,
       wireframe: true,
     });
-    const starMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(0.42, 1), starMat);
+    const starMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(0.48, 1), starMat);
     stardustGroup.add(starMesh);
     this.relicMeshes.push(stardustGroup);
     this.scene.add(stardustGroup);
 
-    // Broad clickable hitbox for relics
+    // Interactive hitbox
     const relicHitbox = new THREE.Mesh(
-      new THREE.BoxGeometry(4.2, 2.0, 1.5),
+      createRoundedBox(5.5, 2.4, 1.8, 0.3, 2),
       new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 })
     );
-    relicHitbox.position.set(0, 2.7, -2.4);
+    relicHitbox.position.set(0, 3.1, -4.8);
     relicHitbox.userData = { station: "relics" };
     this.scene.add(relicHitbox);
     this.interactiveStations.push(relicHitbox);
@@ -733,14 +981,14 @@ export class Room3DScene {
 
   // Floating Sunbeam Dust Particles
   private buildSunbeamDust(): THREE.Points {
-    const count = 120;
+    const count = 160;
     const geo = new THREE.BufferGeometry();
     const positions = new Float32Array(count * 3);
 
     for (let i = 0; i < count * 3; i += 3) {
-      positions[i] = (Math.random() - 0.5) * 10;
-      positions[i + 1] = Math.random() * 4.5 + 0.5;
-      positions[i + 2] = (Math.random() - 0.5) * 8;
+      positions[i] = (Math.random() - 0.5) * 16;
+      positions[i + 1] = Math.random() * 5.5 + 0.5;
+      positions[i + 2] = (Math.random() - 0.5) * 12;
     }
 
     geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -749,7 +997,7 @@ export class Room3DScene {
       color: 0xffeedd,
       size: 0.08,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.65,
       blending: THREE.AdditiveBlending,
     });
 
@@ -758,14 +1006,14 @@ export class Room3DScene {
 
   // Celestial Relic Stardust Particles
   private buildRelicStardust(): THREE.Points {
-    const count = 80;
+    const count = 100;
     const geo = new THREE.BufferGeometry();
     const positions = new Float32Array(count * 3);
 
     for (let i = 0; i < count * 3; i += 3) {
-      positions[i] = (Math.random() - 0.5) * 4.5;
-      positions[i + 1] = Math.random() * 2.5 + 1.8;
-      positions[i + 2] = -2.4 + (Math.random() - 0.5) * 1.5;
+      positions[i] = (Math.random() - 0.5) * 6.0;
+      positions[i + 1] = Math.random() * 3.0 + 2.0;
+      positions[i + 2] = -4.8 + (Math.random() - 0.5) * 2.0;
     }
 
     geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -774,14 +1022,14 @@ export class Room3DScene {
       color: 0xff85b8,
       size: 0.09,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.85,
       blending: THREE.AdditiveBlending,
     });
 
     return new THREE.Points(geo, mat);
   }
 
-  // Pointer Move Handler for Raycasting 3D Floor Walking
+  // Pointer Move Handler for Raycasting 3D Floor Walking in the Spacious Room
   private onPointerMove(e: PointerEvent) {
     const rect = this.container.getBoundingClientRect();
     this.mouseVec.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -789,7 +1037,7 @@ export class Room3DScene {
 
     this.raycaster.setFromCamera(this.mouseVec, this.camera);
 
-    // 1. Raycast onto Floor Plane for 3D navigation (only when in kitty/desktop station)
+    // Raycast onto Floor Plane for 3D navigation
     if (
       this.isFollowingCursor &&
       (this.currentStation === "kitty" || this.currentStation === "panda" || this.currentStation === "desktop") &&
@@ -805,7 +1053,7 @@ export class Room3DScene {
       }
     }
 
-    // 2. Head & Eye Tracking towards 3D cursor ray
+    // Head & Eye Tracking towards cursor
     const rayPoint = new THREE.Vector3();
     this.raycaster.ray.at(5.5, rayPoint);
     this.cat.lookAtTarget(rayPoint);
@@ -888,7 +1136,7 @@ export class Room3DScene {
     this.currentCamLookAt.lerp(this.targetCamLookAt, cameraLerp);
     this.camera.lookAt(this.currentCamLookAt);
 
-    // 2. Animated WebGL Equalizer Bars on Synthesizer
+    // 2. Animated Cylindrical Equalizer Bars on Synthesizer
     for (let i = 0; i < this.equalizerBars.length; i++) {
       const bar = this.equalizerBars[i];
       const pulse = 0.25 + Math.abs(Math.sin(elapsedTime * 7 + i * 0.75)) * 0.85 + Math.abs(Math.cos(elapsedTime * 11 + i * 1.2)) * 0.35;
@@ -908,11 +1156,17 @@ export class Room3DScene {
       const relic = this.relicMeshes[i];
       relic.rotation.y += delta * (0.6 + i * 0.15);
       relic.rotation.x = Math.sin(elapsedTime * 2.0 + i) * 0.12;
-      const initialY = relic.userData.initialY ?? 2.5;
-      relic.position.y = initialY + Math.sin(elapsedTime * 2.4 + i * 1.4) * 0.12;
+      const initialY = relic.userData.initialY ?? 3.0;
+      relic.position.y = initialY + Math.sin(elapsedTime * 2.4 + i * 1.4) * 0.14;
     }
 
-    // 5. Move Cat smoothly in 3D towards targetPos
+    // 5. Dangling Cat Tree Toy Ball Gentle Pendulum Swing
+    if (this.danglingBallMesh) {
+      this.danglingBallMesh.position.x = 0.45 + Math.sin(elapsedTime * 2.5) * 0.08;
+      this.danglingBallMesh.position.z = Math.cos(elapsedTime * 2.0) * 0.08;
+    }
+
+    // 6. Move Cat smoothly in 3D towards targetPos with Rounded Obstacle Collisions
     if (this.cat.animState === "walk") {
       const cur = this.cat.group.position;
       const target = this.cat.targetPos;
@@ -929,12 +1183,10 @@ export class Room3DScene {
         while (diff > Math.PI) diff -= Math.PI * 2;
         this.cat.group.rotation.y += diff * 0.12;
 
-        // Proposed next step in 3D
         const step = Math.min(dist, delta * this.cat.walkSpeed * 0.95);
         const nextX = cur.x + (dx / dist) * step;
         const nextZ = cur.z + (dz / dist) * step;
 
-        // Collision Check against all obstacles (Cat radius = 0.62)
         const catRadius = 0.62;
         let hitObstacle: Obstacle3D | null = null;
         let pushX = 0;
@@ -943,19 +1195,19 @@ export class Room3DScene {
         // Check room boundaries
         if (nextX < this.bounds.minX) {
           hitObstacle = { id: "wall_left", name: "Wall", minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
-          pushX = 0.35;
+          pushX = 0.4;
         } else if (nextX > this.bounds.maxX) {
           hitObstacle = { id: "wall_right", name: "Wall", minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
-          pushX = -0.35;
+          pushX = -0.4;
         } else if (nextZ < this.bounds.minZ) {
-          hitObstacle = { id: "window", name: "Window Glass", minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
-          pushZ = 0.35;
+          hitObstacle = { id: "window", name: "Window Sill", minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
+          pushZ = 0.4;
         } else if (nextZ > this.bounds.maxZ) {
-          hitObstacle = { id: "wall_front", name: "Edge of Room", minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
-          pushZ = -0.35;
+          hitObstacle = { id: "wall_front", name: "Room Edge", minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
+          pushZ = -0.4;
         }
 
-        // Check 3D Furniture Obstacles
+        // Check 3D Furniture Obstacles with Rounded Margins
         if (!hitObstacle) {
           for (const obs of this.obstacles) {
             if (obs.isCircle && obs.centerX !== undefined && obs.centerZ !== undefined && obs.radius) {
@@ -992,7 +1244,7 @@ export class Room3DScene {
         }
 
         if (hitObstacle) {
-          // BUMP! Never walk inside the obstacle, bounce back
+          // BUMP: safely bounce back from obstacle with rounded soft push
           cur.x += pushX;
           cur.z += pushZ;
           target.copy(cur);
@@ -1008,30 +1260,28 @@ export class Room3DScene {
             }
           }, 850);
         } else {
-          // Clean safe step
           cur.x = nextX;
           cur.z = nextZ;
         }
       } else {
-        // Arrived at target
         this.cat.animState = "idle";
       }
     }
 
-    // 6. Update Cat's 3D internal animations
+    // 7. Update Cat's 3D internal animations
     this.cat.update(delta);
 
-    // 7. Gentle dust particle drift
+    // 8. Gentle dust particle drift
     if (this.dustPoints) {
       const pos = this.dustPoints.geometry.attributes.position.array as Float32Array;
       for (let i = 1; i < pos.length; i += 3) {
         pos[i] -= delta * 0.1;
-        if (pos[i] < 0.2) pos[i] = 4.5;
+        if (pos[i] < 0.2) pos[i] = 5.5;
       }
       this.dustPoints.geometry.attributes.position.needsUpdate = true;
     }
 
-    // 8. Relic Stardust gentle float
+    // 9. Relic Stardust gentle float
     if (this.relicDustPoints) {
       const pos = this.relicDustPoints.geometry.attributes.position.array as Float32Array;
       for (let i = 1; i < pos.length; i += 3) {

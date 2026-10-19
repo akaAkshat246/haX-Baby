@@ -820,8 +820,72 @@ export const TalkingPandaApp: React.FC = () => {
               </div>
             </div>
 
-            {/* Bottom Floating Interactive Chat & Voice Bar */}
-            <div className="absolute bottom-4 left-4 right-4 z-40 flex items-center justify-center pointer-events-none">
+            {/* Bottom Floating Interactive Chat & Voice Bar with 7-Language Support */}
+            <div className="absolute bottom-4 left-4 right-4 z-40 flex flex-col items-center gap-2 pointer-events-none">
+              {/* Multilingual Quick Selector Chips */}
+              <div className="pointer-events-auto flex items-center gap-1.5 flex-wrap justify-center bg-[#10121d]/85 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-2xl shadow-xl">
+                <span className="text-[10px] text-white/50 font-mono uppercase tracking-wider mr-1">
+                  Languages:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleSendChat(undefined, "Namaste Fourie, kaise ho?")}
+                  className="px-2 py-0.5 rounded-lg bg-pink-500/10 hover:bg-pink-500/30 text-[11px] text-pink-300 border border-pink-500/20 cursor-pointer"
+                  title="Hindi: Namaste Fourie"
+                >
+                  Hindi
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSendChat(undefined, "Namaskar Fourie, kashi aahes tu?")}
+                  className="px-2 py-0.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/30 text-[11px] text-purple-300 border border-purple-500/20 cursor-pointer"
+                  title="Marathi: Namaskar Fourie"
+                >
+                  Marathi
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSendChat(undefined, "Namaskara Fourie, hegiddeera?")}
+                  className="px-2 py-0.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/30 text-[11px] text-amber-300 border border-amber-500/20 cursor-pointer"
+                  title="Kannada: Namaskara Fourie"
+                >
+                  Kannada
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSendChat(undefined, "Namaskaram Fourie, ela unnaru?")}
+                  className="px-2 py-0.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/30 text-[11px] text-cyan-300 border border-cyan-500/20 cursor-pointer"
+                  title="Telugu: Namaskaram Fourie"
+                >
+                  Telugu
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSendChat(undefined, "Bonjour Fourie, comment vas-tu?")}
+                  className="px-2 py-0.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/30 text-[11px] text-blue-300 border border-blue-500/20 cursor-pointer"
+                  title="French: Bonjour Fourie"
+                >
+                  French
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSendChat(undefined, "Привет Фури, как дела?")}
+                  className="px-2 py-0.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/30 text-[11px] text-emerald-300 border border-emerald-500/20 cursor-pointer"
+                  title="Russian: Привет Фури"
+                >
+                  Russian
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSendChat(undefined, "Hello Fourie, how are you today?")}
+                  className="px-2 py-0.5 rounded-lg bg-white/10 hover:bg-white/20 text-[11px] text-white border border-white/10 cursor-pointer"
+                  title="English: Hello Fourie"
+                >
+                  English
+                </button>
+              </div>
+
+              {/* Chat Input Bar */}
               <div className="pointer-events-auto max-w-xl w-full bg-[#121422]/90 backdrop-blur-2xl border border-white/10 rounded-2xl p-2 shadow-2xl flex items-center gap-2">
                 {/* Voice Record / Listen Button */}
                 <button
@@ -832,7 +896,7 @@ export const TalkingPandaApp: React.FC = () => {
                       ? "bg-rose-500 text-white animate-ping shadow-[0_0_20px_#f43f5e]"
                       : "bg-pink-600 hover:bg-pink-500 text-white shadow-[0_4px_12px_rgba(236,72,153,0.4)]"
                   }`}
-                  title="Speak to Kitty"
+                  title="Speak to Kitty (Hindi, English, Marathi, Kannada, Telugu, French, Russian)"
                 >
                   <Mic className="w-5 h-5" />
                 </button>
@@ -843,7 +907,7 @@ export const TalkingPandaApp: React.FC = () => {
                     type="text"
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="Talk or type to Kitty..."
+                    placeholder="Speak or type in Hindi, English, Marathi, Kannada, Telugu, French, Russian..."
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white placeholder-white/40 focus:outline-none focus:border-pink-500/50"
                   />
                   <button

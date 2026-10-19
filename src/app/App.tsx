@@ -65,12 +65,7 @@ export const App: React.FC = () => {
     };
   }, [openWindow, unlockSecret, showToast]);
 
-  if (viewMode === "panda") {
-    return <TalkingPandaApp />;
-  }
-  if (viewMode === "story") {
-    return <StoryLanding />;
-  }
-  return <AndroidDesktop />;
+  // The entire website runs persistently in Three.js and WebGL
+  return <TalkingPandaApp />;
 };
 

@@ -68,12 +68,15 @@ interface AppState {
   toastMessage: string | null;
   showToast: (msg: string) => void;
 
-  // View mode: 3D Talking Panda vs Story Landing vs Android Desktop
-  viewMode: "panda" | "story" | "desktop";
-  setViewMode: (mode: "panda" | "story" | "desktop") => void;
+  // View mode: 3D WebGL room stations
+  viewMode: "kitty" | "panda" | "story" | "lullaby" | "relics" | "desktop";
+  setViewMode: (mode: "kitty" | "panda" | "story" | "lullaby" | "relics" | "desktop") => void;
   enterPanda: () => void;
+  enterKitty: () => void;
   enterDesktop: (fullscreen?: boolean) => void;
   enterStory: () => void;
+  enterLullaby: () => void;
+  enterRelics: () => void;
 
   // Secret state
   secretUnlocked: boolean;
@@ -230,10 +233,13 @@ export const useStore = create<AppState>((set, get) => ({
   secretUnlocked: false,
   unlockSecret: () => set({ secretUnlocked: true }),
 
-  viewMode: "panda",
+  viewMode: "kitty",
   setViewMode: (viewMode) => set({ viewMode }),
   enterPanda: () => {
-    set({ viewMode: "panda" });
+    set({ viewMode: "kitty" });
+  },
+  enterKitty: () => {
+    set({ viewMode: "kitty" });
   },
   enterDesktop: (fullscreen = true) => {
     if (fullscreen && typeof document !== "undefined") {
@@ -256,5 +262,11 @@ export const useStore = create<AppState>((set, get) => ({
   },
   enterStory: () => {
     set({ viewMode: "story" });
+  },
+  enterLullaby: () => {
+    set({ viewMode: "lullaby" });
+  },
+  enterRelics: () => {
+    set({ viewMode: "relics" });
   },
 }));

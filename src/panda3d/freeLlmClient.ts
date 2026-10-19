@@ -76,17 +76,77 @@ export class FreeLlmClient {
     return this.config;
   }
 
-  public async askPanda(userMessage: string): Promise<string> {
+  public async askPanda(userMessage: string, responseLanguage?: string): Promise<string> {
     const cleanMsg = userMessage.trim();
 
     if (!cleanMsg) {
       return "Meow, speak to me sweet friend.";
     }
 
-    // 1. Try local Ollama Qwen through the Express backend.
+    const languageNames: Record<string, string> = {
+      "en": "English",
+      "hi": "Hindi in Roman script",
+      "mr": "Marathi in Roman script",
+      "kn": "Kannada in Roman script",
+      "te": "Telugu in Roman script",
+      "fr": "French",
+      "ru": "Russian",
+    };
+    const selectedLanguage = responseLanguage
+      ? languageNames[responseLanguage.slice(0, 2).toLowerCase()]
+      : undefined;
+    const systemPrompt = selectedLanguage
+      ? `${SYSTEM_PROMPT}\nThe visitor selected ${selectedLanguage} for the cat's voice. Reply in ${selectedLanguage}, even if their message uses another language.`
+      : SYSTEM_PROMPT;
+
+    // 1. Try Groq first for instant, high-quality responses if API key is present
+    if (this.config.provider === "groq" && this.config.apiKey) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 6000);
+
+        try {
+          const res = await fetch(
+            "https://api.groq.com/openai/v1/chat/completions",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${this.config.apiKey}`,
+              },
+              body: JSON.stringify({
+                model: this.config.model || "llama-3.3-70b-versatile",
+                messages: [
+                  { role: "system", content: systemPrompt },
+                  { role: "user", content: cleanMsg },
+                ],
+                max_tokens: 120,
+                temperature: 0.8,
+              }),
+              signal: controller.signal,
+            }
+          );
+
+          if (res.ok) {
+            const data = await res.json();
+            const reply = data.choices?.[0]?.message?.content;
+
+            if (reply) {
+              return this.stripEmojis(reply.trim());
+            }
+          }
+        } finally {
+          clearTimeout(timeout);
+        }
+      } catch (error) {
+        console.warn("Groq request failed, trying local Ollama fallback.", error);
+      }
+    }
+
+    // 2. Try local Ollama Qwen through the Express backend (fast 2.5s check)
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 60000);
+      const timeout = setTimeout(() => controller.abort(), 2500);
 
       try {
         const res = await fetch(LOCAL_OLLAMA_URL, {
@@ -94,7 +154,7 @@ export class FreeLlmClient {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ message: cleanMsg }),
+          body: JSON.stringify({ message: cleanMsg, language: responseLanguage }),
           signal: controller.signal,
         });
 
@@ -105,8 +165,6 @@ export class FreeLlmClient {
             return this.stripEmojis(data.reply.trim());
           }
         }
-
-        console.warn("Local Ollama backend returned:", res.status);
       } finally {
         clearTimeout(timeout);
       }
@@ -114,47 +172,11 @@ export class FreeLlmClient {
       console.warn("Local Ollama unavailable; trying online fallback.", error);
     }
 
-    // 2. Try Groq if an API key is configured.
-    if (this.config.provider === "groq" && this.config.apiKey) {
-      try {
-        const res = await fetch(
-          "https://api.groq.com/openai/v1/chat/completions",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${this.config.apiKey}`,
-            },
-            body: JSON.stringify({
-              model: this.config.model || "llama-3.3-70b-versatile",
-              messages: [
-                { role: "system", content: SYSTEM_PROMPT },
-                { role: "user", content: cleanMsg },
-              ],
-              max_tokens: 120,
-              temperature: 0.8,
-            }),
-          }
-        );
-
-        if (res.ok) {
-          const data = await res.json();
-          const reply = data.choices?.[0]?.message?.content;
-
-          if (reply) {
-            return this.stripEmojis(reply.trim());
-          }
-        }
-      } catch (error) {
-        console.warn("Groq request failed.", error);
-      }
-    }
-
     // 3. Try Pollinations as a no-key online fallback.
     try {
       const url =
         `https://text.pollinations.ai/${encodeURIComponent(cleanMsg)}` +
-        `?system=${encodeURIComponent(SYSTEM_PROMPT)}&model=openai`;
+        `?system=${encodeURIComponent(systemPrompt)}&model=openai`;
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10000);
@@ -179,11 +201,11 @@ export class FreeLlmClient {
     }
 
     // 4. Offline local response fallback.
-    return this.getLocalWittyReply(cleanMsg);
+    return this.getLocalWittyReply(cleanMsg, responseLanguage);
   }
 
-  public async askCat(userMessage: string): Promise<string> {
-    return this.askPanda(userMessage);
+  public async askCat(userMessage: string, responseLanguage?: string): Promise<string> {
+    return this.askPanda(userMessage, responseLanguage);
   }
 
   private stripEmojis(str: string): string {
@@ -195,7 +217,21 @@ export class FreeLlmClient {
       .trim();
   }
 
-  private getLocalWittyReply(msg: string): string {
+  private getLocalWittyReply(msg: string, responseLanguage?: string): string {
+    const localReplies: Record<string, string> = {
+      "en": "Meow! I'm right here with you. Tell me what you'd like to explore!",
+      "hi": "Meow! Main yahin tumhare saath hoon. Batao, kya explore karein?",
+      "mr": "Meow! Mi tujhya sobat ithech aahe. Sang, apan kay explore karuya?",
+      "kn": "Meow! Naanu ninna jothe illiye iddini. Baa, enu explore maadona?",
+      "te": "Meow! Nenu neetho ikkade unnanu. Cheppu, emi explore cheddam?",
+      "fr": "Miaou ! Je suis là avec toi. Qu'aimerais-tu explorer ?",
+      "ru": "Мяу! Я рядом с тобой. Что хочешь исследовать?",
+    };
+    const preferredReply = responseLanguage
+      ? localReplies[responseLanguage.slice(0, 2).toLowerCase()]
+      : undefined;
+    if (preferredReply) return preferredReply;
+
     const lower = msg.toLowerCase();
 
     // 1. Russian

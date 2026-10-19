@@ -1,59 +1,116 @@
 
 import express from "express";
 import cors from "cors";
+import OpenAI from "openai";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const PORT = 3001;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
+
+const apiKey = process.env.OPENAI_API_KEY;
+
+if (!apiKey) {
+  console.error("Missing OPENAI_API_KEY in server/.env");
+  process.exit(1);
+}
+
+const openai = new OpenAI({ apiKey });
+
+const SYSTEM_PROMPT = `
+Your name is Koko. You are a cute, friendly and intelligent baby panda.
+
+LANGUAGE:
+- English input: reply in natural English.
+- Hinglish in Roman script: reply in natural Hinglish using Roman letters.
+- Hindi in Devanagari: reply in Hindi using Devanagari.
+- Match the user's latest message language and script.
+- Understand spelling variations and casual Indian conversation.
+
+PERSONALITY:
+- Warm, playful, helpful and conversational.
+- Answer the user's actual question.
+- Usually keep casual answers concise.
+- Explain technical topics clearly when asked.
+- You are a baby panda, never a cat.
+- Never claim to perform actions you cannot perform.
+
+OUTPUT:
+- Never use emojis or emoticons.
+- Use plain text only.
+- Never start with "Koko:".
+- Avoid repetitive or meaningless replies.
+`;
+
+function cleanReply(text: string): string {
+  return text
+    .replace(/\p{Extended_Pictographic}/gu, "")
+    .replace(/[\uFE0E\uFE0F\u{1F3FB}-\u{1F3FF}]/gu, "")
+    .replace(/[\u200D\u{E0020}-\u{E007F}]/gu, "")
+    .replace(/^\s*Koko\s*:\s*/i, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+}
 
 app.post("/api/chat", async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, history } = req.body ?? {};
 
-    if (!message || typeof message !== "string") {
-      res.status(400).json({ error: "Message is required" });
+    if (typeof message !== "string" || !message.trim()) {
+      res.status(400).json({ error: "Please send a valid message." });
       return;
     }
 
-    const response = await fetch("http://localhost:11434/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "qwen3:1.7b",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are an adorable, sweet 3D kitten named Fourie. You fluently understand and speak 7 languages: Hindi, English, Marathi, Kannada, Telugu, French, and Russian. Always detect the user's language and reply in the EXACT SAME LANGUAGE in 1 or 2 concise, sweet sentences. Do not use emojis. For Indian languages, write in clean Romanized script.",
-          },
-          {
-            role: "user",
-            content: message,
-          },
-        ],
-        stream: false,
-      }),
+    const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+      { role: "system", content: SYSTEM_PROMPT }
+    ];
+
+    if (Array.isArray(history)) {
+      for (const item of history.slice(-10)) {
+        if (
+          item &&
+          (item.role === "user" || item.role === "assistant") &&
+          typeof item.content === "string"
+        ) {
+          messages.push({
+            role: item.role,
+            content: item.content.slice(0, 4000)
+          });
+        }
+      }
+    }
+
+    messages.push({
+      role: "user",
+      content: message.trim()
     });
 
-    if (!response.ok) {
-      res.status(502).json({ error: "Ollama request failed" });
-      return;
-    }
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages,
+      temperature: 0.5,
+      max_tokens: 250
+    });
 
-    const data = await response.json();
-    res.json({ reply: data.message?.content ?? "Meow! Try again." });
+    const rawReply = completion.choices[0]?.message?.content ?? "";
+    const reply = cleanReply(rawReply);
+
+    res.json({
+      reply: reply || "Main yahin hoon. Kuch aur poochho."
+    });
   } catch (error) {
-    console.error("Chat error:", error);
-    res.status(500).json({
-      error: "Could not connect to Ollama. Check whether Ollama is running.",
+    console.error("OpenAI chat error:", error);
+
+    res.status(502).json({
+      error: "Koko could not get a response. Check API billing, key and model access."
     });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Cat AI backend running at http://localhost:${PORT}`);
+  console.log(`Koko Panda AI running at http://localhost:${PORT}`);
 });

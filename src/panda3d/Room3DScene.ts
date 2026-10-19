@@ -64,6 +64,8 @@ export class Room3DScene {
   public currentStation: RoomStation = "kitty";
 
   private floorPlane: THREE.Mesh;
+  private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  private groundPoint = new THREE.Vector3();
   private raycaster: THREE.Raycaster;
   private mouseVec: THREE.Vector2;
   private container: HTMLElement;
@@ -92,6 +94,21 @@ export class Room3DScene {
   private equalizerBars: THREE.Mesh[] = [];
   private relicMeshes: THREE.Object3D[] = [];
   private interactiveStations: THREE.Object3D[] = [];
+
+  // Autonomous Curiosity Wandering Engine
+  private wanderTimer: number = 0;
+  private nextWanderInterval: number = 4.0;
+  private readonly WAYPOINTS: THREE.Vector3[] = [
+    new THREE.Vector3(0, 0, 1.2),      // Center plush carpet
+    new THREE.Vector3(-3.2, 0, 0.8),   // Sunny floor area
+    new THREE.Vector3(3.5, 0, 1.5),    // Near cozy sofa lounge
+    new THREE.Vector3(-6.2, 0, 1.8),   // Near scratch post & kitten tower
+    new THREE.Vector3(1.0, 0, -3.8),   // Near sunny window bay
+    new THREE.Vector3(-2.5, 0, -2.2),  // Near velvet pouf
+    new THREE.Vector3(2.2, 0, 3.8),    // Foreground near camera
+    new THREE.Vector3(-4.5, 0, 3.0),   // Left play zone
+    new THREE.Vector3(0, 0, -1.2),     // Center room
+  ];
 
   // Expanded, spacious walkable 3D boundaries for effortless roaming
   public bounds = {
@@ -274,7 +291,7 @@ export class Room3DScene {
     this.animate = this.animate.bind(this);
 
     window.addEventListener("resize", this.onWindowResize);
-    this.container.addEventListener("pointermove", this.onPointerMove);
+    window.addEventListener("pointermove", this.onPointerMove);
     this.container.addEventListener("pointerdown", this.onPointerDown);
 
     this.animate();
@@ -310,6 +327,36 @@ export class Room3DScene {
         this.targetCamLookAt.set(0, 1.8, 0.5);
         break;
     }
+  }
+
+  public moveCatTo(x: number, z: number) {
+    const safeX = THREE.MathUtils.clamp(x, this.bounds.minX + 0.8, this.bounds.maxX - 0.8);
+    const safeZ = THREE.MathUtils.clamp(z, this.bounds.minZ + 0.8, this.bounds.maxZ - 0.8);
+    this.cat.targetPos.set(safeX, 0, safeZ);
+    this.cat.animState = "walk";
+    this.wanderTimer = -4.0;
+  }
+
+  public moveCatBy(dx: number, dz: number) {
+    this.moveCatTo(this.cat.group.position.x + dx, this.cat.group.position.z + dz);
+  }
+
+  public roamCat() {
+    const current = this.cat.group.position;
+    const destinations = this.WAYPOINTS.filter(
+      (waypoint) => Math.hypot(waypoint.x - current.x, waypoint.z - current.z) > 2.5
+    );
+    const waypoint = destinations[Math.floor(Math.random() * destinations.length)] || this.WAYPOINTS[0];
+    this.moveCatTo(waypoint.x, waypoint.z);
+  }
+
+  private pointOnFloor(clientX: number, clientY: number) {
+    const rect = this.container.getBoundingClientRect();
+    if (!rect.width || !rect.height) return null;
+    this.mouseVec.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouseVec.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+    this.raycaster.setFromCamera(this.mouseVec, this.camera);
+    return this.raycaster.ray.intersectPlane(this.groundPlane, this.groundPoint)?.clone() || null;
   }
 
   // Day/Night Room Lighting Toggle
@@ -1031,25 +1078,23 @@ export class Room3DScene {
 
   // Pointer Move Handler for Raycasting 3D Floor Walking in the Spacious Room
   private onPointerMove(e: PointerEvent) {
-    const rect = this.container.getBoundingClientRect();
-    this.mouseVec.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    this.mouseVec.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-    this.raycaster.setFromCamera(this.mouseVec, this.camera);
+    const point = this.pointOnFloor(e.clientX, e.clientY);
 
     // Raycast onto Floor Plane for 3D navigation
     if (
       this.isFollowingCursor &&
       (this.currentStation === "kitty" || this.currentStation === "panda" || this.currentStation === "desktop") &&
-      this.cat.animState !== "sleep" &&
-      this.cat.animState !== "sit"
+      this.cat.animState !== "sleep"
     ) {
-      const hits = this.raycaster.intersectObject(this.floorPlane);
-      if (hits.length > 0) {
-        const point = hits[0].point;
+      if (point) {
         const clampedX = Math.max(this.bounds.minX, Math.min(this.bounds.maxX, point.x));
         const clampedZ = Math.max(this.bounds.minZ, Math.min(this.bounds.maxZ, point.z));
-        this.cat.targetPos.set(clampedX, 0, clampedZ);
+
+        const cur = this.cat.group.position;
+        const dist = Math.hypot(clampedX - cur.x, clampedZ - cur.z);
+        if (dist > 1.1) {
+          this.moveCatTo(clampedX, clampedZ);
+        }
       }
     }
 
@@ -1061,11 +1106,7 @@ export class Room3DScene {
 
   // Pointer Down (Raycast Tap: Cat Poke, Station Selection, or Floor Walk)
   private onPointerDown(e: PointerEvent) {
-    const rect = this.container.getBoundingClientRect();
-    this.mouseVec.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    this.mouseVec.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-    this.raycaster.setFromCamera(this.mouseVec, this.camera);
+    const point = this.pointOnFloor(e.clientX, e.clientY);
 
     // 1. Check if clicked directly on Cat body meshes
     const catHits = this.raycaster.intersectObjects(this.cat.group.children, true);
@@ -1104,15 +1145,12 @@ export class Room3DScene {
     }
 
     // 3. Otherwise, tap to walk to point on floor
-    const hits = this.raycaster.intersectObject(this.floorPlane);
-    if (hits.length > 0) {
-      const point = hits[0].point;
-      const clampedX = Math.max(this.bounds.minX, Math.min(this.bounds.maxX, point.x));
-      const clampedZ = Math.max(this.bounds.minZ, Math.min(this.bounds.maxZ, point.z));
-      this.cat.targetPos.set(clampedX, 0, clampedZ);
-      if (this.cat.animState !== "walk" && this.cat.animState !== "dance") {
-        this.cat.animState = "walk";
-      }
+    if (
+      point &&
+      point.x >= this.bounds.minX && point.x <= this.bounds.maxX &&
+      point.z >= this.bounds.minZ && point.z <= this.bounds.maxZ
+    ) {
+      this.moveCatTo(point.x, point.z);
     }
   }
 
@@ -1264,7 +1302,50 @@ export class Room3DScene {
           cur.z = nextZ;
         }
       } else {
-        this.cat.animState = "idle";
+        // Destination reached! Playfully express kitten joy
+        const roll = Math.random();
+        if (roll < 0.25) {
+          this.cat.animState = "wave";
+          setTimeout(() => {
+            if (this.cat.animState === "wave") this.cat.animState = "idle";
+          }, 1400);
+        } else if (roll < 0.50) {
+          this.cat.animState = "purr";
+          setTimeout(() => {
+            if (this.cat.animState === "purr") this.cat.animState = "idle";
+          }, 1800);
+        } else if (roll < 0.70) {
+          this.cat.animState = "pout";
+          setTimeout(() => {
+            if (this.cat.animState === "pout") this.cat.animState = "idle";
+          }, 1000);
+        } else {
+          this.cat.animState = "sit";
+          setTimeout(() => {
+            if (this.cat.animState === "sit") this.cat.animState = "idle";
+          }, 2400);
+        }
+        this.wanderTimer = 0;
+        this.nextWanderInterval = 3.5 + Math.random() * 3.5;
+      }
+    } else if (this.cat.animState === "idle") {
+      // Autonomous curiosity wandering engine across spacious rounded room
+      this.wanderTimer += delta;
+      if (this.wanderTimer >= this.nextWanderInterval) {
+        this.wanderTimer = 0;
+        this.nextWanderInterval = 3.5 + Math.random() * 3.5;
+
+        const cur = this.cat.group.position;
+        const candidates = this.WAYPOINTS.filter(
+          (wp) => Math.hypot(wp.x - cur.x, wp.z - cur.z) > 2.0
+        );
+        const chosen =
+          candidates.length > 0
+            ? candidates[Math.floor(Math.random() * candidates.length)]
+            : this.WAYPOINTS[Math.floor(Math.random() * this.WAYPOINTS.length)];
+
+        this.cat.targetPos.copy(chosen);
+        this.cat.animState = "walk";
       }
     }
 
@@ -1297,7 +1378,7 @@ export class Room3DScene {
   public dispose() {
     if (this.animId) cancelAnimationFrame(this.animId);
     window.removeEventListener("resize", this.onWindowResize);
-    this.container.removeEventListener("pointermove", this.onPointerMove);
+    window.removeEventListener("pointermove", this.onPointerMove);
     this.container.removeEventListener("pointerdown", this.onPointerDown);
     this.renderer.dispose();
   }

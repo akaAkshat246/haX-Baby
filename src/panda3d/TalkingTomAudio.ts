@@ -11,10 +11,20 @@ export class TalkingTomAudio {
 
   // Real Audio Audio Elements
   private meowAudio: HTMLAudioElement | null = null;
+  private voices: SpeechSynthesisVoice[] = [];
 
   constructor() {
     if (typeof window !== "undefined") {
       this.synth = window.speechSynthesis || null;
+
+      if (this.synth) {
+        this.voices = this.synth.getVoices();
+        if (typeof this.synth.onvoiceschanged !== "undefined") {
+          this.synth.onvoiceschanged = () => {
+            if (this.synth) this.voices = this.synth.getVoices();
+          };
+        }
+      }
 
       // Preload real cat meow recording
       try {
@@ -35,6 +45,16 @@ export class TalkingTomAudio {
         // Support Hindi and Indian bilingual voice recognition!
         this.recognition.lang = "hi-IN";
       }
+    }
+  }
+
+  public unlockAudio() {
+    this.initCtx();
+    if (this.ctx && this.ctx.state === "suspended") {
+      this.ctx.resume().catch(() => {});
+    }
+    if (this.synth && this.synth.paused) {
+      this.synth.resume();
     }
   }
 
@@ -202,7 +222,7 @@ export class TalkingTomAudio {
   }
 
   // Smooth, Sweet, Natural Voice Repeater with Native Hindi Support!
-  public repeatInTomVoice(text: string) {
+  public repeatInTomVoice(text: string, preferredLanguage?: string) {
     if (!this.synth) return;
     this.synth.cancel();
 
@@ -214,7 +234,9 @@ export class TalkingTomAudio {
 
     const spokenText = cleanSpeech || text;
     const utt = new SpeechSynthesisUtterance(spokenText);
-    const voices = this.synth.getVoices();
+    const voices = (this.synth.getVoices && this.synth.getVoices().length > 0)
+      ? this.synth.getVoices()
+      : this.voices;
 
     // Multilingual Voice Detection
     // 1. Russian
@@ -248,98 +270,132 @@ export class TalkingTomAudio {
         spokenText
       );
 
+    let chosenVoice: SpeechSynthesisVoice | undefined;
+    let chosenLang = "en-US";
+    let chosenPitch = 1.78;
+    let chosenRate = 1.15;
+
     if (isRussian) {
-      const ruVoice = voices.find(
+      chosenVoice = voices.find(
         (v) =>
-          v.lang.startsWith("ru") ||
+          v.lang.toLowerCase().startsWith("ru") ||
           v.name.toLowerCase().includes("russian") ||
           v.name.toLowerCase().includes("milena") ||
           v.name.toLowerCase().includes("dmitry") ||
           v.name.toLowerCase().includes("tatyana")
       );
-      if (ruVoice) utt.voice = ruVoice;
-      utt.lang = "ru-RU";
-      utt.pitch = 1.35;
-      utt.rate = 1.0;
+      chosenLang = chosenVoice?.lang || "ru-RU";
+      chosenPitch = 1.75;
+      chosenRate = 1.12;
     } else if (isFrench) {
-      const frVoice = voices.find(
+      chosenVoice = voices.find(
         (v) =>
-          v.lang.startsWith("fr") ||
+          v.lang.toLowerCase().startsWith("fr") ||
           v.name.toLowerCase().includes("french") ||
           v.name.toLowerCase().includes("thomas") ||
           v.name.toLowerCase().includes("audrey") ||
           v.name.toLowerCase().includes("amelie")
       );
-      if (frVoice) utt.voice = frVoice;
-      utt.lang = "fr-FR";
-      utt.pitch = 1.4;
-      utt.rate = 1.02;
+      chosenLang = chosenVoice?.lang || "fr-FR";
+      chosenPitch = 1.8;
+      chosenRate = 1.15;
     } else if (isTelugu) {
-      const teVoice = voices.find(
-        (v) =>
-          v.lang.startsWith("te") ||
-          v.name.toLowerCase().includes("telugu") ||
-          v.name.toLowerCase().includes("mohan") ||
-          v.name.toLowerCase().includes("chitra")
-      ) || voices.find((v) => v.lang.startsWith("hi") || v.lang === "en-IN");
-      if (teVoice) utt.voice = teVoice;
-      utt.lang = "te-IN";
-      utt.pitch = 1.38;
-      utt.rate = 1.02;
+      chosenVoice =
+        voices.find(
+          (v) =>
+            v.lang.toLowerCase().startsWith("te") ||
+            v.name.toLowerCase().includes("telugu") ||
+            v.name.toLowerCase().includes("mohan") ||
+            v.name.toLowerCase().includes("chitra")
+        ) ||
+        voices.find(
+          (v) =>
+            v.lang.toLowerCase().startsWith("hi") ||
+            v.lang.toLowerCase().includes("in") ||
+            v.name.toLowerCase().includes("hindi")
+        );
+      chosenLang = chosenVoice?.lang || "hi-IN";
+      chosenPitch = 1.76;
+      chosenRate = 1.15;
     } else if (isKannada) {
-      const knVoice = voices.find(
-        (v) =>
-          v.lang.startsWith("kn") ||
-          v.name.toLowerCase().includes("kannada") ||
-          v.name.toLowerCase().includes("sapna") ||
-          v.name.toLowerCase().includes("gagan")
-      ) || voices.find((v) => v.lang.startsWith("hi") || v.lang === "en-IN");
-      if (knVoice) utt.voice = knVoice;
-      utt.lang = "kn-IN";
-      utt.pitch = 1.38;
-      utt.rate = 1.02;
+      chosenVoice =
+        voices.find(
+          (v) =>
+            v.lang.toLowerCase().startsWith("kn") ||
+            v.name.toLowerCase().includes("kannada") ||
+            v.name.toLowerCase().includes("sapna") ||
+            v.name.toLowerCase().includes("gagan")
+        ) ||
+        voices.find(
+          (v) =>
+            v.lang.toLowerCase().startsWith("hi") ||
+            v.lang.toLowerCase().includes("in") ||
+            v.name.toLowerCase().includes("hindi")
+        );
+      chosenLang = chosenVoice?.lang || "hi-IN";
+      chosenPitch = 1.76;
+      chosenRate = 1.15;
     } else if (isMarathi) {
-      const mrVoice = voices.find(
-        (v) =>
-          v.lang.startsWith("mr") ||
-          v.name.toLowerCase().includes("marathi") ||
-          v.name.toLowerCase().includes("aarohi") ||
-          v.name.toLowerCase().includes("manohar")
-      ) || voices.find((v) => v.lang.startsWith("hi") || v.name.toLowerCase().includes("hindi"));
-      if (mrVoice) utt.voice = mrVoice;
-      utt.lang = "mr-IN";
-      utt.pitch = 1.36;
-      utt.rate = 1.02;
+      chosenVoice =
+        voices.find(
+          (v) =>
+            v.lang.toLowerCase().startsWith("mr") ||
+            v.name.toLowerCase().includes("marathi") ||
+            v.name.toLowerCase().includes("aarohi") ||
+            v.name.toLowerCase().includes("manohar")
+        ) ||
+        voices.find(
+          (v) =>
+            v.lang.toLowerCase().startsWith("hi") ||
+            v.name.toLowerCase().includes("hindi") ||
+            v.lang.toLowerCase().includes("in")
+        );
+      chosenLang = chosenVoice?.lang || "hi-IN";
+      chosenPitch = 1.76;
+      chosenRate = 1.15;
     } else if (isHindi) {
-      const hiVoice = voices.find(
+      chosenVoice = voices.find(
         (v) =>
-          v.lang === "hi-IN" ||
-          v.lang.startsWith("hi") ||
+          v.lang.toLowerCase() === "hi-in" ||
+          v.lang.toLowerCase().startsWith("hi") ||
           v.name.toLowerCase().includes("hindi") ||
           v.name.toLowerCase().includes("swara") ||
           v.name.toLowerCase().includes("madhur") ||
           v.name.toLowerCase().includes("kalpana") ||
           v.name.toLowerCase().includes("hemant")
       );
-      if (hiVoice) utt.voice = hiVoice;
-      utt.lang = "hi-IN";
-      utt.pitch = 1.35;
-      utt.rate = 1.02;
+      chosenLang = chosenVoice?.lang || "hi-IN";
+      chosenPitch = 1.75;
+      chosenRate = 1.15;
     } else {
-      // English cute voice
-      const enVoice = voices.find(
-        (v) =>
-          v.name.toLowerCase().includes("samantha") ||
-          v.name.toLowerCase().includes("victoria") ||
-          v.name.toLowerCase().includes("karen") ||
-          v.name.toLowerCase().includes("zira") ||
-          v.lang.startsWith("en")
-      );
-      if (enVoice) utt.voice = enVoice;
-      utt.lang = "en-US";
-      utt.pitch = 1.45;
-      utt.rate = 1.05;
+      // English cute cartoon cat voice
+      chosenVoice =
+        voices.find(
+          (v) =>
+            v.name.toLowerCase().includes("samantha") ||
+            v.name.toLowerCase().includes("victoria") ||
+            v.name.toLowerCase().includes("karen") ||
+            v.name.toLowerCase().includes("zira") ||
+            v.lang.toLowerCase().startsWith("en")
+        ) || (voices.length > 0 ? voices[0] : undefined);
+      chosenLang = chosenVoice?.lang || "en-US";
+      chosenPitch = 1.8;
+      chosenRate = 1.18;
     }
+
+    if (preferredLanguage) {
+      const languagePrefix = preferredLanguage.toLowerCase().split("-")[0];
+      chosenVoice = voices.find((voice) => voice.lang.toLowerCase().startsWith(languagePrefix));
+      chosenLang = chosenVoice?.lang || preferredLanguage;
+    }
+
+    if (chosenVoice) {
+      utt.voice = chosenVoice;
+    }
+    utt.lang = chosenLang;
+    utt.pitch = chosenPitch;
+    utt.rate = chosenRate;
+    utt.volume = 1.0;
 
     utt.onstart = () => {
       this.isSpeaking = true;
@@ -356,24 +412,35 @@ export class TalkingTomAudio {
       if (this.onSpeechEnd) this.onSpeechEnd();
     };
 
-    this.synth.speak(utt);
+    // Unlock and ensure speech synthesis resume in Chromium
+    this.unlockAudio();
+
+    setTimeout(() => {
+      try {
+        if (this.synth) {
+          if (this.synth.paused) this.synth.resume();
+          this.synth.speak(utt);
+        }
+      } catch (e) {
+        console.warn("Speech synthesis error:", e);
+      }
+    }, 40);
   }
 
   // Alias
-  public repeatInCatVoice(text: string) {
-    this.repeatInTomVoice(text);
+  public repeatInCatVoice(text: string, preferredLanguage?: string) {
+    this.repeatInTomVoice(text, preferredLanguage);
   }
 
   // Listen to microphone in speech recognition
-  public listen(onResult: (text: string) => void) {
+  public listen(onResult: (text: string) => void, language = "en-US", onStop?: () => void) {
     if (!this.recognition) {
-      this.repeatInTomVoice("Tap me to talk or type in the chat box.");
-      return;
+      return false;
     }
 
     try {
       this.isListening = true;
-      this.recognition.lang = navigator.language || "en-US";
+      this.recognition.lang = language || navigator.language || "en-US";
       this.recognition.onresult = (e: any) => {
         this.isListening = false;
         const transcript = e.results[0][0].transcript;
@@ -381,13 +448,18 @@ export class TalkingTomAudio {
       };
       this.recognition.onerror = () => {
         this.isListening = false;
+        onStop?.();
       };
       this.recognition.onend = () => {
         this.isListening = false;
+        onStop?.();
       };
       this.recognition.start();
+      return true;
     } catch {
       this.isListening = false;
+      onStop?.();
+      return false;
     }
   }
 }

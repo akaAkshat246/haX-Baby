@@ -56,6 +56,59 @@ import { GeoCitiesWindow } from "../components/windows/GeoCitiesWindow";
 import { WebringWindow } from "../components/windows/WebringWindow";
 import { SecretRoomWindow } from "../components/windows/SecretRoomWindow";
 
+const VOICE_LANGUAGES = [
+  { label: "English", locale: "en-US" },
+  { label: "हिन्दी", locale: "hi-IN" },
+  { label: "मराठी", locale: "mr-IN" },
+  { label: "ಕನ್ನಡ", locale: "kn-IN" },
+  { label: "తెలుగు", locale: "te-IN" },
+  { label: "Français", locale: "fr-FR" },
+  { label: "Русский", locale: "ru-RU" },
+];
+
+function localizeKittyLine(text: string, locale: string) {
+  if (locale.startsWith("en")) return text;
+  const lower = text.toLowerCase();
+  const key = /dance|playful kitten|strawberry/.test(lower)
+    ? "dance"
+    : /sleep|nap|yawn/.test(lower)
+      ? "sleep"
+      : /walk|explore|move/.test(lower)
+        ? "walk"
+        : /milk|slurp/.test(lower)
+          ? "milk"
+          : /fish|tuna|munch/.test(lower)
+            ? "fish"
+            : /hello|welcome|high-five|bonjour|namaste|namaskar|namaskara|namaskaram/.test(lower)
+              ? "hello"
+              : /purr|chin scratch|cozy|happy|tickle/.test(lower)
+                ? "purr"
+                : "hello";
+
+  const lines: Record<string, Record<string, string>> = {
+    "hi": { dance: "Chalo, mere saath dance karo! Meow!", sleep: "Main ab ek pyaari si nap leti hoon. Purr!", walk: "Chalo, saath mein kamra explore karte hain!", milk: "Garam doodh, kitna yummy! Shukriya!", fish: "Yummy machhli! Yeh meri favourite hai!", hello: "Namaste dost! Tumse milkar bahut khushi hui!", purr: "Purr, tumhare saath mujhe bahut achha lagta hai!" },
+    "mr": { dance: "Chala, majhyasobat dance kara! Meow!", sleep: "Mi ata godashi vishranti ghete. Purr!", walk: "Chala, apan ekatra phiruya!", milk: "Garam doodh, khup chhan! Dhanyavaad!", fish: "Mast masali! Hi mazi aavadti aahe!", hello: "Namaskar mitra! Tula bhetun anand zala!", purr: "Purr, tujhya sobat mala khup chhan vatata!" },
+    "kn": { dance: "Banni, nanna jothe dance maadi! Meow!", sleep: "Naanu iga muddaagi nidde maaduttene. Purr!", walk: "Banni, naavu ottige explore maadona!", milk: "Bisi haalu, tumba chennagide! Dhanyavaada!", fish: "Ruchiyaada meenu! Idhu nanna favourite!", hello: "Namaskara snehita! Nimmannu nodi khushi aayitu!", purr: "Purr, ninna jothe nanage tumba santosha!" },
+    "te": { dance: "Randi, naatho kalisi dance cheyyandi! Meow!", sleep: "Nenu ippudu haayiga nidrapotanu. Purr!", walk: "Randi, manam kalisi explore cheddam!", milk: "Vedi paalu, chaala ruchiga unnayi!", fish: "Ruchikaramaina chepa! Naaku chaala ishtam!", hello: "Namaskaram nestama! Ninnu kalavadam santosham!", purr: "Purr, neetho unte naaku chaala santosham!" },
+    "fr": { dance: "Dansons ensemble, mon ami ! Miaou !", sleep: "Je vais faire une petite sieste. Ronron !", walk: "Explorons la pièce ensemble !", milk: "Du lait chaud, quel délice ! Merci !", fish: "Miam, du poisson ! C'est mon préféré !", hello: "Bonjour mon ami ! Je suis ravie de te voir !", purr: "Ronron, je suis si heureuse avec toi !" },
+    "ru": { dance: "Давай танцевать вместе! Мяу!", sleep: "Пора сладко вздремнуть. Мурр!", walk: "Давай вместе исследуем комнату!", milk: "Тёплое молочко, как вкусно!", fish: "Вкусная рыбка! Я её обожаю!", hello: "Привет, друг! Я так рада тебя видеть!", purr: "Мурр, мне так хорошо рядом с тобой!" },
+  };
+  const language = locale.slice(0, 2).toLowerCase();
+  return lines[language]?.[key] || text;
+}
+
+function quickCatCommand(query: string) {
+  const text = query.toLowerCase();
+  if (/\b(purr|ronron|ronronner|purrr)\b/.test(text) || /мурр|пурр/.test(text)) return "purr";
+  if (/\b(dance|dancing|naacho|nacha|nritya|maadi|cheyyandi|dansons|danse)\b/.test(text) || /танц|नाच|ನೃತ್ಯ|ನಾಚು|నాట్యం|ఆడు/.test(text)) return "dance";
+  if (/\b(sleep|nap|so ja|nidra|nidde|nidrapo|sieste|dors)\b/.test(text) || /спать|спи|ನಿದ್ರೆ|నిద్ర|सो जा|सोने/.test(text)) return "sleep";
+  if (/\b(walk|move|explore|chalo|phiruya|banni|randi|explorons)\b/.test(text) || /пойд|идём|चलो|चल|ನಡೆ|నడ/.test(text)) return "walk";
+  if (/\b(milk|doodh|paalu|haalu|lait)\b/.test(text) || /молок|दूध|ಹಾಲು|పాలు/.test(text)) return "milk";
+  if (/\b(fish|tuna|machhli|masali|meenu|chepa|poisson)\b/.test(text) || /рыб|मछली|मासा|ಮೀನು|చేప/.test(text)) return "fish";
+  if (/\b(hello|hi|namaste|namaskar|namaskara|namaskaram|bonjour|salut)\b/.test(text) || /привет|नमस्ते|नमस्कार|ನಮಸ್ಕಾರ|నమస్కారం/.test(text)) return "wave";
+  return null;
+}
+
 export const TalkingPandaApp: React.FC = () => {
   const mountRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<Room3DScene | null>(null);
@@ -79,6 +132,16 @@ export const TalkingPandaApp: React.FC = () => {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [chatInput, setChatInput] = useState("");
+  const [voiceLanguage, setVoiceLanguage] = useState(() => {
+    try {
+      const saved = localStorage.getItem("fourie:voice-language");
+      return VOICE_LANGUAGES.some((language) => language.locale === saved) ? saved! : "en-US";
+    } catch {
+      return "en-US";
+    }
+  });
+  const voiceLanguageRef = useRef(voiceLanguage);
+  voiceLanguageRef.current = voiceLanguage;
   const [walkSpeed, setWalkSpeed] = useState(4.0);
   const [activeStoryChapter, setActiveStoryChapter] = useState(0);
   const [isLullabyPlaying, setIsLullabyPlaying] = useState(false);
@@ -89,6 +152,20 @@ export const TalkingPandaApp: React.FC = () => {
   const [hasBow, setHasBow] = useState(true);
   const [hasSunglasses, setHasSunglasses] = useState(false);
   const [hasHat, setHasHat] = useState(false);
+
+  const speakKitty = (text: string, translate = true) =>
+    tomAudio.repeatInTomVoice(
+      translate ? localizeKittyLine(text, voiceLanguageRef.current) : text,
+      voiceLanguageRef.current
+    );
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("fourie:voice-language", voiceLanguage);
+    } catch {
+      // Keep the current selection for this visit if storage is unavailable.
+    }
+  }, [voiceLanguage]);
 
   // Initialize Three.js 3D Room Scene
   useEffect(() => {
@@ -117,7 +194,9 @@ export const TalkingPandaApp: React.FC = () => {
     // Handle 3D Physical Obstacle Collision Bump!
     scene.onCatBump = (obstacleName: string) => {
       tomAudio.playBoing();
-      setLastSpeechText(`Bumped into the ${obstacleName}!`);
+      const bumpMsg = `Ouch! Bumped into the ${obstacleName}! Meow!`;
+      setLastSpeechText(bumpMsg);
+        speakKitty(bumpMsg);
     };
 
     // Handle 3D Raycasted Station Clicks
@@ -126,29 +205,36 @@ export const TalkingPandaApp: React.FC = () => {
       setViewMode(station);
     };
 
-    // Handle 3D Raycasted Pokes
+    // Handle 3D Raycasted Pokes with spoken cartoon cat voice
     scene.onCatPoke = (part: string) => {
+      tomAudio.unlockAudio();
       if (part === "head") {
         tomAudio.playPurr();
         scene.cat.animState = "purr";
-        setLastSpeechText("Purr, chin scratches feel so wonderful.");
+        const msg = "Purr, chin scratches feel so wonderful! Meow!";
+        setLastSpeechText(msg);
+        speakKitty(msg);
         setTimeout(() => {
           if (scene.cat.animState === "purr") scene.cat.animState = "idle";
-        }, 1600);
+        }, 1800);
       } else if (part === "belly") {
         tomAudio.playGiggle();
         scene.cat.animState = "poke_belly";
-        setLastSpeechText("Hehe, tummy tickles! Wiggle wiggle.");
+        const msg = "Hehe, tummy tickles! Wiggle wiggle!";
+        setLastSpeechText(msg);
+        speakKitty(msg);
         setTimeout(() => {
           if (scene.cat.animState === "poke_belly") scene.cat.animState = "idle";
-        }, 1400);
+        }, 1600);
       } else {
         tomAudio.playMeow();
         scene.cat.animState = "wave";
-        setLastSpeechText("High-five with soft pink kitten paws.");
+        const msg = "Meow! High-five with my soft pink kitten paws!";
+        setLastSpeechText(msg);
+        speakKitty(msg);
         setTimeout(() => {
           if (scene.cat.animState === "wave") scene.cat.animState = "idle";
-        }, 1200);
+        }, 1500);
       }
     };
 
@@ -181,11 +267,12 @@ export const TalkingPandaApp: React.FC = () => {
 
   // Talking Tom's Listen & Voice Interaction (Powered by Groq AI)
   const handleTalkButton = () => {
+    tomAudio.unlockAudio();
     if (isListening) return;
     setIsListening(true);
     setLastSpeechText("Listening to you... Speak to Kitty");
 
-    tomAudio.listen(async (transcript) => {
+    const listeningStarted = tomAudio.listen(async (transcript) => {
       setIsListening(false);
       if (!transcript || transcript.trim().length === 0) {
         setLastSpeechText("Meow, I could not hear you clearly. Please try again.");
@@ -194,15 +281,29 @@ export const TalkingPandaApp: React.FC = () => {
 
       setLastSpeechText(`"${transcript}"`);
 
+      const command = quickCatCommand(transcript);
+      if (command === "milk" || command === "fish") {
+        handleFeed(command);
+        return;
+      }
+      if (command) {
+        handleAction(command);
+        return;
+      }
+
       // Query AI Cat Brain
       try {
-        const reply = await freeLlm.askCat(transcript);
+        const reply = await freeLlm.askCat(transcript, voiceLanguageRef.current);
         setLastSpeechText(reply);
-        tomAudio.repeatInTomVoice(reply);
+        speakKitty(reply, false);
       } catch {
-        tomAudio.repeatInTomVoice(transcript);
+        speakKitty(transcript, false);
       }
-    });
+    }, voiceLanguageRef.current, () => setIsListening(false));
+    if (!listeningStarted) {
+      setIsListening(false);
+      setLastSpeechText("Voice input is unavailable here. Type a message to Kitty instead.");
+    }
   };
 
   // Actions Trigger
@@ -214,7 +315,9 @@ export const TalkingPandaApp: React.FC = () => {
       case "purr":
         cat.animState = "purr";
         tomAudio.playPurr();
-        setLastSpeechText("Purr, feeling so cozy and happy.");
+        const purrMsg = "Purr, feeling so cozy and happy with you!";
+        setLastSpeechText(purrMsg);
+        speakKitty(purrMsg);
         setTimeout(() => {
           if (cat.animState === "purr") cat.animState = "idle";
         }, 2500);
@@ -223,8 +326,9 @@ export const TalkingPandaApp: React.FC = () => {
       case "dance":
         cat.animState = "dance";
         tomAudio.playTone(880, 0.3);
-        setLastSpeechText("Watch my playful kitten dance moves!");
-        tomAudio.repeatInTomVoice("Watch my playful kitten dance moves!");
+        const danceMsg = "Watch my playful kitten dance moves!";
+        setLastSpeechText(danceMsg);
+        speakKitty(danceMsg);
         setTimeout(() => {
           if (cat.animState === "dance") cat.animState = "idle";
         }, 3200);
@@ -233,34 +337,43 @@ export const TalkingPandaApp: React.FC = () => {
       case "sit":
         cat.animState = "sit";
         tomAudio.playMeow();
-        setLastSpeechText("Sitting quietly in a sweet kitten loaf pose.");
+        const sitMsg = "Sitting quietly in a sweet kitten loaf pose. Meow!";
+        setLastSpeechText(sitMsg);
+        speakKitty(sitMsg);
         break;
 
       case "sleep":
         cat.animState = "sleep";
         tomAudio.playYawn();
-        setLastSpeechText("Curling up for a warm cat nap.");
+        const sleepMsg = "Curling up for a warm cozy cat nap. Purr.";
+        setLastSpeechText(sleepMsg);
+        speakKitty(sleepMsg);
         break;
 
       case "wave":
         cat.animState = "wave";
         tomAudio.playMeow();
-        setLastSpeechText("Hello dear friend! Welcome to my cozy room.");
-        tomAudio.repeatInTomVoice("Hello friend! Welcome to my cozy room!");
+        const waveMsg = "Hello dear friend! Welcome to my cozy room!";
+        setLastSpeechText(waveMsg);
+        speakKitty(waveMsg);
         setTimeout(() => {
           if (cat.animState === "wave") cat.animState = "idle";
         }, 1800);
         break;
 
       case "walk":
-        cat.animState = "walk";
-        setLastSpeechText("Click anywhere on the room floor to walk.");
+        sceneRef.current.roamCat();
+        const walkMsg = "Let's explore the room together! Meow!";
+        setLastSpeechText(walkMsg);
+        speakKitty(walkMsg);
         break;
 
       case "pout":
         cat.animState = "pout";
         tomAudio.playBoing();
-        setLastSpeechText("Playful little jump!");
+        const poutMsg = "Boing! Playful little kitten jump!";
+        setLastSpeechText(poutMsg);
+        speakKitty(poutMsg);
         setTimeout(() => {
           if (cat.animState === "pout") cat.animState = "idle";
         }, 1200);
@@ -280,14 +393,14 @@ export const TalkingPandaApp: React.FC = () => {
       setLastSpeechText("Warm sweet milk! Delicious!");
       setTimeout(() => {
         tomAudio.playPurr();
-        tomAudio.repeatInTomVoice("Delicious warm milk, thank you!");
+        speakKitty("Delicious warm milk, thank you!");
       }, 900);
     } else if (food === "fish") {
       cat.animState = "sit";
       tomAudio.playMunch();
       setLastSpeechText("Crispy tuna fish, my absolute favorite!");
       setTimeout(() => {
-        tomAudio.repeatInTomVoice("That crispy tuna fish was purr-fect!");
+        speakKitty("That crispy tuna fish was purr-fect!");
         if (cat.animState === "sit") cat.animState = "idle";
       }, 1400);
     } else if (food === "berry") {
@@ -295,7 +408,7 @@ export const TalkingPandaApp: React.FC = () => {
       tomAudio.playTone(950, 0.2);
       setLastSpeechText("Sweet strawberry cream!");
       setTimeout(() => {
-        tomAudio.repeatInTomVoice("Sweet strawberry cream, yummy!");
+        speakKitty("Sweet strawberry cream, yummy!");
         if (cat.animState === "dance") cat.animState = "idle";
       }, 1500);
     }
@@ -336,38 +449,26 @@ export const TalkingPandaApp: React.FC = () => {
     const query = (customQuery || chatInput).trim();
     if (!query) return;
 
+    tomAudio.unlockAudio();
     if (!customQuery) setChatInput("");
     setLastSpeechText("Thinking...");
 
-    const lower = query.toLowerCase();
-    if (lower.includes("purr") || lower.includes("love")) {
-      handleAction("purr");
+    const command = quickCatCommand(query);
+    if (command === "milk" || command === "fish") {
+      handleFeed(command);
       return;
-    } else if (lower.includes("dance")) {
-      handleAction("dance");
-      return;
-    } else if (lower.includes("milk")) {
-      handleFeed("milk");
-      return;
-    } else if (lower.includes("fish") || lower.includes("tuna")) {
-      handleFeed("fish");
-      return;
-    } else if (lower.includes("sleep")) {
-      handleAction("sleep");
-      return;
-    } else if (lower.includes("meow")) {
-      tomAudio.playMeow();
-      setLastSpeechText("Meow! Sending lots of love.");
-      tomAudio.repeatInTomVoice("Meow! I love spending time with you.");
+    }
+    if (command) {
+      handleAction(command);
       return;
     }
 
     try {
-      const reply = await freeLlm.askCat(query);
+      const reply = await freeLlm.askCat(query, voiceLanguageRef.current);
       setLastSpeechText(reply);
-      tomAudio.repeatInTomVoice(reply);
+      speakKitty(reply, false);
     } catch {
-      tomAudio.repeatInTomVoice(query);
+      speakKitty(query, false);
     }
   };
 
@@ -824,9 +925,20 @@ export const TalkingPandaApp: React.FC = () => {
             <div className="absolute bottom-4 left-4 right-4 z-40 flex flex-col items-center gap-2 pointer-events-none">
               {/* Multilingual Quick Selector Chips */}
               <div className="pointer-events-auto flex items-center gap-1.5 flex-wrap justify-center bg-[#10121d]/85 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-2xl shadow-xl">
-                <span className="text-[10px] text-white/50 font-mono uppercase tracking-wider mr-1">
-                  Languages:
-                </span>
+                <label htmlFor="kitty-voice-language" className="text-[10px] text-white/60 font-mono uppercase tracking-wider mr-1">
+                  Voice
+                </label>
+                <select
+                  id="kitty-voice-language"
+                  value={voiceLanguage}
+                  onChange={(event) => setVoiceLanguage(event.target.value)}
+                  className="rounded-lg bg-[#202236] border border-white/15 px-2 py-1 text-[11px] text-white outline-none focus:border-pink-400"
+                  aria-label="Choose the cat's spoken language"
+                >
+                  {VOICE_LANGUAGES.map((language) => (
+                    <option key={language.locale} value={language.locale}>{language.label}</option>
+                  ))}
+                </select>
                 <button
                   type="button"
                   onClick={() => handleSendChat(undefined, "Namaste Fourie, kaise ho?")}

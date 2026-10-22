@@ -5,6 +5,12 @@ export default defineConfig({
   plugins: [
     react(),
   ],
+  optimizeDeps: {
+    include: [
+      "three",
+      "three/addons/geometries/RoundedBoxGeometry.js",
+    ],
+  },
   server: {
     port: 3000,
   },

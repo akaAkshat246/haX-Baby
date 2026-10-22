@@ -71,6 +71,17 @@ export const StoryLanding: React.FC = () => {
       tagline: "56K Carrier Waves Se Buni Lori",
       badges: ["Cloud Cradle", "56K Lullaby", "Sweet Slumber", "Starry Night"],
     },
+    {
+      id: "chapter-4",
+      chapter: "Chapter IV · Koko Ki Dosti",
+      title: "The Sunlit Nursery & Koko's Voice",
+      subtitle: "Sunehri dhoop, chamakta taara, aur nanhay panda Koko ki meethi aawaz",
+      imageSrc: "/assets/story/fourie_koko_nursery.svg",
+      quote:
+        "Jab subah ki sunehri dhoop nursery me aati hai, Fourie apni chamakti yaadon ka taara nanhay panda Koko ko deta hai—jo har bhasha me pyaar se baat karta hai aur khilkhila kar hansta hai. Kyunki is 404 Sanctuary me har aawaz aur har dosti hamesha zinda rehti hai.",
+      tagline: "Har Bhasha Me Pyaar Bhari Dosti",
+      badges: ["Golden Sunset", "Baby Panda Koko", "Live Voice", "Eternal Friendship"],
+    },
   ];
 
   const scrollToChapter = (index: number) => {
@@ -102,19 +113,9 @@ export const StoryLanding: React.FC = () => {
           <a href="#chapter-1" className="hover:text-[#c43d74] transition-colors whitespace-nowrap shrink-0">01. Origin Tale</a>
           <a href="#chapter-2" className="hover:text-[#c43d74] transition-colors whitespace-nowrap shrink-0">02. Lost &amp; Found</a>
           <a href="#chapter-3" className="hover:text-[#c43d74] transition-colors whitespace-nowrap shrink-0">03. Cloud Cradle</a>
+          <a href="#chapter-4" className="hover:text-[#c43d74] transition-colors whitespace-nowrap shrink-0">04. Koko Ki Dosti</a>
           <a href="#sanctuary-portal" className="hover:text-[#c43d74] transition-colors whitespace-nowrap shrink-0">3D Nursery</a>
         </nav>
-
-        {/* Zone 3: Single Primary Action */}
-        <div className="flex items-center shrink-0">
-          <button
-            type="button"
-            onClick={handleDiveIn}
-            className="px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-gradient-to-r from-[#ee6b9e] to-[#f4936a] text-white shadow-md hover:-translate-y-0.5 transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0"
-          >
-            <span>Visit Koko&apos;s Room</span>
-          </button>
-        </div>
       </header>
 
       {/* Hero Section */}

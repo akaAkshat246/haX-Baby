@@ -588,10 +588,9 @@ export const TalkingPandaApp: React.FC = () => {
           <div>
             <div className="text-xs font-bold text-white flex items-center gap-1.5">
               <span>Fourie 3D Sanctuary</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
             </div>
             <div className="text-[10px] text-white/60 font-mono">
-              Three.js WebGL Engine (60 FPS)
+              Three.js WebGL Sanctuary
             </div>
           </div>
         </div>

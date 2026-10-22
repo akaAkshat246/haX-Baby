@@ -609,17 +609,20 @@ export class Panda3DModel {
 
       case "sit": {
         this.bambooStickGroup.visible = true;
-        this.group.position.y = THREE.MathUtils.lerp(this.group.position.y, -0.45, 0.1);
+        const k = 10.0;
+        const t = performance.now() * 0.003;
+        this.group.position.y = THREE.MathUtils.damp(this.group.position.y, -0.48, k, delta);
+        this.bodyMesh.rotation.x = THREE.MathUtils.damp(this.bodyMesh.rotation.x, -0.16, k, delta);
 
-        this.leftLegGroup.rotation.x = THREE.MathUtils.lerp(this.leftLegGroup.rotation.x, -1.3, 0.1);
-        this.rightLegGroup.rotation.x = THREE.MathUtils.lerp(this.rightLegGroup.rotation.x, -1.3, 0.1);
-        this.leftLegGroup.rotation.z = -0.3;
-        this.rightLegGroup.rotation.z = 0.3;
+        this.leftLegGroup.rotation.x = THREE.MathUtils.damp(this.leftLegGroup.rotation.x, -1.42 + Math.sin(t) * 0.06, k, delta);
+        this.rightLegGroup.rotation.x = THREE.MathUtils.damp(this.rightLegGroup.rotation.x, -1.42 - Math.sin(t) * 0.06, k, delta);
+        this.leftLegGroup.rotation.z = THREE.MathUtils.damp(this.leftLegGroup.rotation.z, -0.32, k, delta);
+        this.rightLegGroup.rotation.z = THREE.MathUtils.damp(this.rightLegGroup.rotation.z, 0.32, k, delta);
 
-        this.leftArmGroup.rotation.x = -1.1;
-        this.rightArmGroup.rotation.x = -1.1;
-        this.leftArmGroup.rotation.z = -0.5;
-        this.rightArmGroup.rotation.z = 0.5;
+        this.leftArmGroup.rotation.x = THREE.MathUtils.damp(this.leftArmGroup.rotation.x, -1.05, k, delta);
+        this.rightArmGroup.rotation.x = THREE.MathUtils.damp(this.rightArmGroup.rotation.x, -1.05, k, delta);
+        this.leftArmGroup.rotation.z = THREE.MathUtils.damp(this.leftArmGroup.rotation.z, -0.45, k, delta);
+        this.rightArmGroup.rotation.z = THREE.MathUtils.damp(this.rightArmGroup.rotation.z, 0.45, k, delta);
 
         const chew = Math.sin(performance.now() * 0.015) * 0.08;
         this.jawMesh.position.y = -0.16 + chew;
@@ -629,8 +632,8 @@ export class Panda3DModel {
 
       case "sleep": {
         this.bambooStickGroup.visible = false;
-        this.group.position.y = THREE.MathUtils.lerp(this.group.position.y, -0.85, 0.1);
-        this.bodyMesh.rotation.x = THREE.MathUtils.lerp(this.bodyMesh.rotation.x, 1.25, 0.1);
+        this.group.position.y = THREE.MathUtils.damp(this.group.position.y, -0.85, 8.0, delta);
+        this.bodyMesh.rotation.x = THREE.MathUtils.damp(this.bodyMesh.rotation.x, 1.25, 8.0, delta);
         this.headGroup.position.set(0, 1.3, 1.1);
         this.headGroup.rotation.x = 0.3;
 
@@ -649,7 +652,7 @@ export class Panda3DModel {
 
       case "wave": {
         this.bambooStickGroup.visible = false;
-        this.group.position.y = 0;
+        this.group.position.y = THREE.MathUtils.damp(this.group.position.y, 0, 10.0, delta);
         const waveT = performance.now() * 0.01;
 
         this.rightArmGroup.rotation.z = 2.2;
@@ -672,10 +675,14 @@ export class Panda3DModel {
 
       case "poke_belly": {
         const t = performance.now() * 0.02;
-        this.bodyMesh.scale.z = 0.8 + Math.sin(t) * 0.1;
-        this.headGroup.rotation.x = 0.4;
-        this.leftArmGroup.rotation.x = -0.9;
-        this.rightArmGroup.rotation.x = -0.9;
+        this.group.position.y = THREE.MathUtils.damp(this.group.position.y, -0.42 + Math.abs(Math.sin(t * 0.5)) * 0.12, 12.0, delta);
+        this.bodyMesh.rotation.z = Math.sin(t) * 0.2;
+        this.bodyMesh.scale.z = 0.9 + Math.sin(t) * 0.08;
+        this.headGroup.rotation.x = -0.25 + Math.sin(t * 0.8) * 0.1;
+        this.leftLegGroup.rotation.x = -1.35 + Math.sin(t * 1.4) * 0.4;
+        this.rightLegGroup.rotation.x = -1.35 - Math.sin(t * 1.4) * 0.4;
+        this.leftArmGroup.rotation.x = -0.9 + Math.sin(t * 1.5) * 0.25;
+        this.rightArmGroup.rotation.x = -0.9 - Math.sin(t * 1.5) * 0.25;
         this.leftArmGroup.rotation.z = -0.4;
         this.rightArmGroup.rotation.z = 0.4;
         break;

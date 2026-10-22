@@ -1,0 +1,10 @@
+{
+  "name": "Fourie & Koko — 404 Sanctuary & 3D Baby Panda Companion",
+  "description": "Visit Fourie's 404 Lost & Found Sanctuary and step inside Koko's cozy 3D sunset nursery with real-time synthesized baby giggles and playful interactions.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

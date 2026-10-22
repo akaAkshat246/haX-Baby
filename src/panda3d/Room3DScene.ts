@@ -80,7 +80,10 @@ export class Room3DScene {
   private synthPointLight: THREE.PointLight;
   private relicsPointLight: THREE.PointLight;
   private fairyLightGroup: THREE.Group;
+  private fairyPointLights: THREE.PointLight[] = [];
   private skyPlane: THREE.Mesh;
+  private sunsetSkyTex: THREE.CanvasTexture;
+  private starryNightTex: THREE.CanvasTexture;
 
   // Particle systems & animated elements
   private dustPoints: THREE.Points;
@@ -94,6 +97,9 @@ export class Room3DScene {
   private equalizerBars: THREE.Mesh[] = [];
   private relicMeshes: THREE.Object3D[] = [];
   private interactiveStations: THREE.Object3D[] = [];
+  private interactivePlantGroup?: THREE.Group;
+  private plantHitboxMesh?: THREE.Mesh;
+  private plantWiggleTimer: number = 0;
 
   // Autonomous Curiosity Wandering Engine
   private wanderTimer: number = 0;
@@ -257,9 +263,13 @@ export class Room3DScene {
     this.relicsPointLight.position.set(0, 3.8, -4.8);
     this.scene.add(this.relicsPointLight);
 
-    // Warm Fairy String Lights Group
+    // Warm Fairy String Lights Group (Enabled in Night Mode)
     this.fairyLightGroup = new THREE.Group();
+    this.fairyLightGroup.visible = false;
     this.scene.add(this.fairyLightGroup);
+
+    this.sunsetSkyTex = this.createSunsetSkyTexture();
+    this.starryNightTex = this.createStarryNightTexture();
 
     // 4. Build the Spacious Rounded Room Environment
     const room = this.buildRoom();
@@ -359,16 +369,71 @@ export class Room3DScene {
     return this.raycaster.ray.intersectPlane(this.groundPlane, this.groundPoint)?.clone() || null;
   }
 
+  private createSunsetSkyTexture(): THREE.CanvasTexture {
+    const canvas = document.createElement("canvas");
+    canvas.width = 512;
+    canvas.height = 256;
+    const ctx = canvas.getContext("2d")!;
+    const grad = ctx.createLinearGradient(0, 0, 0, 256);
+    grad.addColorStop(0, "#3E4D74");
+    grad.addColorStop(0.4, "#C07A84");
+    grad.addColorStop(0.75, "#F3A178");
+    grad.addColorStop(1, "#FFE4B5");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 512, 256);
+    return new THREE.CanvasTexture(canvas);
+  }
+
+  private createStarryNightTexture(): THREE.CanvasTexture {
+    const canvas = document.createElement("canvas");
+    canvas.width = 512;
+    canvas.height = 256;
+    const ctx = canvas.getContext("2d")!;
+    const grad = ctx.createLinearGradient(0, 0, 0, 256);
+    grad.addColorStop(0, "#040614");
+    grad.addColorStop(0.45, "#0B1330");
+    grad.addColorStop(1, "#1D2452");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 512, 256);
+
+    for (let i = 0; i < 120; i++) {
+      const sx = (i * 97 + i * i * 17) % 512;
+      const sy = (i * 53 + i * 29) % 210;
+      const r = i % 6 === 0 ? 1.6 : 0.9;
+      ctx.fillStyle = i % 3 === 0 ? "#FEF3C7" : "#FFFFFF";
+      ctx.beginPath();
+      ctx.arc(sx, sy, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.fillStyle = "#FEF9C3";
+    ctx.beginPath();
+    ctx.arc(390, 64, 20, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#0B1330";
+    ctx.beginPath();
+    ctx.arc(398, 59, 17, 0, Math.PI * 2);
+    ctx.fill();
+
+    return new THREE.CanvasTexture(canvas);
+  }
+
   // Day/Night Room Lighting Toggle
   public setLightingTheme(theme: "day" | "night") {
+    const skyMat = this.skyPlane.material as THREE.MeshBasicMaterial;
     if (theme === "night") {
       this.ambientLight.color.setHex(0x1a162b);
-      this.ambientLight.intensity = 0.6;
+      this.ambientLight.intensity = 0.45;
       this.hemiLight.color.setHex(0x2d1b4e);
       this.hemiLight.groundColor.setHex(0x0f0b18);
+      this.hemiLight.intensity = 0.5;
       this.sunLight.color.setHex(0x5078ff);
-      this.sunLight.intensity = 0.85;
-      (this.skyPlane.material as THREE.MeshBasicMaterial).color.setHex(0x090514);
+      this.sunLight.intensity = 0.65;
+      skyMat.map = this.starryNightTex;
+      skyMat.color.setHex(0xffffff);
+      skyMat.needsUpdate = true;
+      this.fairyLightGroup.visible = true;
+      this.fairyPointLights.forEach((l) => (l.intensity = 1.4));
       this.deskLampLight.intensity = 3.4;
       this.synthPointLight.intensity = 2.8;
       this.relicsPointLight.intensity = 3.2;
@@ -377,9 +442,14 @@ export class Room3DScene {
       this.ambientLight.intensity = 0.9;
       this.hemiLight.color.setHex(0xffe8d6);
       this.hemiLight.groundColor.setHex(0x5a3e28);
+      this.hemiLight.intensity = 0.85;
       this.sunLight.color.setHex(0xfff4db);
       this.sunLight.intensity = 2.6;
-      (this.skyPlane.material as THREE.MeshBasicMaterial).color.setHex(0xffe8d6);
+      skyMat.map = this.sunsetSkyTex;
+      skyMat.color.setHex(0xffffff);
+      skyMat.needsUpdate = true;
+      this.fairyLightGroup.visible = false;
+      this.fairyPointLights.forEach((l) => (l.intensity = 0.0));
       this.deskLampLight.intensity = 2.4;
       this.synthPointLight.intensity = 1.6;
       this.relicsPointLight.intensity = 2.2;
@@ -435,8 +505,8 @@ export class Room3DScene {
     windowOuter.position.set(0, 5.2, -6.9);
     this.scene.add(windowOuter);
 
-    // Golden Morning Skyline Backdrop
-    const skyMat = new THREE.MeshBasicMaterial({ color: 0xffe8d6 });
+    // Golden Sunset / Starry Night Skyline Backdrop
+    const skyMat = new THREE.MeshBasicMaterial({ map: this.sunsetSkyTex, color: 0xffffff });
     const sky = new THREE.Mesh(new THREE.PlaneGeometry(12.5, 6.0), skyMat);
     sky.position.set(0, 5.2, -7.05);
     this.scene.add(sky);
@@ -722,30 +792,40 @@ export class Room3DScene {
 
     this.scene.add(deskGroup);
 
-    // 11. Potted Rounded Ceramic Planter
+    // 11. Interactive Potted Rounded Ceramic Planter (Wiggles & plays soft nature chime on click)
     const plantGroup = new THREE.Group();
-    plantGroup.position.set(1.2, 0, -5.2);
+    plantGroup.position.set(1.2, 0, -4.6);
+    this.interactivePlantGroup = plantGroup;
 
-    const potMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35 });
+    const potMat = new THREE.MeshStandardMaterial({ color: 0xfff5eb, roughness: 0.35 });
     const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.42, 0.95, 24), potMat);
     pot.position.y = 0.48;
     pot.castShadow = true;
     plantGroup.add(pot);
 
-    const leafMat = new THREE.MeshStandardMaterial({ color: 0x276749, roughness: 0.45, side: THREE.DoubleSide });
+    const leafMat = new THREE.MeshStandardMaterial({ color: 0x38a169, roughness: 0.55 });
     for (let i = 0; i < 7; i++) {
       const angle = (i / 7) * Math.PI * 2;
-      const leafStem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 1.6, 8), leafMat);
+      const leafStem = new THREE.Mesh(new THREE.CapsuleGeometry(0.03, 1.3, 8, 12), leafMat);
       leafStem.position.set(Math.cos(angle) * 0.18, 1.0, Math.sin(angle) * 0.18);
       leafStem.rotation.z = Math.cos(angle) * 0.55;
       leafStem.rotation.x = Math.sin(angle) * 0.55;
 
-      const leafBlade = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.95, 6), leafMat);
-      leafBlade.position.set(0, 0.8, 0);
+      const leafBlade = new THREE.Mesh(new THREE.SphereGeometry(0.36, 16, 14), leafMat);
+      leafBlade.scale.set(1.2, 0.28, 0.9);
+      leafBlade.position.set(0, 0.72, 0);
       leafBlade.rotation.y = angle;
       leafStem.add(leafBlade);
       plantGroup.add(leafStem);
     }
+
+    const plantHitbox = new THREE.Mesh(
+      new THREE.SphereGeometry(1.1, 12, 12),
+      new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
+    );
+    plantHitbox.position.set(0, 1.1, 0);
+    plantGroup.add(plantHitbox);
+    this.plantHitboxMesh = plantHitbox;
     this.scene.add(plantGroup);
 
     // 12. Draped Warm Fairy String Lights
@@ -764,6 +844,13 @@ export class Room3DScene {
       bulb.position.set(x, y, z);
       this.fairyLightGroup.add(bulb);
       this.fairyLightMeshes.push(bulb);
+
+      if (i % 4 === 1) {
+        const fLight = new THREE.PointLight(bulbColor, 0.0, 6.0);
+        fLight.position.set(x, y - 0.1, z + 0.3);
+        this.fairyLightGroup.add(fLight);
+        this.fairyPointLights.push(fLight);
+      }
     }
 
     return { floor, sky };
@@ -1144,6 +1231,16 @@ export class Room3DScene {
       }
     }
 
+    // 2.5 Check if clicked on the Interactive 3D Plant
+    if (this.plantHitboxMesh) {
+      const plantHits = this.raycaster.intersectObject(this.plantHitboxMesh, true);
+      if (plantHits.length > 0) {
+        this.plantWiggleTimer = 1.35;
+        this.playSoftNatureChime();
+        return;
+      }
+    }
+
     // 3. Otherwise, tap to walk to point on floor
     if (
       point &&
@@ -1202,6 +1299,20 @@ export class Room3DScene {
     if (this.danglingBallMesh) {
       this.danglingBallMesh.position.x = 0.45 + Math.sin(elapsedTime * 2.5) * 0.08;
       this.danglingBallMesh.position.z = Math.cos(elapsedTime * 2.0) * 0.08;
+    }
+
+    // 5.5 Interactive Plant Wiggle Animation
+    if (this.interactivePlantGroup) {
+      const idleSway = Math.sin(elapsedTime * 1.8) * 0.03;
+      if (this.plantWiggleTimer > 0) {
+        this.plantWiggleTimer = Math.max(0, this.plantWiggleTimer - delta);
+        const env = this.plantWiggleTimer / 1.35;
+        this.interactivePlantGroup.rotation.z = idleSway + Math.sin((1.35 - this.plantWiggleTimer) * 26.0) * env * 0.24;
+        this.interactivePlantGroup.rotation.x = Math.cos((1.35 - this.plantWiggleTimer) * 22.0) * env * 0.16;
+      } else {
+        this.interactivePlantGroup.rotation.z = idleSway;
+        this.interactivePlantGroup.rotation.x = 0;
+      }
     }
 
     // 6. Move Cat smoothly in 3D towards targetPos with Rounded Obstacle Collisions
@@ -1373,6 +1484,31 @@ export class Room3DScene {
 
     this.renderer.render(this.scene, this.camera);
     this.animId = requestAnimationFrame(this.animate);
+  }
+
+  private playSoftNatureChime() {
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const notes = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5];
+      const t0 = ctx.currentTime;
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, t0 + idx * 0.065);
+        gain.gain.setValueAtTime(0.001, t0 + idx * 0.065);
+        gain.gain.linearRampToValueAtTime(0.14, t0 + idx * 0.065 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + idx * 0.065 + 0.75);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t0 + idx * 0.065);
+        osc.stop(t0 + idx * 0.065 + 0.8);
+      });
+    } catch {
+      // Ignore audio context errors
+    }
   }
 
   public dispose() {

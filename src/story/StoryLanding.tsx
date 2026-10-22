@@ -82,142 +82,119 @@ export const StoryLanding: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0e0714] text-[#fff0f7] font-sans selection:bg-[#ff85b8] selection:text-[#3d001e] overflow-x-hidden">
-      {/* Dynamic Background Nebulae & Baby Pink Ambient Aura */}
-      <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#ff85b8]/12 rounded-full blur-[150px] pointer-events-none" />
-      <div className="fixed bottom-0 right-1/4 w-[650px] h-[650px] bg-[#c084fc]/10 rounded-full blur-[160px] pointer-events-none" />
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#ff3377]/6 rounded-full blur-[180px] pointer-events-none" />
+    <div className="relative min-h-screen w-full bg-[#fffaf7] text-[#362238] font-sans selection:bg-[#ff85b8] selection:text-[#3d001e] overflow-x-hidden">
+      {/* Soft Pastel Ambient Aura */}
+      <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#ffd6e8]/50 rounded-full blur-[140px] pointer-events-none" />
+      <div className="fixed bottom-0 right-1/4 w-[650px] h-[650px] bg-[#f3e8ff]/60 rounded-full blur-[150px] pointer-events-none" />
 
       {/* Floating Stardust Canvas */}
       <SparkCanvas />
 
-      {/* Top Floating Glass Navigation Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-8 py-3.5 bg-[#14081c]/75 backdrop-blur-xl border-b border-[#ff85b8]/20 flex items-center justify-between">
-        {/* Brand & Companion Badge */}
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#ff85b8] to-[#ffb6d9] flex items-center justify-center shadow-[0_4px_16px_rgba(255,133,184,0.4)]">
-            <Sparkles className="w-5 h-5 text-[#3d001e]" />
-          </div>
-          <div>
-            <div className="text-sm font-bold font-sans tracking-wide text-white flex items-center gap-2">
-              <span>FOURIE</span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#ff85b8]/20 text-[#ff85b8] border border-[#ff85b8]/30">
-                404 Sanctuary
-              </span>
-            </div>
-            <div className="text-[11px] text-[#d8b4c8] font-medium hidden sm:block">
-              Internet ke 404 page ka bachcha
-            </div>
-          </div>
-        </div>
+      {/* Top Navigation Header — Strict 3-Zone Top Bar Contract */}
+      <header className="sticky top-0 left-0 right-0 z-50 px-6 sm:px-10 py-4 bg-[#fffcfa]/90 backdrop-blur-xl border-b border-[#e879a9]/20 flex items-center justify-between gap-8">
+        {/* Zone 1: Single Clean Brand Wordmark */}
+        <a href="#hero" className="text-lg font-bold tracking-tight text-[#362238] whitespace-nowrap shrink-0">
+          Fourie Sanctuary
+        </a>
 
-        {/* Action Controls: Music + Sound + Dive into Desktop */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Lullaby Audio Player Pill */}
-          <button
-            type="button"
-            onClick={toggleLullaby}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-mono flex items-center gap-2 border transition-all cursor-pointer ${
-              isPlayingLullaby
-                ? "bg-[#ff85b8] text-[#3d001e] border-[#ff85b8] shadow-[0_0_20px_rgba(255,133,184,0.5)] font-semibold"
-                : "bg-[#1b0e24]/80 text-[#ffd1e6] border-[#ff85b8]/30 hover:border-[#ff85b8]/60"
-            }`}
-            title="Toggle dial-up ambient lullaby synthesizer"
-          >
-            <Music className={`w-3.5 h-3.5 ${isPlayingLullaby ? "animate-spin" : ""}`} />
-            <span className="hidden md:inline">
-              {isPlayingLullaby ? "Lullaby Playing" : "Play Lullaby"}
-            </span>
-          </button>
+        {/* Zone 2: Concise Single-Line Navigation Links */}
+        <nav className="hidden md:flex items-center gap-7 text-sm font-semibold text-[#664c69]">
+          <a href="#chapter-1" className="hover:text-[#c43d74] transition-colors whitespace-nowrap shrink-0">01. Origin Tale</a>
+          <a href="#chapter-2" className="hover:text-[#c43d74] transition-colors whitespace-nowrap shrink-0">02. Lost &amp; Found</a>
+          <a href="#chapter-3" className="hover:text-[#c43d74] transition-colors whitespace-nowrap shrink-0">03. Cloud Cradle</a>
+          <a href="#sanctuary-portal" className="hover:text-[#c43d74] transition-colors whitespace-nowrap shrink-0">3D Nursery</a>
+        </nav>
 
-          {/* Mute Button */}
-          <button
-            type="button"
-            onClick={toggleMute}
-            className="w-8 h-8 rounded-full bg-[#1b0e24]/80 border border-white/10 flex items-center justify-center text-[#d8b4c8] hover:text-white transition-colors"
-            title={muted ? "Unmute sounds" : "Mute sounds"}
-          >
-            {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-          </button>
-
-          {/* Open 3D AI Panda Room Button */}
-          <button
-            type="button"
-            onClick={() => {
-              audio.click();
-              enterPanda();
-            }}
-            className="px-3.5 py-1.5 rounded-full text-xs font-semibold font-sans bg-gradient-to-r from-[#ec4899] to-[#a855f7] text-white shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer border border-white/20"
-            title="Open 3D AI Talking Kitty Room"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">3D Kitty Room</span>
-          </button>
-
-          {/* Dive Into Fourie's World Button */}
+        {/* Zone 3: Single Primary Action */}
+        <div className="flex items-center shrink-0">
           <button
             type="button"
             onClick={handleDiveIn}
-            className="px-4 py-2 rounded-full text-xs sm:text-sm font-semibold font-sans bg-gradient-to-r from-[#ff85b8] via-[#ffa5cc] to-[#fde047] text-[#38001a] shadow-[0_4px_24px_rgba(255,133,184,0.5)] hover:shadow-[0_6px_30px_rgba(255,133,184,0.7)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer border border-[#fff0f7]/40"
+            className="px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-gradient-to-r from-[#ee6b9e] to-[#f4936a] text-white shadow-md hover:-translate-y-0.5 transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0"
           >
-            <Maximize2 className="w-3.5 h-3.5" />
-            <span>Dive Into World</span>
+            <span>Visit Koko&apos;s Room</span>
           </button>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="relative pt-32 sm:pt-40 pb-16 px-4 sm:px-8 max-w-5xl mx-auto flex flex-col items-center text-center z-10">
-        {/* Soft Pink Glowing Pill Badge */}
-        <div className="mb-6 px-4 py-1.5 rounded-full bg-[#1e0f29]/90 border border-[#ff85b8]/35 shadow-[0_0_25px_rgba(255,133,184,0.25)] text-xs sm:text-sm font-mono text-[#ffb6d9] flex items-center gap-2 animate-bounce">
-          <Heart className="w-3.5 h-3.5 text-[#ff85b8] fill-[#ff85b8]" />
-          <span>Kuch kho gaya? Maine sambhal ke rakha hai.</span>
+      <section id="hero" className="relative pt-16 sm:pt-24 pb-16 px-4 sm:px-8 max-w-5xl mx-auto flex flex-col items-center text-center z-10">
+        {/* Clean Unboxed Kicker */}
+        <div className="mb-4 text-xs sm:text-sm font-semibold text-[#c43d74] flex items-center gap-2">
+          <span>404 Lost &amp; Found Sanctuary</span>
+          <span aria-hidden="true">·</span>
+          <span>Kuch kho gaya? Maine sambhal ke rakha hai</span>
         </div>
 
         {/* Hero Title */}
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight font-sans leading-[1.1] mb-6 drop-shadow-lg">
+        <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-[#362238] leading-[1.12] mb-6 max-w-3xl">
           Fourie, Internet Ke{" "}
-          <span className="bg-gradient-to-r from-[#ff85b8] via-[#ffd1e6] to-[#fde047] bg-clip-text text-transparent">
+          <span className="text-[#e85d95]">
             404 Page Ka Bachcha
           </span>
         </h1>
 
         {/* Story Subtitle & Premise */}
-        <p className="text-base sm:text-xl text-[#e8c6da] max-w-3xl leading-relaxed mb-8 font-sans font-normal">
+        <p className="text-base sm:text-lg text-[#664c69] max-w-2xl leading-relaxed mb-8 font-normal">
           Jab internet par koi webpage delete ho jaata hai, uski jagah ek khaali gap reh jaata hai.
-          Us gap se ek chhota sa creature paida hota hai: <strong className="text-white font-semibold">Fourie</strong>.
-          Wo internet ke <span className="text-[#ff85b8] font-medium">“Lost & Found office”</span> me kaam karta hai aur
+          Us gap se ek chhota sa creature paida hota hai: <strong className="text-[#362238] font-semibold">Fourie</strong>.
+          Wo internet ke <span className="text-[#c43d74] font-semibold">Lost &amp; Found Nursery</span> me kaam karta hai aur
           khoye hue pages ko sambhal ke rakhta hai.
         </p>
 
-        {/* Story Quick Chapter Selector */}
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-10">
-          {storyChapters.map((ch, idx) => (
-            <button
-              key={ch.id}
-              type="button"
-              onClick={() => scrollToChapter(idx)}
-              className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all cursor-pointer ${
-                activeChapter === idx
-                  ? "bg-[#ff85b8] text-[#3d001e] font-bold shadow-[0_0_15px_rgba(255,133,184,0.5)]"
-                  : "bg-[#180c22]/80 text-[#d8b4c8] border border-[#ff85b8]/20 hover:border-[#ff85b8]/50"
-              }`}
-            >
-              {ch.chapter.split("·")[1]?.trim() || ch.chapter}
-            </button>
-          ))}
+        {/* Interactive Chapter & Audio Controls */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+          <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-[#fff0f6] border border-[#e879a9]/25">
+            {storyChapters.map((ch, idx) => (
+              <button
+                key={ch.id}
+                type="button"
+                onClick={() => scrollToChapter(idx)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
+                  activeChapter === idx
+                    ? "bg-white text-[#c43d74] shadow-sm"
+                    : "text-[#664c69] hover:text-[#362238]"
+                }`}
+              >
+                {ch.chapter.split("·")[1]?.trim() || ch.chapter}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={toggleLullaby}
+            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 border transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
+              isPlayingLullaby
+                ? "bg-[#e85d95] text-white border-[#e85d95]"
+                : "bg-white text-[#664c69] border-[#e879a9]/30 hover:border-[#e879a9]"
+            }`}
+          >
+            <Music className="w-3.5 h-3.5" />
+            <span>{isPlayingLullaby ? "Lullaby Playing" : "Play Lullaby"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleMute}
+            className="px-3.5 py-2 rounded-xl bg-white border border-[#e879a9]/30 flex items-center gap-1.5 text-xs font-semibold text-[#664c69] hover:text-[#362238] transition-colors cursor-pointer whitespace-nowrap shrink-0"
+            title={muted ? "Unmute sounds" : "Mute sounds"}
+          >
+            {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+            <span>{muted ? "Muted" : "Sound On"}</span>
+          </button>
         </div>
 
         {/* Scroll Indicator */}
-        <div className="flex flex-col items-center gap-1.5 text-xs font-mono text-[#8b6880] animate-pulse">
-          <span>SCROLL FOR FOURIE'S TALE</span>
-          <ChevronDown className="w-4 h-4 text-[#ff85b8]" />
+        <div className="flex flex-col items-center gap-1 text-xs font-semibold text-[#9a7d9e]">
+          <span>Read Fourie&apos;s Storybook</span>
+          <ChevronDown className="w-4 h-4 text-[#e85d95]" />
         </div>
       </section>
 
-      {/* Story Chapters Sections with Generated Artwork in Motion */}
-      <section className="relative px-4 sm:px-8 max-w-5xl mx-auto space-y-24 sm:space-y-32 pb-24 z-10">
-        {storyChapters.map((chap, idx) => (
+      {/* Story Chapters Sections */}
+      <section className="relative px-4 sm:px-8 max-w-5xl mx-auto space-y-20 sm:space-y-24 pb-24 z-10">
+        {storyChapters.map((chap) => (
           <div key={chap.id} id={chap.id} className="scroll-mt-24 flex flex-col items-center">
             <MotionArtwork
               imageSrc={chap.imageSrc}
@@ -232,74 +209,51 @@ export const StoryLanding: React.FC = () => {
         ))}
       </section>
 
-      {/* Grand Entrance Section: "Diving into Fourie's World" */}
-      <section className="relative px-4 sm:px-8 max-w-4xl mx-auto pb-32 text-center z-10">
-        <div className="relative rounded-[36px] p-8 sm:p-14 bg-gradient-to-b from-[#1c0e2a] to-[#12081a] border border-[#ff85b8]/35 shadow-[0_30px_90px_rgba(18,8,25,0.9),0_0_60px_rgba(255,133,184,0.2)] overflow-hidden">
-          {/* Ambient Inner Glow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#ff85b8]/15 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ff85b8]/15 border border-[#ff85b8]/30 text-xs font-mono text-[#ff85b8]">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>EXPERIENCE THE DIGITAL SANCTUARY</span>
+      {/* Grand Entrance Section */}
+      <section id="sanctuary-portal" className="relative px-4 sm:px-8 max-w-4xl mx-auto pb-28 text-center z-10">
+        <div className="relative rounded-[36px] p-8 sm:p-14 bg-gradient-to-b from-[#fff0f6] to-[#fde8f1] border border-[#e879a9]/30 overflow-hidden">
+          <div className="relative z-10 space-y-5">
+            <div className="text-xs font-bold text-[#c43d74]">
+              Interactive Digital Sanctuary · Cozy Nursery
             </div>
 
-            <h2 className="text-3xl sm:text-5xl font-extrabold font-sans text-white tracking-tight">
-              Ready to Dive Into Fourie's World?
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#362238] tracking-tight">
+              Ready to Step Inside Fourie&apos;s World?
             </h2>
 
-            <p className="text-sm sm:text-base text-[#d8b4c8] max-w-xl mx-auto leading-relaxed">
-              Step directly into the full Android 15 Desktop Mode. Play the 16-step dial-up lullaby sequencer,
-              explore the 1999 GeoCities sticker shrine, write on the Lost Notes wall, and interact with Baby Fourie.
+            <p className="text-sm sm:text-base text-[#664c69] max-w-xl mx-auto leading-relaxed">
+              Play the 16-step dial-up lullaby sequencer, explore the 1999 GeoCities relic collection, write on the Lost Notes wall, and care for your companion.
             </p>
 
-            {/* Feature Highlights Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-4 max-w-2xl mx-auto text-left">
-              <div className="p-3.5 rounded-2xl bg-[#14081c]/80 border border-white/5">
-                <Sparkles className="w-5 h-5 text-pink-400 mb-1" />
-                <div className="text-xs font-bold text-white">Living Mascot</div>
-                <div className="text-[11px] text-[#8b6880]">Reactive Companion</div>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-[#14081c]/80 border border-white/5">
-                <Volume2 className="w-5 h-5 text-purple-400 mb-1" />
-                <div className="text-xs font-bold text-white">Lullaby Lab</div>
-                <div className="text-[11px] text-[#8b6880]">16-Step Synthesizer</div>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-[#14081c]/80 border border-white/5">
-                <Heart className="w-5 h-5 text-rose-400 mb-1" />
-                <div className="text-xs font-bold text-white">Lost Notes</div>
-                <div className="text-[11px] text-[#8b6880]">Sanctuary Guestbook</div>
-              </div>
-              <div className="p-3.5 rounded-2xl bg-[#14081c]/80 border border-white/5">
-                <Maximize2 className="w-5 h-5 text-cyan-400 mb-1" />
-                <div className="text-xs font-bold text-white">1999 Shrine</div>
-                <div className="text-[11px] text-[#8b6880]">GeoCities Relics</div>
-              </div>
-            </div>
-
-            {/* Grand Glowing CTA Button */}
-            <div className="pt-4 flex flex-col items-center gap-3">
+            <div className="pt-3 flex flex-wrap items-center justify-center gap-4">
               <button
                 type="button"
                 onClick={handleDiveIn}
-                className="w-full sm:w-auto px-8 sm:px-12 py-4 rounded-full text-base sm:text-lg font-bold font-sans bg-gradient-to-r from-[#ff85b8] via-[#ffa8d0] to-[#fde047] text-[#340018] shadow-[0_8px_32px_rgba(255,133,184,0.6)] hover:shadow-[0_12px_45px_rgba(255,133,184,0.85)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer border border-white/40"
+                className="px-8 py-3.5 rounded-full text-sm sm:text-base font-bold bg-gradient-to-r from-[#ee6b9e] to-[#f4936a] text-white shadow-md hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2.5 cursor-pointer whitespace-nowrap shrink-0"
               >
-                <Maximize2 className="w-5 h-5" />
-                <span>Dive Into Fourie's World · Launch Android OS</span>
+                <Maximize2 className="w-4 h-4" />
+                <span>Step Inside Sanctuary</span>
               </button>
 
-              <div className="text-xs font-mono text-[#ffb6d9] flex items-center gap-2">
-                <span>Automatically switches browser to Fullscreen Mode</span>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  audio.click();
+                  enterPanda();
+                }}
+                className="px-6 py-3.5 rounded-full text-sm font-semibold bg-white text-[#362238] border border-[#e879a9]/35 hover:border-[#e879a9] transition-all cursor-pointer whitespace-nowrap shrink-0"
+              >
+                <span>Open 3D Companion Room</span>
+              </button>
             </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="relative py-8 px-4 text-center border-t border-[#ff85b8]/15 text-xs text-[#8b6880] font-mono z-10">
-        <div>Fourie — Internet 404 Lost & Found Sanctuary · Built with Baby Pink & Contrasting Velvet Plum</div>
-        <div className="mt-1 text-[#ff85b8]/80">“Kuch kho gaya? Maine sambhal ke rakha hai.”</div>
+      <footer className="relative py-8 px-4 text-center border-t border-[#e879a9]/20 text-xs text-[#664c69] z-10">
+        <div>Fourie 404 Lost &amp; Found Sanctuary · Clean Storybook Edition</div>
+        <div className="mt-1 text-[#9a7d9e]">Kuch kho gaya? Maine sambhal ke rakha hai.</div>
       </footer>
     </div>
   );
